@@ -121,7 +121,7 @@ PackedCylinders(radii, centers, L, orientation=(0.0, 0.0, 1.0), surface_relaxivi
 Periodic RVE with N_actual myelinated cylinders — three-compartment.
 
 ```python
-PackedMyelinatedCylinders(inner_radii, g_ratios, centers, cell_size, N_max=128, orientation=(0.0, 0.0, 1.0), D_intra=2e-09, D_myelin=1e-10, D_extra=2e-09, T2_intra=None, T2_myelin=None, T2_extra=None, kappa_inner=0.0, kappa_outer=0.0, rho_inner=0.0, rho_outer=0.0)
+PackedMyelinatedCylinders(inner_radii, g_ratios, centers, cell_size, N_max=128, orientation=(0.0, 0.0, 1.0), D_intra=2e-09, D_myelin=0.0, D_extra=2e-09, T2_intra=None, T2_myelin=None, T2_extra=None, kappa_inner=0.0, kappa_outer=0.0, rho_inner=0.0, rho_outer=0.0)
 ```
 
 ## Substrate parameters

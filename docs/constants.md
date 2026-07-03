@@ -26,10 +26,6 @@ Every value below links to its source paper.
 
 | Constant | Default | Description | Reference |
 | --- | --- | --- | --- |
-| `T1_csf` | 4 s | T1 relaxation time of CSF | [Rooney 2007](https://doi.org/10.1002/mrm.21122) |
-| `T1_extra_axonal` | 1 s | T1 relaxation time of extra-axonal (hindered) water in WM at 3T. No direct compartment-specific measurement exists; value from mcDESPOT IE-compartment simulation ground truth (Deoni 2012). | [Deoni 2013](https://doi.org/10.1002/mrm.24429) |
-| `T1_intra_axonal` | 1.2 s | T1 relaxation time of white matter at 3T | [Wright 2008](https://doi.org/10.1007/s10334-008-0104-8) |
-| `T1_myelin` | 0.44 s | T1 relaxation time of myelin water at 3T, in vivo human WM | [Deoni 2015](https://doi.org/10.1002/mrm.25108) |
 | `T2_csf` | 2 s | T2 relaxation time of CSF | [Piechnik 2009](https://doi.org/10.1002/mrm.21897) |
 | `T2_extra_axonal` | 0.08 s | T2 relaxation time of extra-axonal water | [MacKay 1994](https://doi.org/10.1002/mrm.1910310614) |
 | `T2_intra_axonal` | 0.07 s | T2 relaxation time of intra-axonal water | [MacKay 1994](https://doi.org/10.1002/mrm.1910310614) |
@@ -52,14 +48,7 @@ Every value below links to its source paper.
 | Constant | Default | Description | Reference |
 | --- | --- | --- | --- |
 | `kappa_membrane` | 1e-05 m/s | Axonal membrane permeability | [Nilsson 2013](https://doi.org/10.1002/mrm.24395) |
-| `rho1_axon_membrane` | 8.7e-08 m/s | T1 surface relaxivity of the axon membrane (axolemma). Use paired with corrected T1_bulk_intra (~1.40 s), not T1_apparent. | [Barakovic 2023](https://doi.org/10.3389/fnins.2023.1209521) |
 | `rho2_axon_membrane` | 1.16e-06 m/s | T2 surface relaxivity of the axon membrane (axolemma). Use paired with corrected T2_bulk_intra, not T2_apparent. | [Barakovic 2023](https://doi.org/10.3389/fnins.2023.1209521) |
-
-## Susceptibility
-
-| Constant | Default | Description | Reference |
-| --- | --- | --- | --- |
-| `delta_chi_a_myelin` | -1e-07 SI (dimensionless) | Susceptibility anisotropy of myelinated white matter: difference between susceptibility parallel and perpendicular to the fibre axis, Δχ_a = χ_∥ − χ_⊥.  Negative because myelin is more diamagnetic along the axon than perpendicular to it (phospholipid bilayer geometry).  In SI units (dimensionless); 1 ppm = 1×10⁻⁶.  Enters the hollow-cylinder dipolar field as: ΔB_ea = (Δχ_a·B₀·sin²θ/2)·b²(1−g²)/r²·cos(2φ). | [Liu 2010](https://doi.org/10.1002/mrm.22482) |
 
 ## Physical constants
 
