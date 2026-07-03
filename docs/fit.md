@@ -22,3 +22,6 @@ fractions = fit.fitted_parameters["partial_volume_2"]
 - **White matter:** `white_matter.build_white_matter_model()` (a decoupled diffusion-only
   canonical model — surface relaxivity reweights intra vs extra) and
   `white_matter.t2_spectrum_mwf()` (standard NNLS myelin-water fraction).
+
+See the **[Model catalog](catalog.md)** for every published inverse model (NODDI, Ball&Stick,
+Standard Model, SMT, NEXI, VERDICT, SANDI, …) built from these primitives in a few lines.
