@@ -32,6 +32,7 @@ nav:
   - Install: install.md
   - Forward — dmipy-sim: sim.md
   - Inverse — dmipy-fit: fit.md
+  - Acquisition sequences: sequences.md
   - Model catalog: catalog.md
   - Surface relaxivity & MWF: surface_relaxivity_mwf.md
   - API reference: api.md
