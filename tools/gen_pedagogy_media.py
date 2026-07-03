@@ -65,6 +65,6 @@ _cpmg = dmipy_sim.cpmg(n_echoes=4, TE=12e-3, G_magnitude=0.0, bvecs=BVEC, n_t_pe
 pedagogy.magnitude_movie(
     MAG_GEOM, _cpmg, os.path.join(OUT, 'magnitude_cpmg.mp4'), rho=40e-6,
     T2_per_comp=[SUB.T2_intra, SUB.T2_myelin, SUB.T2_extra], n_walkers=6000, stride=16,
-    title='CPMG — magnitude distribution: intra vs extra (surface relaxivity)')
+    title='CPMG |M| distribution: intra vs extra  (ρ = 40 µm/s, exaggerated ~30x vs the 1.16 µm/s literature)')
 print(f"  magnitude_cpmg.mp4: {os.path.getsize(os.path.join(OUT, 'magnitude_cpmg.mp4')) / 1024:.0f} KB")
 print('done')

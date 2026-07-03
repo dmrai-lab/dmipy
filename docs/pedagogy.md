@@ -78,13 +78,23 @@ relaxivity turn a spike into a distribution.
 At `t=0` every spin sits at `|M|=1` — a spike. With no surface relaxivity each compartment would
 just slide down as one delta at its bulk-`T2` rate. **Surface relaxivity gives every walker its own
 wall-contact history**, so the spike fans out — capped on the right at the bulk-`T2` value, because
-relaxivity only ever *subtracts*. And the two pools fan *differently*: **intra-axonal** (small
+relaxivity only ever *subtracts*. The **dashed line** is that bulk-`T2` ceiling (where a
+zero-wall-contact spin would sit), sliding left at the bulk rate; the **gap between the line and
+the histogram is exactly the surface-relaxivity effect**. And the two pools fan *differently*: **intra-axonal** (small
 lumen, high `S/V`) is motionally averaged — it stays a narrow spike that just slides left;
 **extra-axonal** (larger, more heterogeneous space) is diffusion-limited — it spreads into a broad
 distribution. The width is set by `ρ·a/D`. The **mean** of each histogram at echo *k* is exactly the
 CPMG point that `white_matter.t2_spectrum_mwf()` inverts — the microstructure behind the T2 spectrum.
-(Substrate: moderate-fibre packed myelin, so the fan is legible; myelin water is a frozen short-`T2`
-pool and is omitted here.)
+
+!!! warning "The fan is exaggerated — real white matter barely broadens"
+    This clip uses `ρ ≈ 40 µm/s` purely so the distribution is *visible*. The literature axolemma
+    relaxivity is `ρ ≈ 1.16 µm/s` ([Barakovic et al. 2023](https://doi.org/10.3389/fnins.2023.1209521);
+    swept 0–2.5 µm/s in the surface-relaxivity paper), at which — with µm-scale pores — white matter
+    sits **deep in the motional-averaging limit** (`ρa/D ≈ 0.002`): the spike barely widens and surface
+    relaxivity acts as a small **apparent-T2 shortening** (a ~1 pp MWF bias), *not* a broad fan. The
+    broad, diffusion-limited fan shown here is the large-pore regime (the porous-media setting
+    Brownstein–Tarr came from). Substrate: moderate-fibre packed myelin; myelin water (frozen short-`T2`)
+    is omitted.
 
 ---
 
