@@ -30,8 +30,8 @@ plugins:
 nav:
   - Home: index.md
   - Install: install.md
-  - Forward — dmipy-sim: sim.md
   - Inverse — dmipy-fit: fit.md
+  - Forward — dmipy-sim: sim.md
   - Acquisition sequences: sequences.md
   - Substrate & geometry: substrate.md
   - Biophysical constants: constants.md
