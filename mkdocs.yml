@@ -1,0 +1,38 @@
+site_name: dmipy
+site_description: Diffusion Microstructure Imaging in Python — forward Monte Carlo + analytical inverse
+site_url: https://dmipy.org
+repo_url: https://github.com/dmrai-lab
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: black
+    accent: teal
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_source: false
+nav:
+  - Home: index.md
+  - Install: install.md
+  - Forward — dmipy-sim: sim.md
+  - Inverse — dmipy-fit: fit.md
+  - Surface relaxivity & MWF: surface_relaxivity_mwf.md
+  - API reference: api.md

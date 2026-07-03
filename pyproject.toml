@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dmipy"
+version = "1.0.0"
+description = "Diffusion Microstructure Imaging in Python — umbrella install for the dmipy-sim (forward Monte Carlo) and dmipy-fit (analytical inverse) engines"
+requires-python = ">=3.10"
+dependencies = [
+    "dmipy-sim @ git+https://github.com/dmrai-lab/dmipy-sim.git@v1.0.0",
+    "dmipy-fit @ git+https://github.com/dmrai-lab/dmipy-fit.git@v1.0.0",
+]
+
+[project.optional-dependencies]
+# GPU JAX for both engines
+cuda12 = ["jax[cuda12]>=0.6.2", "jaxopt>=0.8", "osqp>=1.1"]
+cpu    = ["jax[cpu]>=0.6.2",    "jaxopt>=0.8", "osqp>=1.1"]
+# Build the dmipy.org documentation site
+docs = [
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.24",
+    "mkdocs-jupyter>=0.24",
+]
+
+[project.urls]
+Homepage = "https://dmipy.org"
+Source = "https://github.com/dmrai-lab"
+
+# dmipy is a thin umbrella: `pip install dmipy` pulls the two engines
+# (dmipy-sim + dmipy-fit). There is no `dmipy` importable package — import
+# `dmipy_sim` and `dmipy_fit` directly. This repo also hosts the dmipy.org docs.
