@@ -32,6 +32,7 @@ nav:
   - Install: install.md
   - Inverse — dmipy-fit: fit.md
   - Forward — dmipy-sim: sim.md
+  - Pedagogy — watch the spins: pedagogy.md
   - Acquisition sequences: sequences.md
   - Substrate & geometry: substrate.md
   - Biophysical constants: constants.md
