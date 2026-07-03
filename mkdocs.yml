@@ -4,6 +4,7 @@ site_url: https://dmipy.org
 repo_url: https://github.com/dmrai-lab
 theme:
   name: material
+  font: false            # we load DM Mono + Fraunces ourselves (see extra.css)
   palette:
     scheme: slate
     primary: black
@@ -11,6 +12,7 @@ theme:
   features:
     - navigation.sections
     - navigation.top
+    - navigation.instant
     - content.code.copy
     - search.suggest
 markdown_extensions:
@@ -19,6 +21,8 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.arithmatex:
       generic: true
+extra_css:
+  - stylesheets/dmrai.css
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 plugins:
