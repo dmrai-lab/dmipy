@@ -50,4 +50,21 @@ movie(dmipy_sim.cpmg(n_echoes=4, TE=12e-3, G_magnitude=0.0, bvecs=BVEC, n_t_per_
       'cpmg.mp4', 'CPMG on packed myelinated white matter')
 movie(dmipy_sim.ogse(frequency=100.0, T_total=40e-3, G_magnitude=0.06, bvecs=BVEC, n_t=300),
       'ogse.mp4', 'OGSE on packed myelinated white matter')
+
+# --- magnitude-distribution movie: intra vs extra under surface relaxivity ---------
+# A moderate-fibre packed substrate (inner radius ~3 um) so the surface-relaxivity fan is
+# legible: intra (small lumen, high S/V) stays a narrow, fast-relaxing spike (motional
+# averaging), extra (larger, heterogeneous) fans into a broad distribution.
+_mir = np.full(6, 3e-6)
+_mirr, _mgrr, _mctr = dmipy_sim.pack_myelinated_cylinders(
+    _mir, np.full(6, SUB.g_ratio), target_packing=0.30, seed=2)
+_mL = float(np.sqrt(np.pi * np.sum((_mirr / _mgrr) ** 2) / 0.30))
+MAG_GEOM = dmipy_sim.PackedMyelinatedCylinders(
+    _mirr, _mgrr, _mctr, _mL, D_intra=SUB.D_intra, D_myelin=SUB.D_myelin, D_extra=SUB.D_extra)
+_cpmg = dmipy_sim.cpmg(n_echoes=4, TE=12e-3, G_magnitude=0.0, bvecs=BVEC, n_t_per_echo=800)
+pedagogy.magnitude_movie(
+    MAG_GEOM, _cpmg, os.path.join(OUT, 'magnitude_cpmg.mp4'), rho=40e-6,
+    T2_per_comp=[SUB.T2_intra, SUB.T2_myelin, SUB.T2_extra], n_walkers=6000, stride=16,
+    title='CPMG — magnitude distribution: intra vs extra (surface relaxivity)')
+print(f"  magnitude_cpmg.mp4: {os.path.getsize(os.path.join(OUT, 'magnitude_cpmg.mp4')) / 1024:.0f} KB")
 print('done')

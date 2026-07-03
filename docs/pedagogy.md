@@ -65,6 +65,27 @@ An oscillating gradient reverses sign many times within one echo, so spins are p
 much shorter effective diffusion time — sensitising the signal to smaller length scales than a
 single PGSE lobe.
 
+## Magnitude, not phase — surface relaxivity fans the T2 spike
+
+Everything above tracks the **phase**. This one tracks the **magnitude**: the `|M|` histogram of
+each compartment under a CPMG train (no gradient — pure relaxation), so you watch surface
+relaxivity turn a spike into a distribution.
+
+<video autoplay loop muted playsinline controls style="width:100%;max-width:900px;border-radius:8px">
+  <source src="/media/magnitude_cpmg.mp4" type="video/mp4">
+</video>
+
+At `t=0` every spin sits at `|M|=1` — a spike. With no surface relaxivity each compartment would
+just slide down as one delta at its bulk-`T2` rate. **Surface relaxivity gives every walker its own
+wall-contact history**, so the spike fans out — capped on the right at the bulk-`T2` value, because
+relaxivity only ever *subtracts*. And the two pools fan *differently*: **intra-axonal** (small
+lumen, high `S/V`) is motionally averaged — it stays a narrow spike that just slides left;
+**extra-axonal** (larger, more heterogeneous space) is diffusion-limited — it spreads into a broad
+distribution. The width is set by `ρ·a/D`. The **mean** of each histogram at echo *k* is exactly the
+CPMG point that `white_matter.t2_spectrum_mwf()` inverts — the microstructure behind the T2 spectrum.
+(Substrate: moderate-fibre packed myelin, so the fan is legible; myelin water is a frozen short-`T2`
+pool and is omitted here.)
+
 ---
 
 The renderer is idealised (hard-pulse rotations + gradient phase + `T2`, not the full walk
