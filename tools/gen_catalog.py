@@ -29,6 +29,16 @@ def desc(fn):
     d = inspect.getdoc(fn) or ""
     return d.splitlines()[0] if d else ""
 
+def cite_link(fn, cite):
+    """Clickable citation: link the short reference to its DOI (from the docstring)."""
+    d = inspect.getdoc(fn) or ""
+    m = re.search(r'(?:doi:|https?://doi\.org/)\s*(10\.\S+)', d)
+    doi = m.group(1).rstrip('.,);') if m else None
+    if not doi:
+        return cite
+    url = 'https://doi.org/' + doi.replace('(', '%28').replace(')', '%29')  # keep md link intact
+    return f'[{cite}]({url})'
+
 funcs = [(n, getattr(rm, n)) for n in dir(rm)
          if not n.startswith('_') and callable(getattr(rm, n))
          and getattr(getattr(rm, n), '__module__', '') == rm.__name__ and n in rows]
@@ -53,7 +63,7 @@ for name, fn in funcs:
         out += ['', f'## {FAMILIES.get(fam, fam)}', '']
     out += [f'### `{name}()` <small>{code}</small>', '',
             f'{desc(fn)}', '',
-            f'*{cite}*', '',
+            f'*{cite_link(fn, cite)}*', '',
             '```python', body(fn), '```', '']
 open('docs/catalog.md', 'w').write('\n'.join(out) + '\n')
 print(f'wrote docs/catalog.md — {len(funcs)} models')

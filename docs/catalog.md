@@ -15,7 +15,7 @@ fit = mcm.fit(scheme, data, solver="jax")
 
 Isotropic Gaussian (single ADC).
 
-*Stejskal & Tanner 1965, JCP 42*
+*[Stejskal & Tanner 1965, JCP 42](https://doi.org/10.1063/1.1695690)*
 
 ```python
 return MultiCompartmentModel([G1Ball()])
@@ -25,7 +25,7 @@ return MultiCompartmentModel([G1Ball()])
 
 Axially symmetric Gaussian (DTI-like, single fascicle).
 
-*Basser et al. 1994, Biophys J 66*
+*[Basser et al. 1994, Biophys J 66](https://doi.org/10.1016/S0006-3495%2894%2980775-1)*
 
 ```python
 return MultiCompartmentModel([G2Zeppelin()])
@@ -35,7 +35,7 @@ return MultiCompartmentModel([G2Zeppelin()])
 
 Anisotropic compartment with structural-disorder time dependence.
 
-*Novikov et al. 2019, NMR Biomed 32*
+*[Novikov et al. 2019, NMR Biomed 32](https://doi.org/10.1002/nbm.3998)*
 
 ```python
 return MultiCompartmentModel([G3TemporalZeppelin()])
@@ -48,7 +48,7 @@ return MultiCompartmentModel([G3TemporalZeppelin()])
 
 Isotropic Ball + zero-radius Stick (intra-axonal).
 
-*Behrens et al. 2003, MRM 50*
+*[Behrens et al. 2003, MRM 50](https://doi.org/10.1002/mrm.10609)*
 
 ```python
 return MultiCompartmentModel([C1Stick(), G1Ball()])
@@ -58,7 +58,7 @@ return MultiCompartmentModel([C1Stick(), G1Ball()])
 
 Isotropic Ball + anisotropic Zeppelin (tissue DTI tensor).
 
-*Panagiotaki et al. 2012, NeuroImage 59*
+*[Panagiotaki et al. 2012, NeuroImage 59](https://doi.org/10.1016/j.neuroimage.2011.09.077)*
 
 ```python
 return MultiCompartmentModel([G2Zeppelin(), G1Ball()])
@@ -68,7 +68,7 @@ return MultiCompartmentModel([G2Zeppelin(), G1Ball()])
 
 Intra-axonal Stick + tortuous extra-axonal Zeppelin.
 
-*Novikov et al. 2018, Science Adv 4*
+*[Novikov et al. 2019, NMR Biomed 32](https://doi.org/10.1002/nbm.3998)*
 
 ```python
 mcm = MultiCompartmentModel([C1Stick(), G2Zeppelin()])
@@ -87,7 +87,7 @@ return mcm
 
 Tissue Zeppelin + fixed free-water Ball (D_iso = 3.0e-9 m²/s).
 
-*Pasternak et al. 2009, MRM 62*
+*[Pasternak et al. 2009, MRM 62](https://doi.org/10.1002/mrm.22055)*
 
 ```python
 mcm = MultiCompartmentModel([G2Zeppelin(), G1Ball()])
@@ -99,7 +99,7 @@ return mcm
 
 IVIM: tissue diffusion + vascular pseudo-diffusion.
 
-*Le Bihan et al. 1988, Radiology 161*
+*[Le Bihan et al. 1988, Radiology 161](https://doi.org/10.1148/radiology.168.2.3393671)*
 
 ```python
 mcm = MultiCompartmentModel([G1Ball(), G1Ball()])
@@ -115,7 +115,7 @@ return mcm
 
 NODDI: Watson-dispersed Stick + tortuous Zeppelin + CSF Ball.
 
-*Zhang et al. 2012, NeuroImage 61*
+*[Zhang et al. 2012, NeuroImage 61](https://doi.org/10.1016/j.neuroimage.2012.03.072)*
 
 ```python
 bundle = SD1WatsonDistributed(models=[C1Stick(), G2Zeppelin()])
@@ -135,7 +135,7 @@ return mcm
 
 Bingham-NODDI: Bingham-dispersed Stick + tortuous Zeppelin + CSF Ball.
 
-*Tariq et al. 2016, NeuroImage 133*
+*[Tariq et al. 2016, NeuroImage 133](https://doi.org/10.1016/j.neuroimage.2016.02.045)*
 
 ```python
 bundle = SD2BinghamDistributed(models=[C1Stick(), G2Zeppelin()])
@@ -155,7 +155,7 @@ return mcm
 
 NODDIDA: Stick + tortuous Zeppelin + free Ball — all diffusivities free.
 
-*Jelescu et al. 2015, NMR Biomed 28*
+*[Jelescu et al. 2015, NMR Biomed 28](https://doi.org/10.1002/nbm.3450)*
 
 ```python
 mcm = MultiCompartmentModel([C1Stick(), G2Zeppelin(), G1Ball()])
@@ -174,7 +174,7 @@ return mcm
 
 MC-SMT: Multi-Compartment Spherical Mean Technique.
 
-*Kaden et al. 2016, NeuroImage 139*
+*[Kaden et al. 2016, NeuroImage 139](https://doi.org/10.1016/j.neuroimage.2016.06.002)*
 
 ```python
 mcm = MultiCompartmentSphericalMeanModel([C1Stick(), G2Zeppelin()])
@@ -195,7 +195,7 @@ return mcm
 
 Two independently oriented Watson-NODDI bundles + shared CSF Ball.
 
-*Behrens et al. 2007, NeuroImage 34*
+*[Behrens et al. 2007, NeuroImage 34](https://doi.org/10.1016/j.neuroimage.2006.09.028)*
 
 ```python
 bundle1 = SD1WatsonDistributed(models=[C1Stick(), G2Zeppelin()])
@@ -222,7 +222,7 @@ return mcm
 
 CHARMED: Callaghan cylinder (restricted) + tortuous Zeppelin (hindered).
 
-*Assaf & Basser 2005, NeuroImage 27*
+*[Assaf & Basser 2005, NeuroImage 27](https://doi.org/10.1016/j.neuroimage.2005.05.031)*
 
 ```python
 cyl  = C3CylinderCallaghanApproximation()
@@ -245,7 +245,7 @@ return mcm
 
 AxCaliber: Gamma-distributed Callaghan cylinders + Zeppelin.
 
-*Assaf et al. 2008, MRM 59*
+*[Assaf et al. 2008, MRM 59](https://doi.org/10.1002/mrm.21577)*
 
 ```python
 gamma_cyl = DD1GammaDistributed([C3CylinderCallaghanApproximation()])
@@ -261,7 +261,7 @@ return mcm
 
 ActiveAx: single-diameter Callaghan cylinder + Zeppelin + free Ball.
 
-*Alexander et al. 2010, NeuroImage 52*
+*[Alexander et al. 2010, NeuroImage 52](https://doi.org/10.1016/j.neuroimage.2010.05.043)*
 
 ```python
 mcm = MultiCompartmentModel([
@@ -277,7 +277,7 @@ return mcm
 
 VERDICT: Sphere (cell body) + Stick (membrane/vascular) + Ball (EES).
 
-*Panagiotaki et al. 2014, Cancer Res 74*
+*[Panagiotaki et al. 2014, Cancer Res 74](https://doi.org/10.1158/0008-5472.can-13-2511)*
 
 ```python
 return MultiCompartmentModel([
@@ -288,7 +288,7 @@ return MultiCompartmentModel([
 
 SANDI: Sphere (soma) + Stick (neurite) + Ball (extra-cellular).
 
-*Palombo et al. 2020, NeuroImage 215*
+*[Palombo et al. 2020, NeuroImage 215](https://doi.org/10.1016/j.neuroimage.2020.116835)*
 
 ```python
 soma = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
@@ -301,7 +301,7 @@ return mcm
 
 IMPULSED: Sphere + isotropic Ball (two-compartment, fixed D_in).
 
-*Xu et al. 2020, MRM 84*
+*[Xu et al. 2020, MRM 84](https://doi.org/10.1002/mrm.28127)*
 
 ```python
 soma = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
@@ -315,7 +315,7 @@ return MultiCompartmentModel([soma, G1Ball()])
 
 NEXI: Neurite Exchange Imaging — Stick + Zeppelin with Kärger exchange.
 
-*Jelescu et al. 2022, NeuroImage 256*
+*[Jelescu et al. 2022, NeuroImage 256](https://doi.org/10.1016/j.neuroimage.2022.119277)*
 
 ```python
 return MultiCompartmentModel([X2NEXIModel()])
@@ -325,7 +325,7 @@ return MultiCompartmentModel([X2NEXIModel()])
 
 Generic Kärger two-compartment model: Ball + Ball with exchange.
 
-*Kärger 1985, Adv Colloid Interface Sci 23*
+*[Kärger 1985, Adv Colloid Interface Sci 23](https://doi.org/10.1016/0001-8686%2885%2980018-X)*
 
 ```python
 return MultiCompartmentModel([X0GeneralizedKarger(G1Ball(), G1Ball())])
@@ -335,7 +335,7 @@ return MultiCompartmentModel([X0GeneralizedKarger(G1Ball(), G1Ball())])
 
 FEXI: Filter EXchange Imaging — two isotropic pools with exchange.
 
-*Lasič et al. 2011, MRM 66*
+*[Lasič et al. 2011, MRM 66](https://doi.org/10.1002/nbm.1616)*
 
 ```python
 slow = G1Ball()
@@ -349,7 +349,7 @@ return mcm
 
 SANDIX: SANDI with exchange between soma (sphere) and extracellular (Ball).
 
-*Palombo et al. 2022, NeuroImage 254*
+*[Palombo et al. 2022, NeuroImage 254](https://doi.org/10.1016/j.neuroimage.2022.119149)*
 
 ```python
 soma  = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
@@ -363,7 +363,7 @@ return mcm
 
 EXCHANGE: IMPULSED + transcytolemmal Kärger exchange (tumour).
 
-*Preprint 2024 / MRI 2025*
+*[Preprint 2024 / MRI 2025](https://doi.org/10.48550/arXiv.2408.01918)*
 
 ```python
 soma  = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
@@ -378,7 +378,7 @@ return MultiCompartmentModel([X0GeneralizedKarger(soma, extra)])
 
 Temporal Zeppelin + free Ball: Standard Model with structural disorder.
 
-*Novikov et al. 2019, NMR Biomed 32*
+*[Novikov et al. 2019, NMR Biomed 32](https://doi.org/10.1002/nbm.3998)*
 
 ```python
 mcm = MultiCompartmentModel([G3TemporalZeppelin(), G1Ball()])
@@ -393,7 +393,7 @@ return mcm
 
 Multi-TE Ball-and-Stick with per-compartment T2 relaxation.
 
-*Gong et al. 2020, NeuroImage 217*
+*[Gong et al. 2020, NeuroImage 217](https://doi.org/10.1016/j.neuroimage.2020.116906)*
 
 ```python
 mcm = MultiCompartmentModel([C1Stick(), G1Ball()])
@@ -404,7 +404,7 @@ return mcm   # T2 on both compartments is free by default
 
 MTE-NODDI: NODDI extended with per-compartment T2 relaxation.
 
-*Gong et al. 2020, NeuroImage 217*
+*[Gong et al. 2020, NeuroImage 217](https://doi.org/10.1016/j.neuroimage.2020.116906)*
 
 ```python
 bundle = SD1WatsonDistributed(models=[C1Stick(), G2Zeppelin()])
@@ -434,7 +434,7 @@ return mcm   # T2 on Stick and Ball compartments are free; soma has no T2 param
 
 WMTI: White Matter Tract Integrity — biophysical Standard Model structure.
 
-*Fieremans et al. 2011, NeuroImage 58*
+*[Fieremans et al. 2011, NeuroImage 58](https://doi.org/10.1016/j.neuroimage.2011.06.079)*
 
 ```python
 mcm = MultiCompartmentModel([C1Stick(), G2Zeppelin()])
@@ -453,7 +453,7 @@ return mcm
 
 NODDIDA-MTE: unconstrained NODDIDA with per-compartment T2.
 
-*Jelescu 2015 + Gong 2020*
+*[Jelescu 2015 + Gong 2020](https://doi.org/10.1002/nbm.3450)*
 
 ```python
 mcm = MultiCompartmentModel([C1Stick(), G2Zeppelin(), G1Ball()])
@@ -472,7 +472,7 @@ return mcm   # T2 on all three compartments are free parameters
 
 MTE-IMPULSED: IMPULSED with per-compartment T2 relaxation.
 
-*Jiang et al. 2025, MRM*
+*[Jiang et al. 2025, MRM](https://doi.org/10.1002/mrm.30254)*
 
 ```python
 return MultiCompartmentModel([S4SphereGaussianPhaseApproximation(), G1Ball()])
