@@ -61,10 +61,18 @@ _mirr, _mgrr, _mctr = dmipy_sim.pack_myelinated_cylinders(
 _mL = float(np.sqrt(np.pi * np.sum((_mirr / _mgrr) ** 2) / 0.30))
 MAG_GEOM = dmipy_sim.PackedMyelinatedCylinders(
     _mirr, _mgrr, _mctr, _mL, D_intra=SUB.D_intra, D_myelin=SUB.D_myelin, D_extra=SUB.D_extra)
+# same walk (n_walkers, seed, substrate, waveform, rho) drives BOTH the histogram and the
+# spatial cross-section, so the two clips play in lock-step.
 _cpmg = dmipy_sim.cpmg(n_echoes=4, TE=12e-3, G_magnitude=0.0, bvecs=BVEC, n_t_per_echo=800)
-pedagogy.magnitude_movie(
-    MAG_GEOM, _cpmg, os.path.join(OUT, 'magnitude_cpmg.mp4'), rho=40e-6,
-    T2_per_comp=[SUB.T2_intra, SUB.T2_myelin, SUB.T2_extra], n_walkers=6000, stride=16,
-    title='CPMG |M| distribution: intra vs extra  (ρ = 40 µm/s, exaggerated ~30x vs the 1.16 µm/s literature)')
+_mag_kw = dict(rho=40e-6, T2_per_comp=[SUB.T2_intra, SUB.T2_myelin, SUB.T2_extra],
+               n_walkers=4000, seed=0)
+_mag_title = ('CPMG |M| distribution: intra vs extra  '
+              '(ρ = 40 µm/s, exaggerated ~30x vs the 1.16 µm/s literature)')
+pedagogy.magnitude_movie(MAG_GEOM, _cpmg, os.path.join(OUT, 'magnitude_cpmg.mp4'),
+                         stride=16, title=_mag_title, **_mag_kw)
 print(f"  magnitude_cpmg.mp4: {os.path.getsize(os.path.join(OUT, 'magnitude_cpmg.mp4')) / 1024:.0f} KB")
+pedagogy.magnitude_spatial_movie(MAG_GEOM, _cpmg, os.path.join(OUT, 'magnitude_spatial_cpmg.mp4'),
+                                 n_show=1500, stride=20, dpi=80,
+                                 title='CPMG — |M| across the substrate (ρ exaggerated ~30x)', **_mag_kw)
+print(f"  magnitude_spatial_cpmg.mp4: {os.path.getsize(os.path.join(OUT, 'magnitude_spatial_cpmg.mp4')) / 1024:.0f} KB")
 print('done')

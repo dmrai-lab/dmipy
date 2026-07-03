@@ -96,6 +96,21 @@ CPMG point that `white_matter.t2_spectrum_mwf()` inverts — the microstructure 
     Brownstein–Tarr came from). Substrate: moderate-fibre packed myelin; myelin water (frozen short-`T2`)
     is omitted.
 
+### Where the low-magnitude spins are
+
+The **same walk**, viewed in space: every walker drawn at its position in the substrate
+cross-section, coloured by `|M|`. It's the identical run as the histogram above (same seed), so the
+two play in lock-step.
+
+<video autoplay loop muted playsinline controls style="width:100%;max-width:560px;border-radius:8px">
+  <source src="/media/magnitude_spatial_cpmg.mp4" type="video/mp4">
+</video>
+
+Spins hugging the axolemma accumulate wall contact and **go dark first**; spins parked in the
+interior of the extra-axonal "holes" between fibres barely touch a wall and **stay bright**. Those
+dark rims and bright pockets *are* the histogram fan, resolved one walker at a time — the spatial
+origin of surface relaxivity. (Same exaggerated `ρ` as above.)
+
 ---
 
 The renderer is idealised (hard-pulse rotations + gradient phase + `T2`, not the full walk
