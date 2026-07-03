@@ -34,6 +34,7 @@ nav:
   - Inverse — dmipy-fit: fit.md
   - Acquisition sequences: sequences.md
   - Substrate & geometry: substrate.md
+  - Biophysical constants: constants.md
   - Model catalog: catalog.md
   - Surface relaxivity & MWF: surface_relaxivity_mwf.md
   - API reference: api.md

@@ -27,7 +27,7 @@ sub = Substrate()          # canonical healthy white matter; override any field
 geom = dmipy_sim.MyelinatedCylinder(
     inner_radius=sub.mean_inner_radius, outer_radius=sub.mean_outer_radius,
     orientation=(0, 0, 1), D_intra=sub.D_intra, D_extra=sub.D_extra,
-    D_myelin_radial=sub.D_myelin_radial, D_myelin_tangential=sub.D_myelin_tangential)
+    D_myelin=sub.D_myelin)   # myelin water is stuck (D_myelin = 0) by default
 
 # analytical inverse (dmipy-fit): the SAME physical numbers parametrize the model
 model, params = build_white_matter_model(
