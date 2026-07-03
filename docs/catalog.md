@@ -58,7 +58,7 @@ return MultiCompartmentModel([C1Stick(), G1Ball()])
 
 Isotropic Ball + anisotropic Zeppelin (tissue DTI tensor).
 
-*[Panagiotaki et al. 2012, NeuroImage 59](https://doi.org/10.1016/j.neuroimage.2011.09.077)*
+*[Panagiotaki et al. 2012, NeuroImage 59](https://doi.org/10.1016/j.neuroimage.2011.09.081)*
 
 ```python
 return MultiCompartmentModel([G2Zeppelin(), G1Ball()])
@@ -135,7 +135,7 @@ return mcm
 
 Bingham-NODDI: Bingham-dispersed Stick + tortuous Zeppelin + CSF Ball.
 
-*[Tariq et al. 2016, NeuroImage 133](https://doi.org/10.1016/j.neuroimage.2016.02.045)*
+*[Tariq et al. 2016, NeuroImage 133](https://doi.org/10.1016/j.neuroimage.2016.01.046)*
 
 ```python
 bundle = SD2BinghamDistributed(models=[C1Stick(), G2Zeppelin()])
@@ -195,7 +195,7 @@ return mcm
 
 Two independently oriented Watson-NODDI bundles + shared CSF Ball.
 
-*[Behrens et al. 2007, NeuroImage 34](https://doi.org/10.1016/j.neuroimage.2006.09.028)*
+*[Behrens et al. 2007, NeuroImage 34](https://doi.org/10.1016/j.neuroimage.2006.09.018)*
 
 ```python
 bundle1 = SD1WatsonDistributed(models=[C1Stick(), G2Zeppelin()])
@@ -222,7 +222,7 @@ return mcm
 
 CHARMED: Callaghan cylinder (restricted) + tortuous Zeppelin (hindered).
 
-*[Assaf & Basser 2005, NeuroImage 27](https://doi.org/10.1016/j.neuroimage.2005.05.031)*
+*[Assaf & Basser 2005, NeuroImage 27](https://doi.org/10.1016/j.neuroimage.2005.03.042)*
 
 ```python
 cyl  = C3CylinderCallaghanApproximation()
@@ -301,7 +301,7 @@ return mcm
 
 IMPULSED: Sphere + isotropic Ball (two-compartment, fixed D_in).
 
-*[Xu et al. 2020, MRM 84](https://doi.org/10.1002/mrm.28127)*
+*[Xu et al. 2019, Magn Reson Med](https://doi.org/10.1002/mrm.28056)*
 
 ```python
 soma = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
@@ -335,7 +335,7 @@ return MultiCompartmentModel([X0GeneralizedKarger(G1Ball(), G1Ball())])
 
 FEXI: Filter EXchange Imaging — two isotropic pools with exchange.
 
-*[Lasič et al. 2011, MRM 66](https://doi.org/10.1002/nbm.1616)*
+*[Lasič et al. 2011, MRM 66](https://doi.org/10.1002/mrm.22782)*
 
 ```python
 slow = G1Ball()
@@ -349,7 +349,7 @@ return mcm
 
 SANDIX: SANDI with exchange between soma (sphere) and extracellular (Ball).
 
-*[Palombo et al. 2022, NeuroImage 254](https://doi.org/10.1016/j.neuroimage.2022.119149)*
+*[SANDI (Palombo 2020) + Kärger 1985](https://doi.org/10.1016/j.neuroimage.2020.116835)*
 
 ```python
 soma  = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
@@ -363,7 +363,7 @@ return mcm
 
 EXCHANGE: IMPULSED + transcytolemmal Kärger exchange (tumour).
 
-*[Preprint 2024 / MRI 2025](https://doi.org/10.48550/arXiv.2408.01918)*
+*[Shi et al. 2025, Magn Reson Imaging](https://doi.org/10.1016/j.mri.2025.110433)*
 
 ```python
 soma  = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
@@ -434,7 +434,7 @@ return mcm   # T2 on Stick and Ball compartments are free; soma has no T2 param
 
 WMTI: White Matter Tract Integrity — biophysical Standard Model structure.
 
-*[Fieremans et al. 2011, NeuroImage 58](https://doi.org/10.1016/j.neuroimage.2011.06.079)*
+*[Fieremans et al. 2011, NeuroImage 58](https://doi.org/10.1016/j.neuroimage.2011.06.006)*
 
 ```python
 mcm = MultiCompartmentModel([C1Stick(), G2Zeppelin()])
