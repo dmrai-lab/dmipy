@@ -8,13 +8,58 @@ The framework has one model of its own — the **unified white-matter model** be
 
 It is **not** a bespoke class: the canonical white-matter substrate is an ordinary `MultiCompartmentModel` built from the same primitives as everything below — `C1Stick` (intra-axonal), `G2Zeppelin` (extra-axonal) and `S1Dot` (stuck myelin), each wrapped in an `OccupancyGatedModel` that carries the opt-in occupancy-gated factors: transverse relaxation (`T2`) and intra-pore + exterior **surface relaxivity**. A single Gamma outer-diameter distribution drives both surface factors, and the whole thing forward-simulates and fits through the standard machinery, exactly like NODDI. Diffusion-only — no susceptibility, gradient-/stimulated-echo, or T1 physics.
 
-```python
-from dmipy_fit.white_matter import build_white_matter_model
+Each compartment is a diffusion primitive wrapped in an `OccupancyGatedModel` carrying the occupancy-gated factors (surface relaxivity + `T2`) — one Gamma outer-diameter distribution drives both surface factors:
 
-model, params = build_white_matter_model()      # canonical healthy WM @ 3 T
-signal = model(scheme, **params)                # forward-simulate
-fit    = model.fit(scheme, data, solver="jax")  # fit to data
+```python
+from dmipy_fit.signal_models.cylinder_models import C1Stick
+from dmipy_fit.signal_models.gaussian_models import G2Zeppelin
+from dmipy_fit.signal_models.sphere_models import S1Dot
+from dmipy_fit.signal_models.attenuation import (
+    OccupancyGatedModel, TransverseRelaxation,
+    IntraPoreSurfaceRelaxivity, ExteriorSurfaceRelaxivity)
+from dmipy_fit.white_matter.surface import exterior_surface_to_volume
+
+if S_ext_over_V is None:
+    S_ext_over_V = exterior_surface_to_volume(
+        f_axon, gamma_shape, gamma_scale_outer_diameter)
+intra = OccupancyGatedModel(C1Stick(), [
+    IntraPoreSurfaceRelaxivity(
+        gamma_shape=gamma_shape,
+        gamma_scale_outer_diameter=gamma_scale_outer_diameter,
+        volume_weighted=True),
+    TransverseRelaxation(),
+])
+extra = OccupancyGatedModel(G2Zeppelin(), [
+    ExteriorSurfaceRelaxivity(S_ext_over_V=S_ext_over_V),
+    TransverseRelaxation(),
+])
+# myelin water is ~stuck (radial D ~ 0): a stationary Dot, short-T2 only
+myelin = OccupancyGatedModel(S1Dot(), [TransverseRelaxation()])
+compartments = [intra, extra, myelin]
+if include_csf:
+    compartments.append(OccupancyGatedModel(G1Ball(), [TransverseRelaxation()]))
+return compartments
 ```
+
+then assembled into a standard `MultiCompartmentModel` with one shared fibre orientation — no bespoke class:
+
+```python
+from dmipy_fit.core.modeling_framework import MultiCompartmentModel
+
+geom = {k: overrides[k] for k in
+        ('gamma_shape', 'gamma_scale_outer_diameter', 'f_axon', 'S_ext_over_V')
+        if k in overrides}
+compartments = white_matter_compartments(include_csf=include_csf, **geom)
+model = MultiCompartmentModel(models=compartments, S0_global=True)
+# one coherent fibre: the extra-axonal orientation follows the intra-axonal
+model.set_equal_parameter('OccupancyGatedModel_1_mu',
+                          'OccupancyGatedModel_2_mu')
+parameters = canonical_parameters(include_csf=include_csf, **overrides)
+parameters.pop('OccupancyGatedModel_2_mu', None)   # linked to _1_mu
+return model, parameters
+```
+
+That composition is packaged with canonical healthy-WM-at-3 T defaults as one call — `model, params = build_white_matter_model()` — then `model(scheme, **params)` forward-simulates and `model.fit(scheme, data, solver="jax")` fits, exactly like the literature models below.
 
 ---
 

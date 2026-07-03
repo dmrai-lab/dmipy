@@ -1,7 +1,8 @@
 """Generate docs/catalog.md from dmipy_fit's reference-model factories (single source
 of truth). Run: python tools/gen_catalog.py  (needs dmipy-fit importable)."""
-import inspect, re, textwrap
+import inspect, re, textwrap, ast
 from dmipy_fit.custom_optimizers import reference_models as rm
+from dmipy_fit.white_matter import composition as wm
 
 FAMILIES = {
     'A': 'Gaussian / tensor', 'B': 'Two-compartment white matter',
@@ -20,10 +21,17 @@ for line in hdr.splitlines():
         rows[name] = (code, cat.strip(), cite.strip())
 
 def body(fn):
-    src = inspect.getsource(fn)
-    src = re.sub(r'^\s*def [^\n]*\n', '', src, count=1)          # drop def line
-    src = re.sub(r'^\s*(?:"""|\'\'\').*?(?:"""|\'\'\')\s*\n', '', src, count=1, flags=re.S)
-    return textwrap.dedent(src).strip()
+    """Source of a factory's body — everything after the (possibly multi-line) def
+    signature and the docstring. AST-based so multi-line signatures strip cleanly."""
+    src = textwrap.dedent(inspect.getsource(fn))
+    lines = src.splitlines()
+    stmts = ast.parse(src).body[0].body
+    # skip a leading string-literal docstring
+    start = 1 if (stmts and isinstance(stmts[0], ast.Expr)
+                  and isinstance(getattr(stmts[0], 'value', None), ast.Constant)
+                  and isinstance(stmts[0].value.value, str)) else 0
+    first = stmts[start] if start < len(stmts) else stmts[0]
+    return textwrap.dedent('\n'.join(lines[first.lineno - 1:])).strip()
 
 def desc(fn):
     d = inspect.getdoc(fn) or ""
@@ -61,13 +69,31 @@ out = ['# Model catalog', '',
        'outer-diameter distribution drives both surface factors, and the whole thing '
        'forward-simulates and fits through the standard machinery, exactly like NODDI. '
        'Diffusion-only — no susceptibility, gradient-/stimulated-echo, or T1 physics.', '',
+       'Each compartment is a diffusion primitive wrapped in an `OccupancyGatedModel` '
+       'carrying the occupancy-gated factors (surface relaxivity + `T2`) — one Gamma '
+       'outer-diameter distribution drives both surface factors:', '',
        '```python',
-       'from dmipy_fit.white_matter import build_white_matter_model',
+       'from dmipy_fit.signal_models.cylinder_models import C1Stick',
+       'from dmipy_fit.signal_models.gaussian_models import G2Zeppelin',
+       'from dmipy_fit.signal_models.sphere_models import S1Dot',
+       'from dmipy_fit.signal_models.attenuation import (',
+       '    OccupancyGatedModel, TransverseRelaxation,',
+       '    IntraPoreSurfaceRelaxivity, ExteriorSurfaceRelaxivity)',
+       'from dmipy_fit.white_matter.surface import exterior_surface_to_volume',
        '',
-       'model, params = build_white_matter_model()      # canonical healthy WM @ 3 T',
-       'signal = model(scheme, **params)                # forward-simulate',
-       'fit    = model.fit(scheme, data, solver="jax")  # fit to data',
+       body(wm.white_matter_compartments),
        '```', '',
+       'then assembled into a standard `MultiCompartmentModel` with one shared fibre '
+       'orientation — no bespoke class:', '',
+       '```python',
+       'from dmipy_fit.core.modeling_framework import MultiCompartmentModel',
+       '',
+       body(wm.build_white_matter_model),
+       '```', '',
+       'That composition is packaged with canonical healthy-WM-at-3 T defaults as one '
+       'call — `model, params = build_white_matter_model()` — then '
+       '`model(scheme, **params)` forward-simulates and `model.fit(scheme, data, '
+       'solver="jax")` fits, exactly like the literature models below.', '',
        '---', '',
        '## Literature models',
        '',
