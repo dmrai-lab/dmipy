@@ -2,7 +2,7 @@
 of truth). Run: python tools/gen_catalog.py  (needs dmipy-fit importable)."""
 import inspect, re, textwrap, ast
 from dmipy_fit.custom_optimizers import reference_models as rm
-from dmipy_fit.white_matter import composition as wm
+from dmipy_fit.core.modeling_framework import MultiCompartmentModel
 
 FAMILIES = {
     'A': 'Gaussian / tensor', 'B': 'Two-compartment white matter',
@@ -52,6 +52,45 @@ funcs = [(n, getattr(rm, n)) for n in dir(rm)
          and getattr(getattr(rm, n), '__module__', '') == rm.__name__ and n in rows]
 funcs.sort(key=lambda t: (rows[t[0]][0][0], int(rows[t[0]][0][1:])))   # by code
 
+# The unified-WM construction, shown verbatim on the catalog. Kept as a literal (not a
+# stripped function body) so it reads as a runnable script; exec'd below to guarantee it
+# stays in sync with the real API.
+FLAGSHIP_SNIPPET = '''\
+from dmipy_fit.core.modeling_framework import MultiCompartmentModel
+from dmipy_fit.signal_models.cylinder_models import C1Stick
+from dmipy_fit.signal_models.gaussian_models import G2Zeppelin
+from dmipy_fit.signal_models.sphere_models import S1Dot
+from dmipy_fit.signal_models.attenuation import (
+    OccupancyGatedModel, TransverseRelaxation,
+    IntraPoreSurfaceRelaxivity, ExteriorSurfaceRelaxivity)
+from dmipy_fit.white_matter.surface import exterior_surface_to_volume
+
+# one Gamma OUTER (fibre) diameter distribution drives both surface factors
+gamma_shape, gamma_scale = 2.0, 0.304e-6      # mean outer diameter = shape * scale
+f_axon = 0.55                                 # intra-axonal (lumen) volume fraction
+S_ext_over_V = exterior_surface_to_volume(f_axon, gamma_shape, gamma_scale)
+
+# each compartment = a diffusion primitive + opt-in occupancy-gated factors (surface relaxivity + T2)
+intra  = OccupancyGatedModel(C1Stick(), [
+    IntraPoreSurfaceRelaxivity(gamma_shape=gamma_shape,
+                               gamma_scale_outer_diameter=gamma_scale,
+                               volume_weighted=True),
+    TransverseRelaxation()])
+extra  = OccupancyGatedModel(G2Zeppelin(), [
+    ExteriorSurfaceRelaxivity(S_ext_over_V=S_ext_over_V),
+    TransverseRelaxation()])
+myelin = OccupancyGatedModel(S1Dot(), [TransverseRelaxation()])   # stuck myelin water (radial D ~ 0)
+
+# assemble into a standard MultiCompartmentModel with one shared fibre orientation
+model = MultiCompartmentModel([intra, extra, myelin], S0_global=True)
+model.set_equal_parameter('OccupancyGatedModel_1_mu', 'OccupancyGatedModel_2_mu')
+'''
+
+# fail generation if the displayed snippet no longer runs against the real API
+_ns = {}
+exec(FLAGSHIP_SNIPPET, _ns)
+assert isinstance(_ns['model'], MultiCompartmentModel), 'flagship snippet did not build a model'
+
 out = ['# Model catalog', '',
        'The framework has one model of its own — the **unified white-matter model** below — '
        'and reproduces the published literature as thin factories around the *same* shared '
@@ -69,31 +108,16 @@ out = ['# Model catalog', '',
        'outer-diameter distribution drives both surface factors, and the whole thing '
        'forward-simulates and fits through the standard machinery, exactly like NODDI. '
        'Diffusion-only — no susceptibility, gradient-/stimulated-echo, or T1 physics.', '',
-       'Each compartment is a diffusion primitive wrapped in an `OccupancyGatedModel` '
-       'carrying the occupancy-gated factors (surface relaxivity + `T2`) — one Gamma '
-       'outer-diameter distribution drives both surface factors:', '',
+       'The whole thing is built from primitives in a couple dozen lines: three '
+       'occupancy-gated compartments assembled into one `MultiCompartmentModel`, '
+       'sharing one fibre orientation.', '',
        '```python',
-       'from dmipy_fit.signal_models.cylinder_models import C1Stick',
-       'from dmipy_fit.signal_models.gaussian_models import G2Zeppelin',
-       'from dmipy_fit.signal_models.sphere_models import S1Dot',
-       'from dmipy_fit.signal_models.attenuation import (',
-       '    OccupancyGatedModel, TransverseRelaxation,',
-       '    IntraPoreSurfaceRelaxivity, ExteriorSurfaceRelaxivity)',
-       'from dmipy_fit.white_matter.surface import exterior_surface_to_volume',
-       '',
-       body(wm.white_matter_compartments),
+       FLAGSHIP_SNIPPET.rstrip(),
        '```', '',
-       'then assembled into a standard `MultiCompartmentModel` with one shared fibre '
-       'orientation — no bespoke class:', '',
-       '```python',
-       'from dmipy_fit.core.modeling_framework import MultiCompartmentModel',
-       '',
-       body(wm.build_white_matter_model),
-       '```', '',
-       'That composition is packaged with canonical healthy-WM-at-3 T defaults as one '
-       'call — `model, params = build_white_matter_model()` — then '
-       '`model(scheme, **params)` forward-simulates and `model.fit(scheme, data, '
-       'solver="jax")` fits, exactly like the literature models below.', '',
+       'Then `model(scheme, **params)` forward-simulates and `model.fit(scheme, data, '
+       'solver="jax")` fits, exactly like the literature models below. This exact '
+       'composition, with canonical healthy-WM defaults at 3T, is packaged as one call: '
+       '`model, params = build_white_matter_model()`.', '',
        '---', '',
        '## Literature models',
        '',
