@@ -45,10 +45,34 @@ funcs = [(n, getattr(rm, n)) for n in dir(rm)
 funcs.sort(key=lambda t: (rows[t[0]][0][0], int(rows[t[0]][0][1:])))   # by code
 
 out = ['# Model catalog', '',
-       'Every published inverse model, built from the shared primitives in a few lines and '
-       'fittable with one `model.fit(scheme, data)` call. Each factory below lives in '
-       '`dmipy_fit.custom_optimizers.reference_models` and returns a configured '
-       '`MultiCompartmentModel` (or spherical-mean model).', '',
+       'The framework has one model of its own — the **unified white-matter model** below — '
+       'and reproduces the published literature as thin factories around the *same* shared '
+       'primitives. Every entry is an ordinary `MultiCompartmentModel`: forward-simulate with '
+       '`model(scheme, **params)`, fit with one `model.fit(scheme, data)` call.', '',
+       '## The unified white-matter model',
+       '',
+       "*The framework's own model — the analytical inverse of the dmipy-sim Monte-Carlo "
+       'forward truth.*', '',
+       'It is **not** a bespoke class: the canonical white-matter substrate is an ordinary '
+       '`MultiCompartmentModel` built from the same primitives as everything below — `C1Stick` '
+       '(intra-axonal), `G2Zeppelin` (extra-axonal) and `S1Dot` (stuck myelin), each wrapped in '
+       'an `OccupancyGatedModel` that carries the opt-in occupancy-gated factors: transverse '
+       'relaxation (`T2`) and intra-pore + exterior **surface relaxivity**. A single Gamma '
+       'outer-diameter distribution drives both surface factors, and the whole thing '
+       'forward-simulates and fits through the standard machinery, exactly like NODDI. '
+       'Diffusion-only — no susceptibility, gradient-/stimulated-echo, or T1 physics.', '',
+       '```python',
+       'from dmipy_fit.white_matter import build_white_matter_model',
+       '',
+       'model, params = build_white_matter_model()      # canonical healthy WM @ 3 T',
+       'signal = model(scheme, **params)                # forward-simulate',
+       'fit    = model.fit(scheme, data, solver="jax")  # fit to data',
+       '```', '',
+       '---', '',
+       '## Literature models',
+       '',
+       'Each factory below lives in `dmipy_fit.custom_optimizers.reference_models` and returns a '
+       'configured `MultiCompartmentModel` (or spherical-mean model) in a few lines.', '',
        '```python',
        'from dmipy_fit.custom_optimizers import reference_models as models',
        'mcm = models.noddi()          # any factory below',
@@ -60,8 +84,8 @@ for name, fn in funcs:
     fam = code[0]
     if fam != cur:
         cur = fam
-        out += ['', f'## {FAMILIES.get(fam, fam)}', '']
-    out += [f'### `{name}()` <small>{code}</small>', '',
+        out += ['', f'### {FAMILIES.get(fam, fam)}', '']
+    out += [f'#### `{name}()` <small>{code}</small>', '',
             f'{desc(fn)}', '',
             f'*{cite_link(fn, cite)}*', '',
             '```python', body(fn), '```', '']

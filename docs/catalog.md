@@ -1,6 +1,26 @@
 # Model catalog
 
-Every published inverse model, built from the shared primitives in a few lines and fittable with one `model.fit(scheme, data)` call. Each factory below lives in `dmipy_fit.custom_optimizers.reference_models` and returns a configured `MultiCompartmentModel` (or spherical-mean model).
+The framework has one model of its own — the **unified white-matter model** below — and reproduces the published literature as thin factories around the *same* shared primitives. Every entry is an ordinary `MultiCompartmentModel`: forward-simulate with `model(scheme, **params)`, fit with one `model.fit(scheme, data)` call.
+
+## The unified white-matter model
+
+*The framework's own model — the analytical inverse of the dmipy-sim Monte-Carlo forward truth.*
+
+It is **not** a bespoke class: the canonical white-matter substrate is an ordinary `MultiCompartmentModel` built from the same primitives as everything below — `C1Stick` (intra-axonal), `G2Zeppelin` (extra-axonal) and `S1Dot` (stuck myelin), each wrapped in an `OccupancyGatedModel` that carries the opt-in occupancy-gated factors: transverse relaxation (`T2`) and intra-pore + exterior **surface relaxivity**. A single Gamma outer-diameter distribution drives both surface factors, and the whole thing forward-simulates and fits through the standard machinery, exactly like NODDI. Diffusion-only — no susceptibility, gradient-/stimulated-echo, or T1 physics.
+
+```python
+from dmipy_fit.white_matter import build_white_matter_model
+
+model, params = build_white_matter_model()      # canonical healthy WM @ 3 T
+signal = model(scheme, **params)                # forward-simulate
+fit    = model.fit(scheme, data, solver="jax")  # fit to data
+```
+
+---
+
+## Literature models
+
+Each factory below lives in `dmipy_fit.custom_optimizers.reference_models` and returns a configured `MultiCompartmentModel` (or spherical-mean model) in a few lines.
 
 ```python
 from dmipy_fit.custom_optimizers import reference_models as models
@@ -9,9 +29,9 @@ fit = mcm.fit(scheme, data, solver="jax")
 ```
 
 
-## Gaussian / tensor
+### Gaussian / tensor
 
-### `ball()` <small>A1</small>
+#### `ball()` <small>A1</small>
 
 Isotropic Gaussian (single ADC).
 
@@ -21,7 +41,7 @@ Isotropic Gaussian (single ADC).
 return MultiCompartmentModel([G1Ball()])
 ```
 
-### `zeppelin()` <small>A2</small>
+#### `zeppelin()` <small>A2</small>
 
 Axially symmetric Gaussian (DTI-like, single fascicle).
 
@@ -31,7 +51,7 @@ Axially symmetric Gaussian (DTI-like, single fascicle).
 return MultiCompartmentModel([G2Zeppelin()])
 ```
 
-### `temporal_zeppelin()` <small>A3</small>
+#### `temporal_zeppelin()` <small>A3</small>
 
 Anisotropic compartment with structural-disorder time dependence.
 
@@ -42,9 +62,9 @@ return MultiCompartmentModel([G3TemporalZeppelin()])
 ```
 
 
-## Two-compartment white matter
+### Two-compartment white matter
 
-### `ball_and_stick()` <small>B1</small>
+#### `ball_and_stick()` <small>B1</small>
 
 Isotropic Ball + zero-radius Stick (intra-axonal).
 
@@ -54,7 +74,7 @@ Isotropic Ball + zero-radius Stick (intra-axonal).
 return MultiCompartmentModel([C1Stick(), G1Ball()])
 ```
 
-### `ball_and_zeppelin()` <small>B2</small>
+#### `ball_and_zeppelin()` <small>B2</small>
 
 Isotropic Ball + anisotropic Zeppelin (tissue DTI tensor).
 
@@ -64,7 +84,7 @@ Isotropic Ball + anisotropic Zeppelin (tissue DTI tensor).
 return MultiCompartmentModel([G2Zeppelin(), G1Ball()])
 ```
 
-### `stick_tortuous_zeppelin()` <small>B3</small>
+#### `stick_tortuous_zeppelin()` <small>B3</small>
 
 Intra-axonal Stick + tortuous extra-axonal Zeppelin.
 
@@ -83,7 +103,7 @@ mcm.set_equal_parameter('C1Stick_1_lambda_par', 'G2Zeppelin_1_lambda_par')
 return mcm
 ```
 
-### `free_water_elimination()` <small>B4</small>
+#### `free_water_elimination()` <small>B4</small>
 
 Tissue Zeppelin + fixed free-water Ball (D_iso = 3.0e-9 m²/s).
 
@@ -95,7 +115,7 @@ mcm.set_fixed_parameter('G1Ball_1_lambda_iso', _Dcsf)
 return mcm
 ```
 
-### `ivim()` <small>B5</small>
+#### `ivim()` <small>B5</small>
 
 IVIM: tissue diffusion + vascular pseudo-diffusion.
 
@@ -109,9 +129,9 @@ return mcm
 ```
 
 
-## Orientation-dispersion
+### Orientation-dispersion
 
-### `noddi()` <small>C1</small>
+#### `noddi()` <small>C1</small>
 
 NODDI: Watson-dispersed Stick + tortuous Zeppelin + CSF Ball.
 
@@ -131,7 +151,7 @@ mcm.set_fixed_parameter('G1Ball_1_lambda_iso', _Dcsf)
 return mcm
 ```
 
-### `bingham_noddi()` <small>C2</small>
+#### `bingham_noddi()` <small>C2</small>
 
 Bingham-NODDI: Bingham-dispersed Stick + tortuous Zeppelin + CSF Ball.
 
@@ -151,7 +171,7 @@ mcm.set_fixed_parameter('G1Ball_1_lambda_iso', _Dcsf)
 return mcm
 ```
 
-### `noddida()` <small>C3</small>
+#### `noddida()` <small>C3</small>
 
 NODDIDA: Stick + tortuous Zeppelin + free Ball — all diffusivities free.
 
@@ -170,7 +190,7 @@ mcm.set_equal_parameter('C1Stick_1_lambda_par', 'G2Zeppelin_1_lambda_par')
 return mcm
 ```
 
-### `mcsmt()` <small>C4</small>
+#### `mcsmt()` <small>C4</small>
 
 MC-SMT: Multi-Compartment Spherical Mean Technique.
 
@@ -189,9 +209,9 @@ return mcm
 ```
 
 
-## Multi-fascicle
+### Multi-fascicle
 
-### `two_fascicle_noddi()` <small>D1</small>
+#### `two_fascicle_noddi()` <small>D1</small>
 
 Two independently oriented Watson-NODDI bundles + shared CSF Ball.
 
@@ -216,9 +236,9 @@ return mcm
 ```
 
 
-## Cylinder / axon diameter
+### Cylinder / axon diameter
 
-### `charmed()` <small>E1</small>
+#### `charmed()` <small>E1</small>
 
 CHARMED: Callaghan cylinder (restricted) + tortuous Zeppelin (hindered).
 
@@ -241,7 +261,7 @@ mcm.set_equal_parameter(
 return mcm
 ```
 
-### `axcaliber()` <small>E2</small>
+#### `axcaliber()` <small>E2</small>
 
 AxCaliber: Gamma-distributed Callaghan cylinders + Zeppelin.
 
@@ -257,7 +277,7 @@ mcm.set_equal_parameter(
 return mcm
 ```
 
-### `active_ax()` <small>E3</small>
+#### `active_ax()` <small>E3</small>
 
 ActiveAx: single-diameter Callaghan cylinder + Zeppelin + free Ball.
 
@@ -271,9 +291,9 @@ return mcm
 ```
 
 
-## Soma / sphere
+### Soma / sphere
 
-### `verdict()` <small>F1</small>
+#### `verdict()` <small>F1</small>
 
 VERDICT: Sphere (cell body) + Stick (membrane/vascular) + Ball (EES).
 
@@ -284,7 +304,7 @@ return MultiCompartmentModel([
     S4SphereGaussianPhaseApproximation(), C1Stick(), G1Ball()])
 ```
 
-### `sandi()` <small>F2</small>
+#### `sandi()` <small>F2</small>
 
 SANDI: Sphere (soma) + Stick (neurite) + Ball (extra-cellular).
 
@@ -297,7 +317,7 @@ mcm.set_fixed_parameter('C1Stick_1_lambda_par', _Da)
 return mcm
 ```
 
-### `impulsed()` <small>F3</small>
+#### `impulsed()` <small>F3</small>
 
 IMPULSED: Sphere + isotropic Ball (two-compartment, fixed D_in).
 
@@ -309,19 +329,24 @@ return MultiCompartmentModel([soma, G1Ball()])
 ```
 
 
-## Membrane exchange
+### Membrane exchange
 
-### `nexi()` <small>G1</small>
+#### `nexi()` <small>G1</small>
 
 NEXI: Neurite Exchange Imaging — Stick + Zeppelin with Kärger exchange.
 
 *[Jelescu et al. 2022, NeuroImage 256](https://doi.org/10.1016/j.neuroimage.2022.119277)*
 
 ```python
-return MultiCompartmentModel([X2NEXIModel()])
+stick, zeppelin = C1Stick(), G2Zeppelin()
+karger = X0GeneralizedKarger(
+    stick, zeppelin,
+    parameter_links=[(zeppelin, 'lambda_perp', T1_tortuosity(),
+                      [(zeppelin, 'lambda_par'), (None, 'f')])])
+return MultiCompartmentModel([karger])
 ```
 
-### `karger_two_compartment()` <small>G2</small>
+#### `karger_two_compartment()` <small>G2</small>
 
 Generic Kärger two-compartment model: Ball + Ball with exchange.
 
@@ -331,7 +356,7 @@ Generic Kärger two-compartment model: Ball + Ball with exchange.
 return MultiCompartmentModel([X0GeneralizedKarger(G1Ball(), G1Ball())])
 ```
 
-### `fexi()` <small>G3</small>
+#### `fexi()` <small>G3</small>
 
 FEXI: Filter EXchange Imaging — two isotropic pools with exchange.
 
@@ -345,7 +370,7 @@ mcm.set_fixed_parameter('X0GeneralizedKarger_1_G1Ball_2_lambda_iso', 2.0e-9)  # 
 return mcm
 ```
 
-### `sandix()` <small>G4</small>
+#### `sandix()` <small>G4</small>
 
 SANDIX: SANDI with exchange between soma (sphere) and extracellular (Ball).
 
@@ -359,7 +384,7 @@ mcm.set_fixed_parameter('C1Stick_1_lambda_par', _Da)
 return mcm
 ```
 
-### `exchange_impulsed()` <small>G5</small>
+#### `exchange_impulsed()` <small>G5</small>
 
 EXCHANGE: IMPULSED + transcytolemmal Kärger exchange (tumour).
 
@@ -372,9 +397,9 @@ return MultiCompartmentModel([X0GeneralizedKarger(soma, extra)])
 ```
 
 
-## Time-dependent
+### Time-dependent
 
-### `temporal_zeppelin_model()` <small>H1</small>
+#### `temporal_zeppelin_model()` <small>H1</small>
 
 Temporal Zeppelin + free Ball: Standard Model with structural disorder.
 
@@ -387,9 +412,9 @@ return mcm
 ```
 
 
-## Relaxometry (multi-TE)
+### Relaxometry (multi-TE)
 
-### `mte_ball_stick()` <small>I1</small>
+#### `mte_ball_stick()` <small>I1</small>
 
 Multi-TE Ball-and-Stick with per-compartment T2 relaxation.
 
@@ -400,7 +425,7 @@ mcm = MultiCompartmentModel([C1Stick(), G1Ball()])
 return mcm   # T2 on both compartments is free by default
 ```
 
-### `mte_noddi()` <small>I2</small>
+#### `mte_noddi()` <small>I2</small>
 
 MTE-NODDI: NODDI extended with per-compartment T2 relaxation.
 
@@ -417,7 +442,7 @@ mcm.set_fixed_parameter('G1Ball_1_lambda_iso', _Dcsf)
 return mcm   # T2 on Stick and Zeppelin inside bundle are free parameters
 ```
 
-### `mte_sandi()` <small>I3</small>
+#### `mte_sandi()` <small>I3</small>
 
 MTE-SANDI: SANDI with per-compartment T2 relaxation.
 
@@ -430,7 +455,7 @@ mcm.set_fixed_parameter('C1Stick_1_lambda_par', _Da)
 return mcm   # T2 on Stick and Ball compartments are free; soma has no T2 param
 ```
 
-### `wmti()` <small>I4</small>
+#### `wmti()` <small>I4</small>
 
 WMTI: White Matter Tract Integrity — biophysical Standard Model structure.
 
@@ -449,7 +474,7 @@ mcm.set_equal_parameter('C1Stick_1_lambda_par', 'G2Zeppelin_1_lambda_par')
 return mcm
 ```
 
-### `noddida_mte()` <small>I5</small>
+#### `noddida_mte()` <small>I5</small>
 
 NODDIDA-MTE: unconstrained NODDIDA with per-compartment T2.
 
@@ -468,7 +493,7 @@ mcm.set_equal_parameter('C1Stick_1_lambda_par', 'G2Zeppelin_1_lambda_par')
 return mcm   # T2 on all three compartments are free parameters
 ```
 
-### `mte_impulsed()` <small>I6</small>
+#### `mte_impulsed()` <small>I6</small>
 
 MTE-IMPULSED: IMPULSED with per-compartment T2 relaxation.
 
