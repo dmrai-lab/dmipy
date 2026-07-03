@@ -1,11 +1,15 @@
 # Pedagogy — watch the spins
 
 These are not cartoons. Each clip is a **real dmipy-sim walk**, rendered frame by frame by
-`dmipy_sim.pedagogy.spin_movie` as a three-panel story: the **gradient + RF** on top, the
-**transverse spin cloud** in the middle (each dot is one walker's magnetisation), and the
-**net signal** on the bottom — a player whose time-cursor sweeps the panels in lock-step. That
-net signal is the vector sum of every spin, exactly the number the analytical model in dmipy-fit
-predicts. The physics you fit and simulate, made visible.
+`dmipy_sim.pedagogy.spin_movie` as two synced views. **On top**, one panel per compartment: the
+**transverse spin cloud** (each dot is one walker's magnetisation) with the bold arrow their
+vector sum — the **net signal**. **On the bottom**, a **pulse-program player** marking the
+instantaneous **90°/180° flips** and the diffusion gradient `G(t)`, with a playhead sweeping in
+time so you can see exactly which event drives each motion. That net-signal arrow is the number
+the analytical model in dmipy-fit predicts. The physics you fit and simulate, made visible.
+
+(The player is the transverse-only, instant-pulse counterpart of the full Bloch pulse-program
+player — it shows *where* the 90°/180° fire, not a finite `B1(t)` shape.)
 
 ```python
 import dmipy_sim
