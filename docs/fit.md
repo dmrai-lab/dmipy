@@ -67,10 +67,18 @@ stick+zeppelin cannot represent.
 
 ### Noise-aware fitting
 
-The signal magnitude is Rician, not Gaussian, at the SNR of real dMRI. The forward model can
-carry a **Rician noise floor** `η`, fitting against $\sqrt{S^2 + \eta^2}$ so parameters are not
-biased upward by the noise floor at high *b*; the CSD solvers accept a matching `eta=` bias
-correction ($\sqrt{\max(S^2-\eta^2,\,0)}$) before the QP solve.
+The signal magnitude is Rician, not Gaussian, at the SNR of real dMRI. Pass `eta=True` and the
+forward model carries a **Rician noise floor** `η`, fitting against $\sqrt{S^2 + \eta^2}$ so
+parameters are not biased upward by the noise floor at high *b*:
+
+```python
+model = MultiCompartmentModel([G1Ball(), C1Stick()], eta=True)  # jointly fit the noise floor
+fit = model.fit(scheme, data, solver="jax")
+noise_floor = fit.fitted_parameters["eta"]                      # dimensionless, ~ 1/SNR
+```
+
+The CSD solvers accept a matching `eta=` bias correction ($\sqrt{\max(S^2-\eta^2,\,0)}$) before
+the QP solve.
 
 ### Citation graph & auto-generated methods
 
@@ -95,8 +103,12 @@ scheme drives both the analytical fit here and the Monte-Carlo ground truth in d
 the same `Substrate` parametrises both. There was no forward-simulation counterpart in the
 original. See **[Acquisition sequences](sequences.md)** and **[Substrate & geometry](substrate.md)**.
 
-### Scope
+### Current scope (this release)
 
-Public dmipy-fit is transverse-only (ideal instantaneous pulses): diffusion + T2 + surface
-relaxivity + permeable exchange. It does not model susceptibility, gradient-/stimulated-echo,
-or T1.
+The **mission** is a physics-complete, sequence- and substrate-agnostic MRI computational
+forward model — the free waveform `G(t)` and an arbitrary substrate as the base representation,
+every physical effect on the same footing — paired with its analytical inverse. *This release*
+is the transverse-magnetisation slice of it: diffusion + T2 + surface relaxivity + permeable
+exchange, with ideal instantaneous pulses. Susceptibility, gradient-/stimulated-echo and T1 are
+part of the model but not in the released public scope yet — so the boundary above is a
+*release* boundary, not the ceiling.

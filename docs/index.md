@@ -16,6 +16,15 @@ one-directional, `fit → sim` — dmipy-sim owns the physical substrate, sequen
 and every analytical model in dmipy-fit is validated effect-by-effect against it. Build a fit and
 a simulation from the *same* parameters and they describe the same tissue.
 
+!!! abstract "The mission"
+    A **physics-complete, sequence- and substrate-agnostic** MRI computational forward model:
+    the free waveform `G(t)` and an arbitrary substrate as the base representation, with every
+    physical effect — diffusion, relaxation, surface relaxivity, exchange, susceptibility, finite
+    RF — on the same footing, paired with its analytical inverse. What is released here **today**
+    is a slice of that: the transverse-magnetisation regime (diffusion + T2 + surface relaxivity +
+    permeable exchange, ideal instantaneous pulses). The *Scope* notes throughout mark the current
+    release boundary — not the ceiling.
+
 !!! quote "Physics is the specification"
     Physical laws, invariants, and known analytical results are the correctness criteria — not
     "the code runs". Every analytical model is validated effect-by-effect against Monte Carlo.
