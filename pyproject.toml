@@ -8,8 +8,8 @@ version = "1.0.0"
 description = "Diffusion Microstructure Imaging in Python — umbrella install for the dmipy-sim (forward Monte Carlo) and dmipy-fit (analytical inverse) engines"
 requires-python = ">=3.10"
 dependencies = [
-    "dmipy-sim @ git+https://github.com/dmrai-lab/dmipy-sim.git@v1.0.0",
-    "dmipy-fit @ git+https://github.com/dmrai-lab/dmipy-fit.git@v1.0.0",
+    "dmipy-sim @ git+https://github.com/dmrai-lab/dmipy-sim.git",
+    "dmipy-fit @ git+https://github.com/dmrai-lab/dmipy-fit.git",
 ]
 
 [project.optional-dependencies]

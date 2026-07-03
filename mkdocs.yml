@@ -23,12 +23,6 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 plugins:
   - search
-  - mkdocstrings:
-      handlers:
-        python:
-          options:
-            docstring_style: numpy
-            show_source: false
 nav:
   - Home: index.md
   - Install: install.md
