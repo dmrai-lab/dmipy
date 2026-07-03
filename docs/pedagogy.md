@@ -1,9 +1,10 @@
 # Pedagogy — watch the spins
 
 These are not cartoons. Each clip is a **real dmipy-sim walk**, rendered frame by frame by
-`dmipy_sim.pedagogy.spin_movie`: spins random-walk through the substrate, accumulate gradient
-phase, get rotated by the RF pulses, and relax by `T2`. The moving arrow is the **net signal**
-— the vector sum of every spin — which is exactly the number the analytical model in dmipy-fit
+`dmipy_sim.pedagogy.spin_movie` as a three-panel story: the **gradient + RF** on top, the
+**transverse spin cloud** in the middle (each dot is one walker's magnetisation), and the
+**net signal** on the bottom — a player whose time-cursor sweeps the panels in lock-step. That
+net signal is the vector sum of every spin, exactly the number the analytical model in dmipy-fit
 predicts. The physics you fit and simulate, made visible.
 
 ```python
