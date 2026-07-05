@@ -65,51 +65,51 @@ An oscillating gradient reverses sign many times within one echo, so spins are p
 much shorter effective diffusion time — sensitising the signal to smaller length scales than a
 single PGSE lobe.
 
-## Magnitude, not phase — surface relaxivity fans the T2 spike
+## Magnitude, not phase — surface relaxivity below the T2 ceiling
 
-Everything above tracks the **phase**. This one tracks the **magnitude**: the `|M|` histogram of
-each compartment under a CPMG train (no gradient — pure relaxation), so you watch surface
-relaxivity turn a spike into a distribution.
+Everything above tracks the **phase**. This tracks the **magnitude**: the `|M|` histogram of each
+compartment under a CPMG train (no gradient — pure relaxation). Without surface relaxivity each
+pool would slide down as a single delta at its bulk-`T2` rate; surface relaxivity gives every walker
+its own wall-contact history, pushing it **below** that bulk-`T2` ceiling — and since it only ever
+*subtracts*, the ceiling is a hard cap.
 
-<video autoplay loop muted playsinline controls style="width:100%;max-width:900px;border-radius:8px">
-  <source src="/media/magnitude_cpmg.mp4" type="video/mp4">
+### The real effect, at ρ = 1.16 µm/s — zoomed
+
+At the literature relaxivity ([Barakovic et al. 2023](https://doi.org/10.3389/fnins.2023.1209521),
+`ρ ≈ 1.16 µm/s`, swept 0–2.5 in the surface-relaxivity paper) white matter is deep in the
+motional-averaging limit: each pool is a **narrow spike just below its bulk-`T2` ceiling** — you
+have to zoom to see it. The left panel is the full `|M|` scale (the spike hugs the ceiling); the
+moving box marks the thin sliver below it; the middle/right panels blow that box up with fine bins.
+
+<video autoplay loop muted playsinline controls style="width:100%;max-width:1000px;border-radius:8px">
+  <source src="/media/magnitude_zoom_cpmg.mp4" type="video/mp4">
 </video>
 
-At `t=0` every spin sits at `|M|=1` — a spike. With no surface relaxivity each compartment would
-just slide down as one delta at its bulk-`T2` rate. **Surface relaxivity gives every walker its own
-wall-contact history**, so the spike fans out — capped on the right at the bulk-`T2` value, because
-relaxivity only ever *subtracts*. The **dashed line** is that bulk-`T2` ceiling (where a
-zero-wall-contact spin would sit), sliding left at the bulk rate; the **gap between the line and
-the histogram is exactly the surface-relaxivity effect**. And the two pools fan *differently*: **intra-axonal** (small
-lumen, high `S/V`) is motionally averaged — it stays a narrow spike that just slides left;
-**extra-axonal** (larger, more heterogeneous space) is diffusion-limited — it spreads into a broad
-distribution. The width is set by `ρ·a/D`. The **mean** of each histogram at echo *k* is exactly the
-CPMG point that `white_matter.t2_spectrum_mwf()` inverts — the microstructure behind the T2 spectrum.
+Zoomed, the real effect is unmistakable with **no exaggeration**: **intra-axonal** sits ~4% below
+its dashed bulk-`T2` ceiling, **extra-axonal** only ~1% — intra has the higher `S/V`, so more wall
+contact per unit time. That gap to the ceiling *is* the surface-relaxivity apparent-`T2` shortening,
+and each histogram's mean is the CPMG point `white_matter.t2_spectrum_mwf()` inverts — the
+microstructure behind the T2 spectrum.
 
-!!! warning "The fan is exaggerated — real white matter barely broadens"
-    This clip uses `ρ ≈ 40 µm/s` purely so the distribution is *visible*. The literature axolemma
-    relaxivity is `ρ ≈ 1.16 µm/s` ([Barakovic et al. 2023](https://doi.org/10.3389/fnins.2023.1209521);
-    swept 0–2.5 µm/s in the surface-relaxivity paper), at which — with µm-scale pores — white matter
-    sits **deep in the motional-averaging limit** (`ρa/D ≈ 0.002`): the spike barely widens and surface
-    relaxivity acts as a small **apparent-T2 shortening** (a ~1 pp MWF bias), *not* a broad fan. The
-    broad, diffusion-limited fan shown here is the large-pore regime (the porous-media setting
-    Brownstein–Tarr came from). Substrate: moderate-fibre packed myelin; myelin water (frozen short-`T2`)
-    is omitted.
+### The spread and the spatial pattern (ρ exaggerated)
 
-### Where the low-magnitude spins are
+The *shift* above is real; the *spread* (a fan) is tiny at physiological ρ, because white matter is
+motionally averaged. To make the fan — and where it comes from — visible, here is the same setup
+with `ρ` exaggerated ~30×. Left: the distribution fans out below the ceiling (**intra** stays a
+narrow spike, **extra** broadens — the `ρa/D` regime), with the dashed bulk-`T2` ceiling sliding
+left. Right: the same walk in space — near-wall spins **go dark first**, extra-axonal hole-interiors
+**stay bright**.
 
-The **same walk**, viewed in space: every walker drawn at its position in the substrate
-cross-section, coloured by `|M|`. It's the identical run as the histogram above (same seed), so the
-two play in lock-step.
-
-<video autoplay loop muted playsinline controls style="width:100%;max-width:560px;border-radius:8px">
+<video autoplay loop muted playsinline controls style="width:100%;max-width:640px;border-radius:8px">
+  <source src="/media/magnitude_cpmg.mp4" type="video/mp4">
+</video>
+<video autoplay loop muted playsinline controls style="width:100%;max-width:460px;border-radius:8px">
   <source src="/media/magnitude_spatial_cpmg.mp4" type="video/mp4">
 </video>
 
-Spins hugging the axolemma accumulate wall contact and **go dark first**; spins parked in the
-interior of the extra-axonal "holes" between fibres barely touch a wall and **stay bright**. Those
-dark rims and bright pockets *are* the histogram fan, resolved one walker at a time — the spatial
-origin of surface relaxivity. (Same exaggerated `ρ` as above.)
+(Real WM sits in the narrow-spike limit above — a ~1 pp MWF bias, not a broad fan; the broad,
+diffusion-limited fan is the large-pore / porous-media regime Brownstein–Tarr came from. Substrate:
+moderate-fibre packed myelin; frozen short-`T2` myelin water omitted.)
 
 ---
 
