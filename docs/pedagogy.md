@@ -94,25 +94,21 @@ contact per unit time. That gap to the ceiling *is* the surface-relaxivity appar
 and each histogram's mean is the CPMG point `white_matter.t2_spectrum_mwf()` inverts — the
 microstructure behind the T2 spectrum.
 
-### The spread and the spatial pattern (ρ exaggerated)
+### Where the low-magnitude spins are
 
-The *shift* above is real; the *spread* (a fan) is tiny at physiological ρ, because white matter is
-motionally averaged. To make the fan — and where it comes from — visible, here is the same setup
-with `ρ` exaggerated ~30×. Left: the distribution fans out below the ceiling (**intra** stays a
-narrow spike, **extra** broadens — the `ρa/D` regime), with the dashed bulk-`T2` ceiling sliding
-left. Right: the same walk in space — near-wall spins **go dark first**, extra-axonal hole-interiors
-**stay bright**.
+The zoom shows *how much* each pool falls below its ceiling; this shows *where*. The same walk in
+space, every walker coloured by `|M|`: spins hugging the axolemma rack up wall contact and **go dark
+first**, while spins parked in the interior of the extra-axonal "holes" between fibres barely touch a
+wall and **stay bright**. Those dark rims and bright pockets are the spatial origin of the drift you
+just watched in the zoom.
 
-<video autoplay loop muted playsinline controls style="width:100%;max-width:640px;border-radius:8px">
-  <source src="/media/magnitude_cpmg.mp4" type="video/mp4">
-</video>
-<video autoplay loop muted playsinline controls style="width:100%;max-width:460px;border-radius:8px">
+<video autoplay loop muted playsinline controls style="width:100%;max-width:520px;border-radius:8px">
   <source src="/media/magnitude_spatial_cpmg.mp4" type="video/mp4">
 </video>
 
-(Real WM sits in the narrow-spike limit above — a ~1 pp MWF bias, not a broad fan; the broad,
-diffusion-limited fan is the large-pore / porous-media regime Brownstein–Tarr came from. Substrate:
-moderate-fibre packed myelin; frozen short-`T2` myelin water omitted.)
+(`ρ` is exaggerated here purely so the colour contrast is visible on a fixed `|M|` scale — the
+zoomed histograms above are the honest, real-`ρ` measure. Substrate: moderate-fibre packed myelin;
+frozen short-`T2` myelin water omitted.)
 
 ---
 

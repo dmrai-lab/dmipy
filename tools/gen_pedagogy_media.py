@@ -66,11 +66,8 @@ MAG_GEOM = dmipy_sim.PackedMyelinatedCylinders(
 _cpmg = dmipy_sim.cpmg(n_echoes=4, TE=12e-3, G_magnitude=0.0, bvecs=BVEC, n_t_per_echo=800)
 _mag_kw = dict(rho=40e-6, T2_per_comp=[SUB.T2_intra, SUB.T2_myelin, SUB.T2_extra],
                n_walkers=4000, seed=0)
-_mag_title = ('CPMG |M| distribution: intra vs extra  '
-              '(ρ = 40 µm/s, exaggerated ~30x vs the 1.16 µm/s literature)')
-pedagogy.magnitude_movie(MAG_GEOM, _cpmg, os.path.join(OUT, 'magnitude_cpmg.mp4'),
-                         stride=16, title=_mag_title, **_mag_kw)
-print(f"  magnitude_cpmg.mp4: {os.path.getsize(os.path.join(OUT, 'magnitude_cpmg.mp4')) / 1024:.0f} KB")
+# spatial cross-section: rho exaggerated so the near-wall darkening is visible on a fixed |M|
+# colourbar (the zoomed histograms below carry the honest, real-rho measure).
 pedagogy.magnitude_spatial_movie(MAG_GEOM, _cpmg, os.path.join(OUT, 'magnitude_spatial_cpmg.mp4'),
                                  n_show=1500, stride=20, dpi=80,
                                  title='CPMG — |M| across the substrate (ρ exaggerated ~30x)', **_mag_kw)
