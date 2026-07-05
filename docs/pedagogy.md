@@ -78,9 +78,11 @@ its own wall-contact history, pushing it **below** that bulk-`T2` ceiling — an
 At the literature relaxivity ([Barakovic et al. 2023](https://doi.org/10.3389/fnins.2023.1209521),
 `ρ ≈ 1.16 µm/s`, swept 0–2.5 in the surface-relaxivity paper) white matter is deep in the
 motional-averaging limit: each pool is a **narrow spike just below its bulk-`T2` ceiling** — you
-have to zoom to see it. The left panel is the full `|M|` scale (the spike hugs the ceiling); the
-moving box marks the thin sliver below it; the middle/right panels blow that box up with fine bins
-and a smooth **KDE** curve, so you can watch each pool's spread slowly grow as TE advances.
+have to zoom to see it. Here the two pools are given the **same bulk-`T2`**, so the only thing
+separating them is `S/V`. The left panel is the full `|M|` scale (the spike hugs the ceiling) with
+a coloured crop box per pool; each zoom panel (middle/right) then **pins its bulk-`T2` ceiling at a
+fixed spot** (dashed line) and lets the distribution drift left below it — with fine bins and a
+smooth **KDE** curve so you can watch the spread grow as TE advances.
 
 <video autoplay loop muted playsinline controls style="width:100%;max-width:1000px;border-radius:8px">
   <source src="/media/magnitude_zoom_cpmg.mp4" type="video/mp4">

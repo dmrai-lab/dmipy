@@ -77,9 +77,11 @@ pedagogy.magnitude_spatial_movie(MAG_GEOM, _cpmg, os.path.join(OUT, 'magnitude_s
 print(f"  magnitude_spatial_cpmg.mp4: {os.path.getsize(os.path.join(OUT, 'magnitude_spatial_cpmg.mp4')) / 1024:.0f} KB")
 
 # the honest one: REAL rho = 1.16 um/s, effect revealed by a moving zoom (no exaggeration).
+# bulk-T2 set EQUAL for intra & extra (60 ms) so the panels isolate the surface-relaxivity (S/V)
+# difference alone -- the only thing separating the two is wall contact per unit time.
 pedagogy.magnitude_zoom_movie(
     MAG_GEOM, _cpmg, os.path.join(OUT, 'magnitude_zoom_cpmg.mp4'), rho=1.16e-6,
-    T2_per_comp=[SUB.T2_intra, SUB.T2_myelin, SUB.T2_extra], n_walkers=8000, stride=16,
-    title='CPMG |M| distribution at REAL ρ = 1.16 µm/s (Barakovic 2023) — zoomed')
+    T2_per_comp=[0.060, SUB.T2_myelin, 0.060], n_walkers=8000, stride=16,
+    title='CPMG |M| at REAL ρ = 1.16 µm/s — zoomed (equal bulk-T2, isolating S/V)')
 print(f"  magnitude_zoom_cpmg.mp4: {os.path.getsize(os.path.join(OUT, 'magnitude_zoom_cpmg.mp4')) / 1024:.0f} KB")
 print('done')
