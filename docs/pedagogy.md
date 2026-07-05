@@ -79,7 +79,8 @@ At the literature relaxivity ([Barakovic et al. 2023](https://doi.org/10.3389/fn
 `ρ ≈ 1.16 µm/s`, swept 0–2.5 in the surface-relaxivity paper) white matter is deep in the
 motional-averaging limit: each pool is a **narrow spike just below its bulk-`T2` ceiling** — you
 have to zoom to see it. The left panel is the full `|M|` scale (the spike hugs the ceiling); the
-moving box marks the thin sliver below it; the middle/right panels blow that box up with fine bins.
+moving box marks the thin sliver below it; the middle/right panels blow that box up with fine bins
+and a smooth **KDE** curve, so you can watch each pool's spread slowly grow as TE advances.
 
 <video autoplay loop muted playsinline controls style="width:100%;max-width:1000px;border-radius:8px">
   <source src="/media/magnitude_zoom_cpmg.mp4" type="video/mp4">
