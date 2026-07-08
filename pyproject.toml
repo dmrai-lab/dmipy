@@ -13,9 +13,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# GPU JAX for both engines
-cuda12 = ["jax[cuda12]>=0.6.2", "jaxopt>=0.8", "osqp>=1.1"]
-cpu    = ["jax[cpu]>=0.6.2",    "jaxopt>=0.8", "osqp>=1.1"]
+# GPU / CPU JAX for both engines (osqp, a dmipy-fit CSD dep, is pulled by dmipy-fit itself)
+cuda12 = ["jax[cuda12]>=0.6.2", "jaxopt>=0.8"]
+cpu    = ["jax[cpu]>=0.6.2",    "jaxopt>=0.8"]
 # Build the dmipy.org documentation site
 docs = [
     "mkdocs-material>=9.5",
