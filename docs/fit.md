@@ -7,12 +7,22 @@ $$S = S_0 \sum_i f_i\, E^{\text{diff}}_i(b)\, e^{-\mathrm{TE}/T_{2,i}}\, \hat B^
 with T2 and **surface relaxivity** as composable occupancy-gated factors on any compartment.
 
 ```python
+import numpy as np
+from dmipy_fit.core.acquisition_scheme import acquisition_scheme_from_bvalues
 from dmipy_fit.signal_models.cylinder_models import C1Stick
 from dmipy_fit.signal_models.gaussian_models import G1Ball, G2Zeppelin
 from dmipy_fit.core.modeling_framework import MultiCompartmentModel
 
-noddi = MultiCompartmentModel([G1Ball(), G2Zeppelin(), C1Stick()])
-fit = noddi.fit(scheme, data, solver="jax")
+# a small two-shell scheme (b in s/m^2 — multiply s/mm^2 by 1e6) + your DWI voxels
+rng    = np.random.default_rng(0)
+bvals  = np.r_[0.0, np.full(32, 1e9), np.full(32, 2e9)]
+bvecs  = np.zeros((65, 3)); v = rng.standard_normal((64, 3))
+bvecs[1:] = v / np.linalg.norm(v, axis=1, keepdims=True)
+scheme = acquisition_scheme_from_bvalues(bvals, bvecs, delta=0.01, Delta=0.03)
+data   = rng.uniform(0.1, 1.0, size=(10, 65))        # <- swap in your DWI voxels
+
+model = MultiCompartmentModel([G1Ball(), G2Zeppelin(), C1Stick()])
+fit = model.fit(scheme, data, solver="jax")
 fractions = fit.fitted_parameters["partial_volume_2"]
 ```
 
@@ -54,11 +64,12 @@ transverse relaxation (`T2`) and intra-pore + exterior **surface relaxivity** �
 is diffusion × relaxation × surface, per compartment:
 
 ```python
+from dmipy_fit.signal_models.gaussian_models import G2Zeppelin
 from dmipy_fit.signal_models.attenuation import (
     OccupancyGatedModel, TransverseRelaxation, ExteriorSurfaceRelaxivity)
 
 extra = OccupancyGatedModel(G2Zeppelin(), [
-    ExteriorSurfaceRelaxivity(S_ext_over_V=...), TransverseRelaxation()])
+    ExteriorSurfaceRelaxivity(S_ext_over_V=2e5), TransverseRelaxation()])
 ```
 
 This is what lets the **[unified white-matter model](catalog.md)** carry the surface-relaxivity

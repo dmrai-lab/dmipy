@@ -30,6 +30,7 @@ plugins:
 nav:
   - Home: index.md
   - Install: install.md
+  - Migrating from dmipy 1.x: migrating.md
   - Inverse — dmipy-fit: fit.md
   - Forward — dmipy-sim: sim.md
   - Pedagogy — watch the spins: pedagogy.md

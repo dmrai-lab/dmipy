@@ -31,12 +31,23 @@ a simulation from the *same* parameters and they describe the same tissue.
     (More on the philosophy at [dmrai-lab.org](https://dmrai-lab.org).)
 
 ```python
+import numpy as np
+from dmipy_fit.core.acquisition_scheme import acquisition_scheme_from_bvalues
 from dmipy_fit.signal_models.gaussian_models import G1Ball
 from dmipy_fit.signal_models.cylinder_models import C1Stick
 from dmipy_fit.core.modeling_framework import MultiCompartmentModel
 
+# a small two-shell scheme (b-values in s/m^2 — multiply s/mm^2 by 1e6)
+rng    = np.random.default_rng(0)
+bvals  = np.r_[0.0, np.full(32, 1e9), np.full(32, 2e9)]
+bvecs  = np.zeros((65, 3)); v = rng.standard_normal((64, 3))
+bvecs[1:] = v / np.linalg.norm(v, axis=1, keepdims=True)
+scheme = acquisition_scheme_from_bvalues(bvals, bvecs, delta=0.01, Delta=0.03)
+data   = rng.uniform(0.1, 1.0, size=(10, 65))        # <- swap in your DWI voxels
+
 ball_stick = MultiCompartmentModel([G1Ball(), C1Stick()])
-fit = ball_stick.fit(scheme, data, solver="jax")     # whole slice on GPU
+fit = ball_stick.fit(scheme, data, solver="jax")     # vmap over voxels, GPU if available
+print(fit.fitted_parameters.keys())
 ```
 
 Start with **[Install](install.md)**, then the inverse ([dmipy-fit](fit.md)) or forward
