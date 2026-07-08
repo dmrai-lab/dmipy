@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "dmipy"
 version = "1.0.0"
 description = "Diffusion Microstructure Imaging in Python — umbrella install for the dmipy-sim (forward Monte Carlo) and dmipy-fit (analytical inverse) engines"
+license = { text = "AGPL-3.0-only OR LicenseRef-Commercial" }  # dual-licensed; see LICENSING.md
 requires-python = ">=3.10"
 dependencies = [
     "dmipy-sim @ git+https://github.com/dmrai-lab/dmipy-sim.git",

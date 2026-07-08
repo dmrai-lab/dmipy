@@ -34,4 +34,10 @@ pip install ".[docs]"
 mkdocs serve
 ```
 
+## License
+
+Dual-licensed: **GNU AGPL-3.0** for open-source use, or a **commercial license** for
+proprietary/closed use — the same terms apply to both engines. See [LICENSE](LICENSE) and
+[LICENSING.md](LICENSING.md) (commercial: rutger.fick@dmrai-lab.org).
+
 The lab and its philosophy: **[dmrai-lab.org](https://dmrai-lab.org)**.
