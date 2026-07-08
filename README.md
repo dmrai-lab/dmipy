@@ -19,6 +19,13 @@ pip install "dmipy[cuda12]"  # + JAX GPU
 import dmipy_sim, dmipy_fit   # no importable `dmipy`; import the engines directly
 ```
 
+> **Upgrading from dmipy 1.x?** dmipy 2.0 is a ground-up rewrite with a different
+> architecture and API. The 1.x line (the original 2019 toolbox, Fick–Wassermann–Deriche)
+> was a single importable `dmipy` package; **2.x is a meta-package with no importable
+> `dmipy` module** — you import `dmipy_sim` / `dmipy_fit`. Old `import dmipy` code will not
+> run under 2.x. To stay on the original toolbox, pin `pip install "dmipy<2"` (it remains
+> available on PyPI).
+
 ## This repo
 
 - `pyproject.toml` — the thin `dmipy` meta-package (installs the two engines).

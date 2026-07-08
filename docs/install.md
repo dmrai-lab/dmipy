@@ -23,6 +23,12 @@ import dmipy_sim          # forward Monte Carlo
 import dmipy_fit          # analytical inverse
 ```
 
+!!! warning "Upgrading from dmipy 1.x"
+    dmipy 2.0 is a ground-up rewrite. The 1.x line (the original 2019 toolbox) was a single
+    importable `dmipy` package; **2.x is a meta-package with no importable `dmipy` module**.
+    Old `import dmipy` code will not run under 2.x. To stay on the original toolbox, pin
+    `pip install "dmipy<2"` — it remains available on PyPI.
+
 Or install an engine on its own:
 
 ```bash

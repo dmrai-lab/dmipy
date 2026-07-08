@@ -4,13 +4,27 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dmipy"
-version = "1.0.0"
+version = "2.0.0"
 description = "Diffusion Microstructure Imaging in Python — umbrella install for the dmipy-sim (forward Monte Carlo) and dmipy-fit (analytical inverse) engines"
+readme = "README.md"
 license = { text = "AGPL-3.0-only OR LicenseRef-Commercial" }  # dual-licensed; see LICENSING.md
+authors = [
+    { name = "Rutger Fick", email = "fick.rutger@gmail.com" }
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
 requires-python = ">=3.10"
+# Published deps (NOT git+ — PyPI rejects direct references). dmipy-fit already pulls
+# dmipy-sim; dmipy-sim is listed too so `pip install dmipy` states both engines explicitly.
 dependencies = [
-    "dmipy-sim @ git+https://github.com/dmrai-lab/dmipy-sim.git",
-    "dmipy-fit @ git+https://github.com/dmrai-lab/dmipy-fit.git",
+    "dmipy-sim>=2.0,<3",
+    "dmipy-fit>=2.0,<3",
 ]
 
 [project.optional-dependencies]
@@ -27,6 +41,10 @@ docs = [
 [project.urls]
 Homepage = "https://dmipy.org"
 Source = "https://github.com/dmrai-lab"
+
+# Meta-package: no importable `dmipy` module, so there is nothing to discover/build.
+[tool.setuptools]
+py-modules = []
 
 # dmipy is a thin umbrella: `pip install dmipy` pulls the two engines
 # (dmipy-sim + dmipy-fit). There is no `dmipy` importable package — import
