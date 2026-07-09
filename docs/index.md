@@ -1,34 +1,41 @@
 # dmipy
 
-**Diffusion Microstructure Imaging in Python** — one physical substrate, two engines:
+## Reading brain tissue from an MRI signal — without leaving physics out
 
-- **[dmipy-fit](https://github.com/dmrai-lab/dmipy-fit)** — analytical multi-compartment signal
-  models + JAX GPU fitting, with T2 and surface relaxivity as composable occupancy-gated
-  factors, CSD, and a standard NNLS myelin-water-fraction estimator. *The analytical inverse —
-  the successor to the original [dmipy](https://doi.org/10.3389/fninf.2019.00064) toolbox.*
-- **[dmipy-sim](https://github.com/dmrai-lab/dmipy-sim)** — a JAX Monte-Carlo simulator: spins
-  random-walk through geometric substrates under arbitrary free gradient waveforms `G(t)`, with
-  surface relaxivity and membrane permeability baked into the walk. *The forward-truth oracle
-  that validates the inverse.*
+MRI scanners don't measure brain tissue directly. They measure a **signal**, and a physics model
+translates that signal into the numbers researchers and clinicians actually read — *axon
+density*, *myelin content*, *tissue microstructure*.
 
-They share **one** free-waveform sequence/substrate interface; the dependency is
-one-directional, `fit → sim` — dmipy-sim owns the physical substrate, sequences and constants,
-and every analytical model in dmipy-fit is validated effect-by-effect against it. Build a fit and
-a simulation from the *same* parameters and they describe the same tissue.
+The problem: today's translation models are **incomplete**. Each one accounts for some physical
+effects (diffusion, say) while ignoring others that are quietly present in the same signal
+(relaxation, magnetic susceptibility, surface interactions). So the numbers coming out of a scan
+are subtly biased — in specific, predictable ways — and most tools have no way to tell you when,
+or how much.
 
-!!! abstract "The mission"
-    A **physics-complete, sequence- and substrate-agnostic** MRI computational forward model:
-    the free waveform `G(t)` and an arbitrary substrate as the base representation, with every
-    physical effect — diffusion, relaxation, surface relaxivity, exchange, susceptibility, finite
-    RF — on the same footing, paired with its analytical inverse. What is released here **today**
-    is a slice of that: the transverse-magnetisation regime (diffusion + T2 + surface relaxivity +
-    permeable exchange, ideal instantaneous pulses). The *Scope* notes throughout mark the current
-    release boundary — not the ceiling.
+**dmipy is a translation model built to leave nothing out:** one shared physical description of
+the tissue, used to explain *every* signal a scanner can produce — so the numbers mean what
+people already assume they mean.
 
-!!! quote "Physics is the specification"
-    Physical laws, invariants, and known analytical results are the correctness criteria — not
-    "the code runs". Every analytical model is validated effect-by-effect against Monte Carlo.
-    (More on the philosophy at [dmrai-lab.org](https://dmrai-lab.org).)
+![A brain dissolving into the geometric compartments dmipy represents it with — cylinders for axons, spheres for cells — the substrate behind the signal.](media/brain_compartments.png){ width="100%" }
+
+## How it works: two engines, one physical tissue
+
+dmipy describes tissue *once* — a substrate of geometric compartments with their physical
+properties — and then looks at it from both directions:
+
+- **[dmipy-fit](https://github.com/dmrai-lab/dmipy-fit)** — the **inverse**: given a measured
+  signal, recover the tissue parameters. Analytical multi-compartment models with T2 and surface
+  relaxivity as composable factors, CSD, and myelin-water estimation, fit on the GPU. The
+  successor to the original [dmipy](https://doi.org/10.3389/fninf.2019.00064) toolbox.
+- **[dmipy-sim](https://github.com/dmrai-lab/dmipy-sim)** — the **forward truth**: given a
+  tissue, simulate the signal from first principles by random-walking spins through the geometry
+  (a Monte-Carlo "ground truth", no analytical shortcuts).
+
+They read the *same* tissue description, so a fit and a simulation built from the same parameters
+describe the same tissue — and every analytical model is checked, effect by effect, against the
+simulator. Agreement is how we earn trust in the numbers.
+
+## Try it
 
 ```python
 import numpy as np
@@ -50,6 +57,19 @@ fit = ball_stick.fit(scheme, data, solver="jax")     # vmap over voxels, GPU if 
 print(fit.fitted_parameters.keys())
 ```
 
-Start with **[Install](install.md)**, then the inverse ([dmipy-fit](fit.md)) or forward
-([dmipy-sim](sim.md)) quickstart, or the worked
-[surface-relaxivity / MWF walkthrough](surface_relaxivity_mwf.md).
+**Start here:** [Install](install.md) → the [inverse](fit.md) or [forward](sim.md) quickstart →
+the worked [surface-relaxivity / myelin-water walkthrough](surface_relaxivity_mwf.md). Coming
+from the 2019 toolbox? See [Migrating from dmipy 1.x](migrating.md).
+
+## The longer game
+
+Diffusion, relaxation, surface relaxivity, exchange — and eventually susceptibility and finite RF
+— all read out of the *same* substrate, on the same footing, each paired with its analytical
+inverse. What's released **today** is a well-tested slice of that: the transverse-magnetisation
+regime (diffusion + T2 + surface relaxivity + permeable exchange, ideal instantaneous pulses).
+The *Scope* notes throughout mark the current boundary, not the ceiling.
+
+!!! quote "Physics is the specification"
+    Physical laws, invariants, and known analytical results are the correctness criteria — not
+    "the code runs". Every analytical model is validated effect-by-effect against Monte Carlo.
+    More on the philosophy at **[dmrai-lab.org](https://dmrai-lab.org)**.
