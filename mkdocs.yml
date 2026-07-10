@@ -40,5 +40,5 @@ nav:
   - Substrate & geometry: substrate.md
   - Biophysical constants: constants.md
   - Model catalog: catalog.md
-  - Surface relaxivity & MWF: surface_relaxivity_mwf.md
+  - Surface relaxivity & MWF: surface_relaxivity_bias.md
   - API reference: api.md

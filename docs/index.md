@@ -58,7 +58,7 @@ print(fit.fitted_parameters.keys())
 ```
 
 **Start here:** [Install](install.md) → the [inverse](fit.md) or [forward](sim.md) quickstart →
-the worked [surface-relaxivity / myelin-water walkthrough](surface_relaxivity_mwf.md). Coming
+the worked [surface-relaxivity / myelin-water walkthrough](surface_relaxivity_bias.md). Coming
 from the 2019 toolbox? See [Migrating from dmipy 1.x](migrating.md).
 
 ## The longer game
