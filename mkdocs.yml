@@ -19,6 +19,7 @@ markdown_extensions:
   - admonition
   - attr_list
   - md_in_html
+  - tables
   - pymdownx.highlight
   - pymdownx.superfences
   - pymdownx.arithmatex:
@@ -41,4 +42,8 @@ nav:
   - Biophysical constants: constants.md
   - Model catalog: catalog.md
   - Surface relaxivity & MWF: surface_relaxivity_bias.md
+  - Examples:
+      - Canonical WM parity (fit ↔ sim): examples/canonical_wm_parity.md
+  - Derivations:
+      - GPA for arbitrary waveforms: derivations/gpa_arbitrary_waveform.md
   - API reference: api.md
