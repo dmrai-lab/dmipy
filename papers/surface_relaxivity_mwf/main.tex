@@ -1,0 +1,133 @@
+% ============================================================================
+%  Two observables of one wall: surface relaxivity links time-dependent
+%  diffusion to a myelin water fraction bias.
+%
+%  arXiv preprint first; submission-agnostic (target venue TBD).
+%
+%  Self-contained, arXiv-compatible (standard `article` class -- no Wiley .cls
+%  dependency; MRM production retypesets anyway, and the broken Wiley/Overleaf
+%  template is best avoided per community guidance). MRM submission conventions
+%  followed: double-spaced, line-numbered, single column; structured abstract
+%  (<=250 words, Purpose/Methods/Results/Conclusion); 3-6 keywords; sections
+%  Introduction / Theory / Methods / Results / Discussion / Conclusion;
+%  numbered superscript references (natbib).
+% ============================================================================
+\documentclass[12pt]{article}
+
+% ── geometry / spacing (MRM submission style) ───────────────────────────────
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{setspace}
+\doublespacing
+% line numbers disabled for arXiv (not allowed); re-enable for journal review
+% \usepackage[switch]{lineno}
+% \linenumbers
+
+% ── math / symbols ──────────────────────────────────────────────────────────
+\usepackage{amsmath,amssymb,bm}
+\usepackage{siunitx}
+\usepackage{microtype}
+
+% ── figures / tables ──────────────────────────────────────────────────────────
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+\usepackage[section]{placeins}
+\usepackage{xcolor}
+
+% ── references: natbib, numbered superscript (MRM / Vancouver) ──────────────
+\usepackage[numbers,super,sort&compress]{natbib}
+% unsrtnat ships with natbib (guaranteed on arXiv); MRM production retypesets to
+% the journal Vancouver style, so the exact .bst is not load-bearing here.
+\bibliographystyle{unsrtnat}
+
+% ── hyperlinks last ─────────────────────────────────────────────────────────
+\usepackage[hidelinks]{hyperref}
+
+% ── macros (kept minimal per MRM style guide) ───────────────────────────────
+\newcommand{\TE}{\mathrm{TE}}
+\newcommand{\SV}{\ensuremath{S/V}}
+\newcommand{\svin}{\ensuremath{\langle 4/d\rangle_{V}}}  % area/spin-weighted interior S/V moment
+\newcommand{\Rtwo}{\ensuremath{R_2}}
+\newcommand{\rhoperp}{\ensuremath{\rho}}
+\newcommand{\dperp}{\ensuremath{D_0}}
+\newcommand{\MWF}{\mathrm{MWF}}
+\newcommand{\MVF}{\mathrm{MVF}}
+
+\begin{document}
+
+% ============================================================================
+%  TITLE PAGE  (MRM: separate title page)
+% ============================================================================
+\begin{titlepage}
+\begin{flushleft}
+{\LARGE\bfseries
+Two observables of one wall: how surface relaxivity can bias the diffusion
+intra-axonal fraction and the myelin water fraction\par}
+\vspace{1.5em}
+
+{\large Rutger H.\,J.\ Fick\textsuperscript{1,$\ast$}\par}
+\vspace{1em}
+
+\textsuperscript{1}\,dmrai-lab, Independent Research Initiative
+(\url{https://dmrai-lab.org})\par
+\vspace{2em}
+
+\textbf{Corresponding author:}\\
+\textsuperscript{$\ast$}\,Rutger H.\,J.\ Fick\\
+dmrai-lab, Independent Research Initiative\\
+\texttt{rutger.fick@dmrai-lab.org}\par
+\vspace{2em}
+
+\textbf{Running head:}\; Surface relaxivity biases microstructure fractions\par
+\vspace{2em}
+
+\textbf{Funding:}\; None.\par
+\vspace{0.5em}
+\textbf{Conflicts of interest:}\; The author declares no competing interests.\par
+\end{flushleft}
+\end{titlepage}
+
+% ============================================================================
+%  STRUCTURED ABSTRACT  (MRM: <=250 words, self-contained, passive voice)
+% ============================================================================
+\input{sections/abstract}
+
+% ============================================================================
+%  BODY
+% ============================================================================
+\input{sections/introduction}
+\input{sections/theory}
+\input{sections/methods}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/conclusion}
+
+% ── appendix ─────────────────────────────────────────────────────────────────
+\appendix
+\input{sections/appendix}
+
+% ── back matter ─────────────────────────────────────────────────────────────
+\section*{Data and Code Availability}
+In keeping with the openness aims of the \texttt{dmrai-lab} project, all materials --- the
+manuscript source, the figures, and the Python scripts that regenerate every figure from
+scratch (each with its committed numeric data) --- are openly available at
+\href{https://github.com/dmrai-lab/dmipy}{\texttt{github.com/dmrai-lab/dmipy}}. The figures
+are built on the dmipy computational ecosystem: \texttt{dmipy-fit}, a subsumption and
+expansion of the original \texttt{dmipy} toolbox \citep{Fick2019} (the analytical
+multi-compartment signal models and the NNLS myelin-water estimator), and
+\texttt{dmipy-sim}, a GPU/JAX-accelerated toolbox for physics-complete Monte-Carlo spin
+simulation under arbitrary free waveforms, sharing one pulse-sequence and substrate
+interface with \texttt{dmipy-fit}. The real cross-sections are the AxonDeepSeg SEM
+rat dataset \citep{Zaimi2018}.
+
+\section*{Acknowledgements}
+The author thanks the dmrai-lab open-source diffusion- and quantitative-MRI
+simulation community.
+
+% ── bibliography ────────────────────────────────────────────────────────────
+\bibliography{refs}
+
+\end{document}

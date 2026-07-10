@@ -1,0 +1,327 @@
+\begin{thebibliography}{40}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Novikov et~al.(2014)Novikov, Jensen, Helpern, and
+  Fieremans]{Novikov2014}
+D.S. Novikov, J.H. Jensen, J.A. Helpern, and E.~Fieremans.
+\newblock Revealing mesoscopic structural universality with diffusion.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 111\penalty0
+  (14):\penalty0 5088--5093, 2014.
+\newblock \doi{10.1073/pnas.1316944111}.
+
+\bibitem[Burcaw et~al.(2015)Burcaw, Fieremans, and Novikov]{Burcaw2015}
+L.M. Burcaw, E.~Fieremans, and D.S. Novikov.
+\newblock Mesoscopic structure of neuronal tracts from time-dependent
+  diffusion.
+\newblock \emph{NeuroImage}, 114:\penalty0 18--37, 2015.
+\newblock \doi{10.1016/j.neuroimage.2015.03.061}.
+
+\bibitem[Brownstein and Tarr(1979)]{Brownstein1979}
+K.R. Brownstein and C.E. Tarr.
+\newblock Importance of classical diffusion in {NMR} studies of water in
+  biological cells.
+\newblock \emph{Physical Review A}, 19:\penalty0 2446--2453, 1979.
+\newblock \doi{10.1103/PhysRevA.19.2446}.
+
+\bibitem[MacKay et~al.(1994)MacKay, Whittal, Adler, Li, Paty, and
+  Graeb]{Mackay1994}
+A.~MacKay, K.~Whittal, J.~Adler, D.~Li, D.~Paty, and D.~Graeb.
+\newblock In vivo visualization of myelin water in brain by magnetic resonance.
+\newblock \emph{Magnetic Resonance in Medicine}, 31:\penalty0 673--677, 1994.
+\newblock \doi{10.1002/mrm.1910310614}.
+
+\bibitem[Laule et~al.(2007)Laule, Vavasour, Kolind, Li, Traboulsee, Moore, and
+  MacKay]{Laule2007}
+C.~Laule, I.M. Vavasour, S.H. Kolind, D.K.B. Li, T.L. Traboulsee, G.R.W. Moore,
+  and A.L. MacKay.
+\newblock Magnetic resonance imaging of myelin.
+\newblock \emph{Neurotherapeutics}, 4:\penalty0 460--484, 2007.
+\newblock \doi{10.1016/j.nurt.2007.05.004}.
+
+\bibitem[Whittall et~al.(1997)Whittall, MacKay, Graeb, Nugent, Li, and
+  Paty]{Whittall1997}
+K.P. Whittall, A.L. MacKay, D.A. Graeb, R.A. Nugent, D.K.B. Li, and D.W. Paty.
+\newblock In vivo measurement of {T2} distributions and water contents in
+  normal human brain.
+\newblock \emph{Magnetic Resonance in Medicine}, 37\penalty0 (1):\penalty0
+  34--43, 1997.
+\newblock \doi{10.1002/mrm.1910370107}.
+
+\bibitem[Prasloski et~al.(2012)Prasloski, Rauscher, MacKay, Hodgson, Vavasour,
+  Laule, and M{\"a}dler]{Prasloski2012}
+Thomas Prasloski, Alexander Rauscher, Alex~L. MacKay, Madeline Hodgson,
+  Irene~M. Vavasour, Cornelia Laule, and Burkhard M{\"a}dler.
+\newblock Rapid whole cerebrum myelin water imaging using a {3D} {GRASE}
+  sequence.
+\newblock \emph{NeuroImage}, 63\penalty0 (1):\penalty0 533--539, 2012.
+\newblock \doi{10.1016/j.neuroimage.2012.06.064}.
+
+\bibitem[Lebel and Wilman(2010)]{Lebel2010}
+R.~Marc Lebel and Alan~H. Wilman.
+\newblock Transverse relaxometry with stimulated echo compensation.
+\newblock \emph{Magnetic Resonance in Medicine}, 64\penalty0 (4):\penalty0
+  1005--1014, 2010.
+\newblock \doi{10.1002/mrm.22487}.
+
+\bibitem[Harkins et~al.(2012)Harkins, Dula, and Does]{Harkins2012}
+Kevin~D. Harkins, Adrienne~N. Dula, and Mark~D. Does.
+\newblock Effect of intercompartmental water exchange on the apparent myelin
+  water fraction in multiexponential {$T_2$} measurements.
+\newblock \emph{Magnetic Resonance in Medicine}, 67\penalty0 (3):\penalty0
+  793--800, 2012.
+\newblock \doi{10.1002/mrm.23053}.
+
+\bibitem[Dula et~al.(2010)Dula, Gochberg, Valentine, Valentine, and
+  Does]{Dula2010}
+Adrienne~N. Dula, Daniel~F. Gochberg, Holly~L. Valentine, William~M. Valentine,
+  and Mark~D. Does.
+\newblock Multiexponential {$T_2$}, magnetization transfer, and quantitative
+  histology in white matter tracts of rat spinal cord.
+\newblock \emph{Magnetic Resonance in Medicine}, 63\penalty0 (4):\penalty0
+  902--909, 2010.
+\newblock \doi{10.1002/mrm.22267}.
+
+\bibitem[Cottaar et~al.(2026)Cottaar, Zheng, Miller, Tendler, and
+  Jbabdi]{Cottaar2025}
+M.~Cottaar, Z.~Zheng, K.L. Miller, B.C. Tendler, and S.~Jbabdi.
+\newblock Multi-modal {Monte Carlo} {MRI} simulator of tissue microstructure.
+\newblock \emph{Imaging Neuroscience}, 2026.
+\newblock \doi{10.1162/IMAG.a.1177}.
+
+\bibitem[Veraart et~al.(2018)Veraart, Novikov, and Fieremans]{Veraart2018}
+J.~Veraart, D.S. Novikov, and E.~Fieremans.
+\newblock {TE} dependent diffusion imaging ({TEdDI}) distinguishes between
+  compartmental {$T_2$} relaxation times.
+\newblock \emph{NeuroImage}, 182:\penalty0 360--369, 2018.
+\newblock \doi{10.1016/j.neuroimage.2017.09.030}.
+
+\bibitem[Birkl et~al.(2021)Birkl, Doucette, Fan, Hernández-Torres, and
+  Rauscher]{Birkl2021}
+Christoph Birkl, Jonathan Doucette, Mike Fan, Enedino Hernández-Torres, and
+  Alexander Rauscher.
+\newblock Myelin water imaging depends on white matter fiber orientation in the
+  human brain.
+\newblock \emph{Magnetic Resonance in Medicine}, 85\penalty0 (4):\penalty0
+  2221--2231, 2021.
+\newblock \doi{10.1002/mrm.28543}.
+
+\bibitem[Novikov and Kiselev(2010)]{NovikovKiselev2010}
+Dmitry~S. Novikov and Valerij~G. Kiselev.
+\newblock Effective medium theory of a diffusion-weighted signal.
+\newblock \emph{NMR in Biomedicine}, 23\penalty0 (7):\penalty0 682--697, 2010.
+\newblock \doi{10.1002/nbm.1584}.
+
+\bibitem[Mitra et~al.(1992)Mitra, Sen, Schwartz, and Le~Doussal]{Mitra1992}
+Partha~P. Mitra, Pabitra~N. Sen, Lawrence~M. Schwartz, and Pierre Le~Doussal.
+\newblock Diffusion propagator as a probe of the structure of porous media.
+\newblock \emph{Physical Review Letters}, 68\penalty0 (24):\penalty0
+  3555--3558, 1992.
+\newblock \doi{10.1103/PhysRevLett.68.3555}.
+
+\bibitem[Tournier et~al.(2007)Tournier, Calamante, and Connelly]{tournier2007}
+J.-D. Tournier, F.~Calamante, and A.~Connelly.
+\newblock Robust determination of the fibre orientation distribution in
+  diffusion {MRI}: non-negativity constrained super-resolved spherical
+  deconvolution.
+\newblock \emph{NeuroImage}, 35\penalty0 (4):\penalty0 1459--1472, 2007.
+\newblock \doi{10.1016/j.neuroimage.2007.02.016}.
+
+\bibitem[Aboitiz et~al.(1992)Aboitiz, Scheibel, Fisher, and
+  Zaidel]{Aboitiz1992}
+F.~Aboitiz, A.B. Scheibel, R.S. Fisher, and E.~Zaidel.
+\newblock Fiber composition of the human corpus callosum.
+\newblock \emph{Brain Research}, 598:\penalty0 143--153, 1992.
+\newblock \doi{10.1016/0006-8993(92)91046-W}.
+
+\bibitem[Assaf et~al.(2008)Assaf, Blumenfeld-Katzir, Yovel, and
+  Basser]{Assaf2008}
+Y.~Assaf, T.~Blumenfeld-Katzir, Y.~Yovel, and P.J. Basser.
+\newblock {AxCaliber}: a method for measuring axon diameter distribution from
+  diffusion {MRI}.
+\newblock \emph{Magnetic Resonance in Medicine}, 59\penalty0 (6):\penalty0
+  1347--1354, 2008.
+\newblock \doi{10.1002/mrm.21577}.
+
+\bibitem[Mitra et~al.(1993)Mitra, Sen, and Schwartz]{Mitra1993}
+P.P. Mitra, P.N. Sen, and L.M. Schwartz.
+\newblock Short-time behavior of the diffusion coefficient as a geometrical
+  probe of porous media.
+\newblock \emph{Physical Review B}, 47\penalty0 (14):\penalty0 8565--8574,
+  1993.
+\newblock \doi{10.1103/PhysRevB.47.8565}.
+
+\bibitem[Zaimi et~al.(2018)Zaimi, Wabartha, Herman, Antonsanti, Perone, and
+  Cohen-Adad]{Zaimi2018}
+Aldo Zaimi, Maxime Wabartha, Victor Herman, Pierre-Louis Antonsanti,
+  Christian~S. Perone, and Julien Cohen-Adad.
+\newblock {AxonDeepSeg}: automatic axon and myelin segmentation from microscopy
+  data using convolutional neural networks.
+\newblock \emph{Scientific Reports}, 8:\penalty0 3816, 2018.
+\newblock \doi{10.1038/s41598-018-22181-4}.
+
+\bibitem[West et~al.(2018)West, Kelm, Carson, Gochberg, Ess, and
+  Does]{West2018}
+Kathryn~L. West, Nathaniel~D. Kelm, Robert~P. Carson, Daniel~F. Gochberg,
+  Kevin~C. Ess, and Mark~D. Does.
+\newblock Myelin volume fraction imaging with {MRI}.
+\newblock \emph{NeuroImage}, 182:\penalty0 511--521, 2018.
+\newblock \doi{10.1016/j.neuroimage.2016.12.067}.
+
+\bibitem[Fieremans et~al.(2011)Fieremans, Jensen, and Helpern]{Fieremans2011}
+E.~Fieremans, J.H. Jensen, and J.A. Helpern.
+\newblock White matter characterization with diffusional kurtosis imaging.
+\newblock \emph{NeuroImage}, 58:\penalty0 177--188, 2011.
+\newblock \doi{10.1016/j.neuroimage.2011.06.006}.
+
+\bibitem[Barakovic et~al.(2023)Barakovic, Pizzolato, Tax, Rudrapatna, Magon,
+  Dyrby, Granziera, Thiran, Jones, and Canales-Rodr{\'i}guez]{Barakovic2023}
+M.~Barakovic, M.~Pizzolato, C.M.W. Tax, U.~Rudrapatna, S.~Magon, T.B. Dyrby,
+  C.~Granziera, J.-P. Thiran, D.K. Jones, and E.J. Canales-Rodr{\'i}guez.
+\newblock Estimating axon radius using diffusion-relaxation {MRI}: calibrating
+  a surface-based relaxation model with histology.
+\newblock \emph{Frontiers in Neuroscience}, 17:\penalty0 1209521, 2023.
+\newblock \doi{10.3389/fnins.2023.1209521}.
+
+\bibitem[Stikov et~al.(2015)Stikov, Campbell, Stroh, et~al.]{Stikov2015}
+Nikola Stikov, Jennifer~S.W. Campbell, Thomas Stroh, et~al.
+\newblock In vivo histology of the myelin g-ratio with magnetic resonance
+  imaging.
+\newblock \emph{NeuroImage}, 118:\penalty0 397--405, 2015.
+\newblock \doi{10.1016/j.neuroimage.2015.05.023}.
+
+\bibitem[Zhang et~al.(2012)Zhang, Schneider, Wheeler-Kingshott, and
+  Alexander]{Zhang2012}
+H.~Zhang, T.~Schneider, C.A. Wheeler-Kingshott, and D.C. Alexander.
+\newblock {NODDI}: Practical in vivo neurite orientation dispersion and density
+  imaging of the human brain.
+\newblock \emph{NeuroImage}, 61:\penalty0 1000--1016, 2012.
+\newblock \doi{10.1016/j.neuroimage.2012.03.072}.
+
+\bibitem[Tariq et~al.(2016)Tariq, Schneider, Alexander, Wheeler-Kingshott, and
+  Zhang]{Tariq2016}
+M.~Tariq, T.~Schneider, D.C. Alexander, C.A.G. Wheeler-Kingshott, and H.~Zhang.
+\newblock {Bingham-NODDI}: Mapping anisotropic orientation dispersion of
+  neurites using diffusion {MRI}.
+\newblock \emph{NeuroImage}, 133:\penalty0 207--223, 2016.
+\newblock \doi{10.1016/j.neuroimage.2016.01.046}.
+
+\bibitem[Kaden et~al.(2016)Kaden, Kelm, Carson, Does, and Alexander]{Kaden2016}
+E.~Kaden, N.D. Kelm, R.P. Carson, M.D. Does, and D.C. Alexander.
+\newblock Multi-compartment microscopic diffusion imaging.
+\newblock \emph{NeuroImage}, 139:\penalty0 346--359, 2016.
+\newblock \doi{10.1016/j.neuroimage.2016.06.002}.
+
+\bibitem[Doucette et~al.(2020)Doucette, Kames, and Rauscher]{Doucette2020}
+Jonathan Doucette, Christian Kames, and Alexander Rauscher.
+\newblock {DECAES} -- {DE}composition and {C}omponent {A}nalysis of
+  {E}xponential {S}ignals.
+\newblock \emph{Zeitschrift f{\"u}r Medizinische Physik}, 30\penalty0
+  (4):\penalty0 271--278, 2020.
+\newblock \doi{10.1016/j.zemedi.2020.04.001}.
+
+\bibitem[Laule et~al.(2004)Laule, Vavasour, Moore, Oger, Li, Paty, and
+  MacKay]{Laule2004}
+Cornelia Laule, Irene~M. Vavasour, G.~R.~Wayne Moore, Joel Oger, David K.~B.
+  Li, Donald~W. Paty, and Alex~L. MacKay.
+\newblock Water content and myelin water fraction in multiple sclerosis: a {T2}
+  relaxation study.
+\newblock \emph{Journal of Neurology}, 251\penalty0 (3):\penalty0 284--293,
+  2004.
+\newblock \doi{10.1007/s00415-004-0306-6}.
+
+\bibitem[Laule et~al.(2006)Laule, Leung, Li, Traboulsee, Paty, MacKay, and
+  Moore]{Laule2006}
+Cornelia Laule, Eric Leung, David K.~B. Li, Anthony~L. Traboulsee, Donald~W.
+  Paty, Alex~L. MacKay, and G.~R.~Wayne Moore.
+\newblock Myelin water imaging in multiple sclerosis: quantitative correlations
+  with histopathology.
+\newblock \emph{Multiple Sclerosis Journal}, 12\penalty0 (6):\penalty0
+  747--753, 2006.
+\newblock \doi{10.1177/1352458506070928}.
+
+\bibitem[Kitzler et~al.(2012)Kitzler, Su, Zeineh, Harper-Little, Leung,
+  Kremenchutzky, Deoni, and Rutt]{Kitzler2012}
+Hagen~H. Kitzler, Jason Su, Michael Zeineh, Caroline Harper-Little, Alex Leung,
+  Marcelo Kremenchutzky, Sean C.~L. Deoni, and Brian~K. Rutt.
+\newblock Deficient {MWF} imaging detects demyelination in the corpus callosum
+  of multiple sclerosis patients.
+\newblock \emph{NeuroImage}, 59\penalty0 (3):\penalty0 2670--2677, 2012.
+\newblock \doi{10.1016/j.neuroimage.2011.08.052}.
+
+\bibitem[Fieremans et~al.(2016)Fieremans, Burcaw, Lee, Lemberskiy, Veraart, and
+  Novikov]{Fieremans2016}
+E.~Fieremans, L.M. Burcaw, H.-H. Lee, G.~Lemberskiy, J.~Veraart, and D.S.
+  Novikov.
+\newblock In vivo observation and biophysical interpretation of time-dependent
+  diffusion in human white matter.
+\newblock \emph{NeuroImage}, 129:\penalty0 414--427, 2016.
+\newblock \doi{10.1016/j.neuroimage.2016.01.018}.
+
+\bibitem[Hall and Alexander(2009)]{Hall2009}
+M.G. Hall and D.C. Alexander.
+\newblock Convergence and parameter choice for {Monte-Carlo} simulations of
+  diffusion {MRI}.
+\newblock \emph{IEEE Transactions on Medical Imaging}, 28:\penalty0 1354--1364,
+  2009.
+\newblock \doi{10.1109/TMI.2009.2015756}.
+
+\bibitem[Xu et~al.(2018)Xu, Foxley, Kleinnijenhuis, Chen, and Miller]{Xu2018}
+Tianyou Xu, Sean Foxley, Michiel Kleinnijenhuis, Way~Cherng Chen, and Karla~L.
+  Miller.
+\newblock The effect of realistic geometries on the susceptibility-weighted
+  {MR} signal in white matter.
+\newblock \emph{Magnetic Resonance in Medicine}, 79\penalty0 (1):\penalty0
+  489--500, 2018.
+\newblock \doi{10.1002/mrm.26689}.
+
+\bibitem[Lundell et~al.(2019)Lundell, Nilsson, Dyrby, Parker, {Hubbard
+  Cristinacce}, Zhou, Topgaard, and Lasic]{Lundell2019}
+H.~Lundell, M.~Nilsson, T.B. Dyrby, G.J.M. Parker, P.L. {Hubbard Cristinacce},
+  F.-L. Zhou, D.~Topgaard, and S.~Lasic.
+\newblock Multidimensional diffusion {MRI} with spectrally modulated gradients
+  reveals unprecedented microstructural detail.
+\newblock \emph{Scientific Reports}, 9:\penalty0 9026, 2019.
+\newblock \doi{10.1038/s41598-019-45235-7}.
+
+\bibitem[Westin et~al.(2016)Westin, Knutsson, Pasternak, Szczepankiewicz,
+  {\"O}zarslan, van Westen, and Nilsson]{Westin2016}
+C.-F. Westin, H.~Knutsson, O.~Pasternak, F.~Szczepankiewicz, E.~{\"O}zarslan,
+  D.~van Westen, and M.~Nilsson.
+\newblock {Q}-space trajectory imaging for multidimensional diffusion {MRI} of
+  the human brain.
+\newblock \emph{NeuroImage}, 135:\penalty0 345--362, 2016.
+\newblock \doi{10.1016/j.neuroimage.2016.02.039}.
+
+\bibitem[Does et~al.(2003)Does, Parsons, and Gore]{Does2003}
+M.D. Does, E.C. Parsons, and J.C. Gore.
+\newblock Oscillating gradient measurements of water diffusion in normal and
+  globally ischemic rat brain.
+\newblock \emph{Magnetic Resonance in Medicine}, 49:\penalty0 206--215, 2003.
+\newblock \doi{10.1002/mrm.10385}.
+
+\bibitem[Nilsson et~al.(2013)Nilsson, van Westen, St{\aa}hlberg, Sundgren, and
+  L{\"a}tt]{Nilsson2013}
+M.~Nilsson, D.~van Westen, F.~St{\aa}hlberg, P.C. Sundgren, and J.~L{\"a}tt.
+\newblock The role of tissue microstructure and water exchange in biophysical
+  modelling of diffusion in white matter.
+\newblock \emph{MAGMA}, 26:\penalty0 345--370, 2013.
+\newblock \doi{10.1007/s10334-013-0371-x}.
+
+\bibitem[Grebenkov(2007)]{Grebenkov2007}
+D.S. Grebenkov.
+\newblock {NMR} survey of reflected {Brownian} motion.
+\newblock \emph{Reviews of Modern Physics}, 79:\penalty0 1077--1137, 2007.
+\newblock \doi{10.1103/RevModPhys.79.1077}.
+
+\bibitem[Fick et~al.(2019)Fick, Wassermann, and Deriche]{Fick2019}
+R.H.J. Fick, D.~Wassermann, and R.~Deriche.
+\newblock The dmipy toolbox: diffusion {MRI} multi-compartment modeling and
+  microstructure recovery made easy.
+\newblock \emph{Frontiers in Neuroinformatics}, 13:\penalty0 64, 2019.
+\newblock \doi{10.3389/fninf.2019.00064}.
+
+\end{thebibliography}

@@ -1,0 +1,206 @@
+% ============================================================================
+\section{Discussion}
+\label{sec:discussion}
+% ============================================================================
+
+The transverse rate a multi-echo spin echo measures is bulk relaxation plus an isotropic,
+TE-linear surface rate $\rho\,(S/V)$ inseparable from it, with $S/V$ unobserved. The
+consequence for the myelin water fraction is specific: surface relaxivity shortens the
+intra/extra apparent $T_2$, and for the thinnest axons it drags that $T_2$ below the
+myelin window, where the water is counted as myelin --- so fine white matter reads
+myelin-\emph{richer} at fixed myelin content, by a substrate-dependent amount (${\sim}0.1$
+percentage points at the cited $\rho$, super-linearly more --- $>1$\,pp --- at the upper
+end of its order-of-magnitude uncertainty). It is no artefact: a wall-counting Monte Carlo
+reproduces the rate from first principles, and the short-$T_2$ crossing is a property of
+the window's own definition, present before any estimator sees the signal.
+
+\paragraph{The same physics from two communities.} The contribution is partly one of
+perspective: the time-dependent extra-axonal $D(t)$ of randomly packed media is well
+established in diffusion MRI \citep{Novikov2014, Burcaw2015, Fieremans2016}, and the same
+wall collisions, seen from relaxometry, are surface-relaxation events (Sec.~\ref{sec:theory:dual}).
+The corollary: the ``$T_2$'' a relaxometry experiment reports is contaminated by a
+geometry-dependent surface rate with no gradient played.
+
+\paragraph{Implications for myelin water imaging.} MWF is read as a myelin-content index
+and compared across tracts, subjects, and time. Because per-voxel MWF is noisy, studies
+average it over a region of interest --- a callosal subregion, a tract, lobar white
+matter --- and compare ROI means; subtracting two such means is where the surface term
+bites. Each ROI carries its own offset set by its own thin-axon population, so
+\begin{equation}
+  \Delta\mathrm{MWF}_{\mathrm{app}}
+  = \underbrace{\Delta\mathrm{MWF}_{\mathrm{true}}}_{\text{myelin difference}}
+  \;+\;\big[\,\beta_A-\beta_B\,\big],
+  \qquad \beta\ =\ F_I\,\Phi(\rho),
+  \label{eq:roi_diff}
+\end{equation}
+where $F_I$ is the intra-axonal signal fraction and $\Phi(\rho)$ the volume-weighted
+fraction of that intra-axonal water dragged below the myelin window (the thin-calibre tail),
+so $\beta$ is larger for the finer region. The second bracket ---
+a pure calibre difference --- adds to the myelin difference and cannot be separated from it
+within the multi-echo data. It vanishes only when the two ROIs share their fine-axon
+population, and is largest where calibre differs systematically: between callosal
+subregions (the finer genu and splenium versus the large-diameter mid-body
+\citep{Aboitiz1992} --- predicting the finer genu/splenium read myelin-\emph{richer} than
+the mid-body at equal myelin), across development or ageing, or between patient and control
+groups when disease shifts the calibre spectrum. At ${\sim}0.1$\,pp (${\sim}0.24$\,pp of
+inferred myelin content) at the cited $\rho$ it is a small fraction of a gross regional
+contrast, but a meaningful one for the subtle, ${\sim}1$\,pp differences cross-sectional
+myelin studies pursue --- and, being deterministic in the substrate, a cohort-level
+systematic that shifts a group mean rather than averaging out. The comparison it spares is
+the field's cleanest, the \emph{same region of the same subject over time}: there the offset
+is a nearly-constant, lumen-set term that cancels in the change
+(Sec.~\ref{sec:results:demyel}), because primary demyelination leaves the inner diameters
+the crossing depends on intact. None of this invalidates MWF; it bounds a contribution of
+the same $S/V$-driven family as the documented exchange bias \citep{Harkins2012}, not
+previously quantified as a surface-relaxivity term inseparable from the bulk $T_2$.
+
+\paragraph{What counts as myelin water.} The mechanism is not really about axons: the
+short-$T_2$ window captures \emph{any} water whose $T_2$ is dragged below it by surface
+relaxivity, which happens once $S/V$ exceeds
+$(1/T_2^{\mathrm{cut}}-1/T_{2,\mathrm b})/\rho\approx 23\,\mu$m$^{-1}$ at the cited $\rho$
+(a sub-micron scale) and $\approx 11\,\mu$m$^{-1}$ at the upper $\rho$. This is the very
+physics that makes bilayer-trapped myelin water short-$T_2$ in the first place, so MWF has
+always measured ``high-$S/V$ trapped water'', of which myelin is merely the dominant source
+in health. It follows --- mechanism-predicted, not simulated here --- that \emph{any}
+membrane-dense sub-micron compartment qualifies: myelin debris, fine reactive-glial
+processes or microvacuolation could add short-$T_2$ signal counted as myelin and prop up
+apparent MWF, while whole cells ($S/V\!<\!1\,\mu$m$^{-1}$) are far too large to cross. This
+widens the caveat from a calibre confound to a statement about what the short-$T_2$ pool
+contains, and is a natural target for a drop-in Monte Carlo of explicit pathological
+microstructure.
+
+\paragraph{Idealised packing, and where Monte Carlo becomes essential.} Our closed forms
+are exact for the substrate we assume --- parallel, circular, non-touching cylinders packed
+by random sequential adsorption --- and for that geometry they are also the \emph{efficient}
+route. A Monte-Carlo pack pays a sub-step cost that scales as $1/R^2$ in its smallest axon
+(an impermeable-wall relaxivity weight needs steps $\ll R$), so the very calibres that
+dominate the bias are the most expensive to simulate \citep{Hall2009}, while the analytics
+returns them for free. The idealisation has a specific blind spot,
+though. The exterior rate uses the \emph{mean} $S/V$ --- total wall perimeter over total
+extra-axonal area --- and a mean cannot see the \emph{distribution of local} $S/V$ that
+realistic packing creates: where axons deform, touch, undulate or cross \citep{Xu2018},
+extra-axonal water is trapped in thin interstitial crevices of very high local $S/V$, and
+the window-crossing the intra-axonal calibre tail undergoes could occur there too ---
+extra-axonal water read as myelin. Whether it does hinges on motional averaging, and two
+\emph{distinct} length scales must not be conflated. A local sheet of high $S/V$ shortens the
+$T_2$ enough to cross the myelin window once its width falls below
+${\sim}90$\,nm ($S/V\gtrsim23\,\mu$m$^{-1}$ at the cited $\rho$) --- a scale the extra-axonal
+space genuinely reaches. But whether that water \emph{averages} with the bulk is a
+\emph{separate} condition, set by how fast a spin escapes the pocket: at a $90$\,nm width the
+traversal time $w^2/D\!\sim\!4\times10^{-3}$\,ms is far below the echo spacing, so an
+\emph{open} $90$\,nm sheet averages comfortably and feels only the mean $S/V$. Averaging fails
+only where the pocket is kinetically \emph{isolated} --- narrow throats or near-contacts whose
+bottleneck traversal time approaches the echo spacing --- a percolation-scale property of the
+packing, not of the sheet width, and one we do not quantify here. So the mean-field rate is a
+lower bound (Jensen; Sec.~\ref{sec:theory:closedforms}) and the size of the correction is set by
+this unquantified isolation scale. This is the regime the analytics cannot reach and only a
+Monte Carlo of non-idealised geometry can resolve --- and, by the same $1/R^2$ argument, the
+most costly to run. The reading is therefore a duality, not a ranking: the closed form should carry the
+idealised packing, where Monte Carlo is wasteful, and Monte Carlo should be reserved for the
+irreducibly non-idealised part --- crevices, undulation, crossings --- where the closed form
+has nothing to say.
+
+\paragraph{Why the correction injects the fraction rather than fitting it.} The quantity a
+diffusion model returns is the intra-axonal \emph{signal} fraction, not the geometric fibre
+volume fraction $VF$; a spherical-mean fit even ties its extra-axonal (tortuosity) diffusivity to
+that signal fraction, so the packing geometry that sets $S/V$ is never an independent output.
+Because the surface term is $b$-independent and inseparable from the bulk $T_2$, $S/V$ --- and
+hence $VF$ --- is not identifiable from the fit, and feeding the fitted fraction back into the
+surface term would be circular (it is the very quantity the surface term biases). The correction
+therefore treats $VF$ as a \emph{bounded prior} supplied from regional histology --- exactly the
+ingredient a cross-TE cohort harmonisation needs and can plausibly obtain --- and leaves the fit
+to return only the corrected fraction.
+
+\paragraph{What could resolve it, and what cannot.} The degeneracy is structural, so no
+refinement of the multi-echo acquisition alone breaks it: echo spacing, train length and
+signal-to-noise change precision, not the non-identifiability. Diffusion is, in
+principle, the orthogonal axis --- the same wall collisions, read with a gradient. The
+elegant point is that the disorder enters diffusion through the \emph{same} fibre
+orientation distribution $\mathcal F(\hat{\mathbf n})$ as the signal convolution
+Eq.~\eqref{eq:fod_conv}: in the low-$b$, short-time regime the apparent diffusivity along
+$\hat{\mathbf g}$ is that FOD convolved with a disorder kernel,
+\begin{equation}
+  \frac{D(t;\hat{\mathbf g})}{D_0}=\int_{S^2}\mathcal F(\hat{\mathbf n})\,
+  \kappa_{\mathrm{dis}}(\hat{\mathbf g}\!\cdot\!\hat{\mathbf n};t)\,\mathrm d\hat{\mathbf n},
+  \quad
+  \kappa_{\mathrm{dis}}=1-\tfrac{4}{3\sqrt\pi}\sqrt{D_0 t}\,
+  \Big[\textstyle\sum_c f_c\,(S/V)_c\Big]\big[1-(\hat{\mathbf g}\!\cdot\!\hat{\mathbf n})^2\big],
+  \label{eq:kdis}
+\end{equation}
+with $(S/V)_c$ the interior $\svin$ or exterior $S_{\mathrm{ext}}/V_{\mathrm{ext}}$. Because
+$1-(\hat{\mathbf g}\!\cdot\!\hat{\mathbf n})^2=\tfrac23[1-P_2(\hat{\mathbf g}\!\cdot\!\hat{\mathbf n})]$
+carries only $\ell=0$ and $\ell=2$, the surface disorder is a \emph{rank-2} function on the
+sphere --- round ($\ell{=}0$) to relaxation, fibre-shaped ($\ell{=}0{+}2$) to diffusion --- and
+spherical convolution preserves that band limit for \emph{any} FOD. The orientation-invariant
+total $S/V$ is then the $\ell=0$ (trace) part, which an isotropic (trace) oscillating-gradient
+acquisition or a spectrally tuned $b$-tensor \citep{Lundell2019, Westin2016} recovers
+independent of fibre dispersion. In practice it is gradient-limited: the short-time regime needs
+OGSE frequencies whose deliverable $b$-value collapses as $\sim$$1/f^3$ \citep{Does2003} ---
+sitting at the corner frequency of a micron axon needs $G\!\sim\!70$--$260\,$T/m, one to two
+orders beyond even preclinical inserts --- so the fine calibres that carry the effect lie out of
+reach, and a realisable protocol is left to future work. What no route removes
+is the absolute calibration: the inner- and outer-wall relaxivities
+$\rho_{\mathrm i},\rho_{\mathrm e}$ --- which may differ, and scale the bias --- are not
+independently established for myelinated tissue, and the myelin-water pool itself, with its
+very large bilayer $S/V$, is plausibly surface-dominated in a way we have not modelled
+here.
+
+\paragraph{Relation to exchange and other MWF confounds.} MWF is already known to
+depend on factors other than myelin content: $B_1$/flip-angle imperfections, which
+the extended-phase-graph fit corrects \citep{Prasloski2012, Lebel2010}; iron and
+susceptibility; and inter-compartment water \emph{exchange}, which Harkins, Dula and
+Does showed makes the apparent MWF depend on axon size \citep{Harkins2012, Dula2010}.
+The exchange bias is, like ours, driven by surface-to-volume ratio, and both are largest
+at high $S/V$. They are \emph{mechanistically distinct} --- exchange moves magnetisation
+between pools of different $T_2$, whereas surface relaxivity destroys coherence at the wall
+and, for the thinnest axons, moves intra water across the window --- but \emph{operationally
+entangled}: both act at the small-calibre end and neither is separable within the multi-echo
+data. We deliberately isolate surface relaxivity by making the myelin impermeable in the
+simulation, so the rate validated in Fig.~\ref{fig:signal}A and the bias of
+Fig.~\ref{fig:mwf} are exchange-free; we do not claim to have measured their \emph{relative}
+magnitude, which would require permeable walls and is left to future work. Myelin is a strong
+barrier (slow apparent exchange, $1$--$10\,$s$^{-1}$, permeation at nodes and paranodes
+\citep{Nilsson2013}), whereas wall \emph{encounters} recur on the perpendicular diffusion
+correlation time ($\sim$$0.1$--$1\,$ms): a spin bounces two to three orders of magnitude more
+often than it permeates, which is what makes isolating surface relaxivity with $\kappa=0$
+physically justified.
+
+\paragraph{Biological idealisations.} Four substrate assumptions bound the biological
+reading. First, the effect is carried by the sub-micron calibre tail (the crossing is at
+$d^{\ast}\!\approx\!0.17\,\mu$m at the cited $\rho$), so the magnitude depends on how much
+sub-micron water the tissue holds --- which we anchor with rat spinal-cord cross-sections
+\citep{Zaimi2018}, a coarser-calibre tissue than the human cortical and callosal white matter
+that is the clinical target. Human callosal fibres run finer, with a substantial sub-micron
+population \citep{Aboitiz1992}, so if anything the rat-cord anchor \emph{under}-states the
+tissue-borne effect; a human-EM calibre census is the proper anchor and we do not claim one.
+Second, we hold the g-ratio fixed at $0.70$ across calibre, whereas fine axons are relatively
+more thickly myelinated (lower $g$) \citep{Stikov2015}; since the crossover
+$\mathrm{VF}^{\ast}=1/(1+g)$ depends on $g$, the single sign law is a calibre-averaged
+statement, and a realistic $g(d)$ would spread the crossover across calibres rather than
+abolish it. Third, we assign the inner and outer walls one relaxivity $\rho_{\mathrm i}=\rho_{\mathrm e}$;
+these are chemically different membranes whose relaxivities may differ, a \emph{structural}
+(not merely scale) uncertainty that could shift the interior/exterior balance and hence the
+$f_{\mathrm{intra}}$ sign, and $\rho$ itself is imported from a histology-fit model coefficient
+\citep{Barakovic2023} that may partly absorb exchange or susceptibility. Fourth, the
+longitudinal cancellation assumes lumen-preserving (pure g-ratio) demyelination; real MS and
+Wallerian degeneration co-vary axon calibre through swelling, beading, atrophy and outright
+axonal loss, which alter the very inner-diameter distribution the offset is set by --- so the
+clean within-subject cancellation is an idealised bound, and where pathology shifts the calibre
+spectrum the cross-region confound re-enters the longitudinal comparison.
+
+\paragraph{Limitations.} We assumed ideal, instantaneous refocusing, isolating the
+bulk-versus-surface question; finite-pulse and susceptibility effects are real but
+orthogonal and treated elsewhere. This sets the effect in perspective: the
+flip-angle/stimulated-echo and fibre-orientation/susceptibility \citep{Birkl2021}
+systematics the MWF field already corrects for are themselves of order a percentage point
+or more --- comparable to or larger than the surface bias at the cited $\rho$, which is a
+further, hitherto-unnamed term of the same family. The MWF magnitudes come from a forward
+model carrying the validated rate over a calibre-distributed intra pool
+(Sec.~\ref{sec:methods:mwf}), so the absolute numbers inherit its two-/three-pool,
+non-exchanging, canonical-Gamma idealisations --- which modulate the magnitude but not the
+existence or sign of the term. The robust core needs no estimator: the closed-form rate and
+its wall-counting Monte-Carlo validation (a motional-narrowing limit and a geometry-only
+simulation with no relaxivity model) agree, and the short-$T_2$ crossing they imply is a
+grid-free property of the signal. The claim we stand behind is the inseparability itself,
+the sign of its consequence (fine reads myelin-richer), and the order of magnitude that
+follows once $\rho$ is fixed.

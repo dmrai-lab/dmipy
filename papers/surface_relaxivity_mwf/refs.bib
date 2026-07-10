@@ -1,0 +1,2221 @@
+% ============================================================
+% dmipy paper — unified, verified bibliography
+% Last updated: 2026-04-28  (automated literature sweep, 7 agents)
+%
+% DOI CORRECTIONS vs prior version:
+%   Zhang2012  : was 10.1002/mrm.20965 (Arsigny 2006!) → 10.1016/j.neuroimage.2012.03.072
+%   Neuman1974 : was 10.1063/1.1680571 (wrong paper)  → 10.1063/1.1680931
+%   Veraart2018: author list corrected (3 authors, not 5)
+%   Does2003   : title corrected "rat cortex" → "rat brain"
+% ============================================================
+
+@article{West2018,
+  author  = {West, Kathryn L. and Kelm, Nathaniel D. and Carson, Robert P. and Gochberg, Daniel F. and Ess, Kevin C. and Does, Mark D.},
+  title   = {Myelin volume fraction imaging with {MRI}},
+  journal = {NeuroImage},
+  year    = {2018},
+  volume  = {182},
+  pages   = {511--521},
+  doi     = {10.1016/j.neuroimage.2016.12.067}
+}
+
+@article{NortonPoduslo1973,
+  author  = {Norton, William T. and Poduslo, Shirley E.},
+  title   = {Myelination in rat brain: changes in myelin composition during brain maturation},
+  journal = {Journal of Neurochemistry},
+  year    = {1973},
+  volume  = {21},
+  number  = {4},
+  pages   = {759--773},
+  doi     = {10.1111/j.1471-4159.1973.tb07520.x}
+}
+
+@article{Zaimi2018,
+  author  = {Zaimi, Aldo and Wabartha, Maxime and Herman, Victor and Antonsanti, Pierre-Louis and Perone, Christian S. and Cohen-Adad, Julien},
+  title   = {{AxonDeepSeg}: automatic axon and myelin segmentation from microscopy data using convolutional neural networks},
+  journal = {Scientific Reports},
+  year    = {2018},
+  volume  = {8},
+  pages   = {3816},
+  doi     = {10.1038/s41598-018-22181-4}
+}
+
+% ── FOUNDATIONS: propagator, signal model, MR physics ─────────────────────────
+
+@article{Callaghan1995,
+  author  = {Callaghan, P.T.},
+  title   = {Pulsed-gradient spin-echo {NMR} for planar, cylindrical, and spherical enclosures},
+  journal = {Journal of Magnetic Resonance Series B},
+  year    = {1995},
+  volume  = {113},
+  pages   = {53--59},
+  doi     = {10.1006/jmrb.1995.1045}
+}
+
+@article{Callaghan1997,
+  author  = {Callaghan, P.T.},
+  title   = {A simple matrix formalism for spin echo analysis of restricted diffusion
+             under generalized gradient waveforms},
+  journal = {Journal of Magnetic Resonance},
+  year    = {1997},
+  volume  = {129},
+  pages   = {74--84},
+  doi     = {10.1006/jmre.1997.1233}
+}
+
+@article{Callaghan2004,
+  author  = {Callaghan, P.T. and Stepisnik, J.},
+  title   = {Frequency-domain analysis of spin motion using modulated-gradient {NMR}},
+  journal = {Journal of Magnetic Resonance Series A},
+  year    = {1995},
+  volume  = {117},
+  pages   = {118--122},
+  doi     = {10.1006/jmra.1995.0715}
+}
+
+@article{Neuman1974,
+  author  = {Neuman, C.H.},
+  title   = {Spin echo of spins diffusing in a bounded medium},
+  journal = {Journal of Chemical Physics},
+  year    = {1974},
+  volume  = {60},
+  pages   = {4508--4511},
+  doi     = {10.1063/1.1680931}
+}
+
+@article{Murday1968,
+  author  = {Murday, J.S. and Cotts, R.M.},
+  title   = {Self-Diffusion Coefficient of Liquid Lithium},
+  journal = {Journal of Chemical Physics},
+  year    = {1968},
+  volume  = {48},
+  pages   = {4938--4945},
+  doi     = {10.1063/1.1668160}
+}
+
+@article{Stepisnik1993,
+  author  = {Stepisnik, J.},
+  title   = {Time-dependent self-diffusion by {NMR} spin-echo},
+  journal = {Physica B: Condensed Matter},
+  year    = {1993},
+  volume  = {183},
+  pages   = {343--350},
+  doi     = {10.1016/0921-4526(93)90124-o}
+}
+
+@article{Basser1994,
+  author  = {Basser, P.J. and Mattiello, J. and LeBihan, D.},
+  title   = {{MR} diffusion tensor spectroscopy and imaging},
+  journal = {Biophysical Journal},
+  year    = {1994},
+  volume  = {66},
+  pages   = {259--267},
+  doi     = {10.1016/S0006-3495(94)80775-1}
+}
+
+@article{Brownstein1979,
+  author  = {Brownstein, K.R. and Tarr, C.E.},
+  title   = {Importance of classical diffusion in {NMR} studies of water in biological cells},
+  journal = {Physical Review A},
+  year    = {1979},
+  volume  = {19},
+  pages   = {2446--2453},
+  doi     = {10.1103/PhysRevA.19.2446}
+}
+
+@article{Balinov1993,
+  author  = {Balinov, B. and J{\"o}nsson, B. and Linse, P. and S{\"o}derman, O.},
+  title   = {The {NMR} self-diffusion method applied to restricted diffusion.
+             {Simulation} of echo attenuation from molecules in spheres and between planes},
+  journal = {Journal of Magnetic Resonance Series A},
+  year    = {1993},
+  volume  = {104},
+  pages   = {17--25},
+  doi     = {10.1006/jmra.1993.1187}
+}
+
+@article{Gudbjartsson1995,
+  author  = {Gudbjartsson, H. and Patz, S.},
+  title   = {The {Rician} distribution of noisy {MRI} data},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {1995},
+  volume  = {34},
+  pages   = {910--914},
+  doi     = {10.1002/mrm.1910340618}
+}
+
+% ── TISSUE MICROSTRUCTURE: anatomy, histology ─────────────────────────────────
+
+@article{Aboitiz1992,
+  author  = {Aboitiz, F. and Scheibel, A.B. and Fisher, R.S. and Zaidel, E.},
+  title   = {Fiber composition of the human corpus callosum},
+  journal = {Brain Research},
+  year    = {1992},
+  volume  = {598},
+  pages   = {143--153},
+  doi     = {10.1016/0006-8993(92)91046-W}
+}
+
+@article{Duval2017,
+  author  = {Duval, T. and McNab, J.A. and Setsompop, K. and others},
+  title   = {In vivo mapping of human spinal cord microstructure at 300~{mT/m}},
+  journal = {NeuroImage},
+  year    = {2015},
+  volume  = {118},
+  pages   = {494--507},
+  doi     = {10.1016/j.neuroimage.2015.06.038}
+}
+
+@article{Stanisz2002,
+  author  = {Stanisz, G.J. and Odrobina, E.E. and Pun, J. and others},
+  title   = {{T1, T2} relaxation and magnetization transfer in tissue at {3T}},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2005},
+  volume  = {54},
+  pages   = {507--512},
+  doi     = {10.1002/mrm.20605}
+}
+
+% ── MULTI-COMPARTMENT MODELING: original papers ───────────────────────────────
+
+@article{Panagiotaki2012,
+  author  = {Panagiotaki, E. and Schneider, T. and Siow, B. and Hall, M.G.
+             and Lythgoe, M.F. and Alexander, D.C.},
+  title   = {Compartment models of the diffusion {MR} signal in brain white matter:
+             a taxonomy and comparison},
+  journal = {NeuroImage},
+  year    = {2012},
+  volume  = {59},
+  pages   = {2241--2254},
+  doi     = {10.1016/j.neuroimage.2011.09.081}
+}
+
+@article{Assaf2005,
+  author  = {Assaf, Y. and Basser, P.J.},
+  title   = {Composite hindered and restricted model of diffusion ({CHARMED})
+             {MR} imaging of the human brain},
+  journal = {NeuroImage},
+  year    = {2005},
+  volume  = {27},
+  pages   = {48--58},
+  doi     = {10.1016/j.neuroimage.2005.03.042}
+}
+
+@article{Alexander2010,
+  author  = {Alexander, D.C. and Hubbard, P.L. and Hall, M.G. and Moore, E.A.
+             and Ptito, M. and Parker, G.J.M. and Dyrby, T.B.},
+  title   = {Orientationally invariant indices of axon diameter and density
+             from diffusion {MRI}},
+  journal = {NeuroImage},
+  year    = {2010},
+  volume  = {52},
+  pages   = {1374--1389},
+  doi     = {10.1016/j.neuroimage.2010.05.043}
+}
+
+@article{Zhang2012,
+  author  = {Zhang, H. and Schneider, T. and Wheeler-Kingshott, C.A. and Alexander, D.C.},
+  title   = {{NODDI}: Practical in vivo neurite orientation dispersion and density
+             imaging of the human brain},
+  journal = {NeuroImage},
+  year    = {2012},
+  volume  = {61},
+  pages   = {1000--1016},
+  doi     = {10.1016/j.neuroimage.2012.03.072}
+}
+
+@article{Kaden2016,
+  author  = {Kaden, E. and Kelm, N.D. and Carson, R.P. and Does, M.D. and Alexander, D.C.},
+  title   = {Multi-compartment microscopic diffusion imaging},
+  journal = {NeuroImage},
+  year    = {2016},
+  volume  = {139},
+  pages   = {346--359},
+  doi     = {10.1016/j.neuroimage.2016.06.002}
+}
+
+@article{Palombo2020,
+  author  = {Palombo, M. and Ianus, A. and Guerreri, M. and Nunes, D.
+             and Alexander, D.C. and Shemesh, N. and Zhang, H.},
+  title   = {{SANDI}: A compartment-based model for non-invasive apparent soma
+             and neurite imaging by diffusion {MRI}},
+  journal = {NeuroImage},
+  year    = {2020},
+  volume  = {215},
+  pages   = {116835},
+  doi     = {10.1016/j.neuroimage.2020.116835}
+}
+
+% ── THE STANDARD MODEL of white matter diffusion ─────────────────────────────
+
+@article{Novikov2019,
+  author  = {Novikov, D.S. and Fieremans, E. and Jespersen, S.N. and Kiselev, V.G.},
+  title   = {Quantifying brain microstructure with diffusion {MRI}: theory and
+             parameter estimation},
+  journal = {NMR in Biomedicine},
+  year    = {2019},
+  volume  = {32},
+  pages   = {e3998},
+  doi     = {10.1002/nbm.3998}
+}
+
+@article{Fieremans2011,
+  author  = {Fieremans, E. and Jensen, J.H. and Helpern, J.A.},
+  title   = {White matter characterization with diffusional kurtosis imaging},
+  journal = {NeuroImage},
+  year    = {2011},
+  volume  = {58},
+  pages   = {177--188},
+  doi     = {10.1016/j.neuroimage.2011.06.006}
+}
+
+@article{Jensen2005,
+  author  = {Jensen, J.H. and Helpern, J.A. and Ramani, A. and Lu, H. and Kaczynski, K.},
+  title   = {Diffusional kurtosis imaging: the quantification of non-{G}aussian water
+             diffusion by means of magnetic resonance imaging},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2005},
+  volume  = {53},
+  pages   = {1432--1440},
+  doi     = {10.1002/mrm.20508}
+}
+
+@article{Jelescu2016degen,
+  author  = {Jelescu, I.O. and Veraart, J. and Fieremans, E. and Novikov, D.S.},
+  title   = {Degeneracy in model parameter estimation for multi-compartmental
+             diffusion in neuronal tissue},
+  journal = {NMR in Biomedicine},
+  year    = {2016},
+  volume  = {29},
+  pages   = {33--47},
+  doi     = {10.1002/nbm.3450}
+}
+
+% ── EXCHANGE MODELS (NEXI, gray matter) ───────────────────────────────────────
+
+@article{Jelescu2022,
+  author  = {Jelescu, I.O. and de Skowronski, A. and Geffroy, F. and Palombo, M.
+             and Novikov, D.S.},
+  title   = {Neurite {Exchange} {Imaging} ({NEXI}): a minimal model of diffusion
+             in gray matter with inter-compartment water exchange},
+  journal = {NeuroImage},
+  year    = {2022},
+  volume  = {256},
+  pages   = {119277},
+  doi     = {10.1016/j.neuroimage.2022.119277}
+}
+
+@article{Olesen2022,
+  author  = {Olesen, J.L. and {\O}stergaard, L. and Shemesh, N. and Jespersen, S.N.},
+  title   = {Diffusion time dependence, power-law scaling, and exchange in gray matter},
+  journal = {NeuroImage},
+  year    = {2022},
+  volume  = {251},
+  pages   = {118976},
+  doi     = {10.1016/j.neuroimage.2022.118976}
+}
+
+% ── RELAXOMETRY: per-compartment T1/T2, proton density ───────────────────────
+
+@article{Mackay1994,
+  author  = {MacKay, A. and Whittal, K. and Adler, J. and Li, D. and Paty, D. and Graeb, D.},
+  title   = {In vivo visualization of myelin water in brain by magnetic resonance},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {1994},
+  volume  = {31},
+  pages   = {673--677},
+  doi     = {10.1002/mrm.1910310614}
+}
+
+@article{Laule2007,
+  author  = {Laule, C. and Vavasour, I.M. and Kolind, S.H. and Li, D.K.B.
+             and Traboulsee, T.L. and Moore, G.R.W. and MacKay, A.L.},
+  title   = {Magnetic resonance imaging of myelin},
+  journal = {Neurotherapeutics},
+  year    = {2007},
+  volume  = {4},
+  pages   = {460--484},
+  doi     = {10.1016/j.nurt.2007.05.004}
+}
+
+@article{Veraart2018,
+  author  = {Veraart, J. and Novikov, D.S. and Fieremans, E.},
+  title   = {{TE} dependent Diffusion Imaging ({TEdDI}) distinguishes between
+             compartmental {$T_2$} relaxation times},
+  journal = {NeuroImage},
+  year    = {2018},
+  volume  = {182},
+  pages   = {360--369},
+  doi     = {10.1016/j.neuroimage.2017.09.030}
+}
+
+@article{DeSantis2016a,
+  author  = {De Santis, S. and Barazany, D. and Jones, D.K. and Assaf, Y.},
+  title   = {Resolving relaxometry and diffusion properties within the same voxel
+             in the presence of crossing fibres by combining inversion recovery and
+             diffusion-weighted acquisitions},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2016},
+  volume  = {75},
+  pages   = {372--380},
+  doi     = {10.1002/mrm.25644}
+}
+
+@article{DeSantis2016b,
+  author  = {De Santis, S. and Jones, D.K. and Roebroeck, A.},
+  title   = {Including diffusion time dependence in the extra-axonal space improves
+             in vivo estimates of axonal diameter and density in human white matter},
+  journal = {NeuroImage},
+  year    = {2016},
+  volume  = {130},
+  pages   = {91--103},
+  doi     = {10.1016/j.neuroimage.2016.01.047}
+}
+
+@article{DeSantis2016c,
+  author  = {De Santis, S. and Assaf, Y. and Jeurissen, B. and Jones, D.K. and Roebroeck, A.},
+  title   = {{T1} relaxometry of crossing fibres in the human brain},
+  journal = {NeuroImage},
+  year    = {2016},
+  volume  = {141},
+  pages   = {133--142},
+  doi     = {10.1016/j.neuroimage.2016.07.037}
+}
+
+@article{Hutter2018,
+  author  = {Hutter, J. and Slator, P.J. and Christiaens, D. and Teixeira, R.P.A.G.
+             and Roberts, T. and Jackson, L. and Price, A.N. and Malik, S. and Hajnal, J.V.},
+  title   = {Integrated and efficient diffusion-relaxometry using {ZEBRA}},
+  journal = {Scientific Reports},
+  year    = {2018},
+  volume  = {8},
+  pages   = {15138},
+  doi     = {10.1038/s41598-018-33463-2}
+}
+
+@article{Gong2020,
+  author  = {Gong, T. and Tong, Q. and He, H. and Sun, Y. and Zhong, J. and Zhang, H.},
+  title   = {{MTE-NODDI}: Multi-{TE} {NODDI} for disentangling non-{T2}-weighted
+             signal fractions from compartment-specific {T2} relaxation times},
+  journal = {NeuroImage},
+  year    = {2020},
+  volume  = {217},
+  pages   = {116906},
+  doi     = {10.1016/j.neuroimage.2020.116906}
+}
+
+@article{Tanner1970,
+  author  = {Tanner, J.E.},
+  title   = {Use of the stimulated echo in {NMR} diffusion studies},
+  journal = {Journal of Chemical Physics},
+  year    = {1970},
+  volume  = {52},
+  pages   = {2523--2526},
+  doi     = {10.1063/1.1673336}
+}
+
+@article{Nilsson2013,
+  author  = {Nilsson, M. and van Westen, D. and St{\aa}hlberg, F. and Sundgren, P.C. and L{\"a}tt, J.},
+  title   = {The role of tissue microstructure and water exchange in biophysical modelling
+             of diffusion in white matter},
+  journal = {MAGMA},
+  year    = {2013},
+  volume  = {26},
+  pages   = {345--370},
+  doi     = {10.1007/s10334-013-0371-x}
+}
+
+@article{Barakovic2023,
+  author  = {Barakovic, M. and Pizzolato, M. and Tax, C.M.W. and Rudrapatna, U.
+             and Magon, S. and Dyrby, T.B. and Granziera, C. and Thiran, J.-P.
+             and Jones, D.K. and Canales-Rodr{\'i}guez, E.J.},
+  title   = {Estimating axon radius using diffusion-relaxation {MRI}:
+             calibrating a surface-based relaxation model with histology},
+  journal = {Frontiers in Neuroscience},
+  year    = {2023},
+  volume  = {17},
+  pages   = {1209521},
+  doi     = {10.3389/fnins.2023.1209521}
+}
+
+@article{Pizzolato2022,
+  author  = {Pizzolato, M. and Andersson, M. and Canales-Rodr{\'i}guez, E.J.
+             and Thiran, J.-P. and Dyrby, T.B.},
+  title   = {Axonal {T2} estimation using the spherical variance of the strongly
+             diffusion-weighted {MRI} signal},
+  journal = {Magnetic Resonance Imaging},
+  year    = {2022},
+  volume  = {86},
+  pages   = {118--134},
+  doi     = {10.1016/j.mri.2021.11.012}
+}
+
+@article{Slator2021,
+  author  = {Slator, P.J. and Palombo, M. and Miller, K.L. and Westin, C.-F. and Laun, F.
+             and Kim, D. and Haldar, J.P. and Benjamini, D. and Lemberskiy, G.
+             and {de Almeida Martins}, J.P. and Hutter, J.},
+  title   = {Combined diffusion-relaxometry microstructure imaging: current status
+             and future prospects},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2021},
+  volume  = {86},
+  pages   = {2987--3011},
+  doi     = {10.1002/mrm.28963}
+}
+
+% ── OGSE AND TIME-DEPENDENT DIFFUSION ────────────────────────────────────────
+
+@article{Does2003,
+  author  = {Does, M.D. and Parsons, E.C. and Gore, J.C.},
+  title   = {Oscillating gradient measurements of water diffusion in normal and
+             globally ischemic rat brain},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2003},
+  volume  = {49},
+  pages   = {206--215},
+  doi     = {10.1002/mrm.10385}
+}
+
+@article{Ianus2013,
+  author  = {Ianus, A. and Siow, B. and Drobnjak, I. and Zhang, H. and Alexander, D.C.},
+  title   = {Gaussian phase distribution approximations for oscillating gradient spin echo
+             diffusion {MRI}},
+  journal = {Journal of Magnetic Resonance},
+  year    = {2013},
+  volume  = {227},
+  pages   = {25--34},
+  doi     = {10.1016/j.jmr.2012.11.021}
+}
+
+@article{Xu2014,
+  author  = {Xu, J. and Li, H. and Harkins, K.D. and Jiang, X. and Xie, J. and Kang, H.
+             and Does, M.D. and Gore, J.C.},
+  title   = {Mapping mean axon diameter and axonal volume fraction by {MRI} using
+             temporal diffusion spectroscopy},
+  journal = {NeuroImage},
+  year    = {2014},
+  volume  = {103},
+  pages   = {10--19},
+  doi     = {10.1016/j.neuroimage.2014.09.006}
+}
+
+@article{Jiang2017,
+  author  = {Jiang, X. and Li, H. and Xie, J. and McKinley, E.T. and Zhao, P.
+             and Gore, J.C. and Xu, J.},
+  title   = {In vivo imaging of cancer cell size and cellularity using temporal
+             diffusion spectroscopy},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2017},
+  volume  = {78},
+  pages   = {156--164},
+  doi     = {10.1002/mrm.26356}
+}
+
+@article{Siow2012,
+  author  = {Siow, B. and Drobnjak, I. and Chatterjee, A. and Lythgoe, M.F. and Alexander, D.C.},
+  title   = {Estimation of pore size in a microstructure phantom using the optimised
+             gradient waveform diffusion weighted {NMR} sequence},
+  journal = {Journal of Magnetic Resonance},
+  year    = {2012},
+  volume  = {214},
+  pages   = {51--60},
+  doi     = {10.1016/j.jmr.2011.10.004}
+}
+
+@article{Novikov2011,
+  author  = {Novikov, D.S. and Fieremans, E. and Jensen, J.H. and Helpern, J.A.},
+  title   = {Random walks with barriers},
+  journal = {Nature Physics},
+  year    = {2011},
+  volume  = {7},
+  pages   = {508--514},
+  doi     = {10.1038/nphys1936}
+}
+
+@article{Burcaw2015,
+  author  = {Burcaw, L.M. and Fieremans, E. and Novikov, D.S.},
+  title   = {Mesoscopic structure of neuronal tracts from time-dependent diffusion},
+  journal = {NeuroImage},
+  year    = {2015},
+  volume  = {114},
+  pages   = {18--37},
+  doi     = {10.1016/j.neuroimage.2015.03.061}
+}
+
+@article{Novikov2014,
+  author  = {Novikov, D.S. and Jensen, J.H. and Helpern, J.A. and Fieremans, E.},
+  title   = {Revealing mesoscopic structural universality with diffusion},
+  journal = {Proceedings of the National Academy of Sciences},
+  year    = {2014},
+  volume  = {111},
+  number  = {14},
+  pages   = {5088--5093},
+  doi     = {10.1073/pnas.1316944111}
+}
+
+@article{Xu2023,
+  author  = {Xu, J. and Jiang, X. and Devan, S.P. and Arlinghaus, L.R. and
+             McKinley, E.T. and Xie, J. and Zu, Z. and Wang, Q. and Chakravarthy,
+             A.B. and Gore, J.C.},
+  title   = {Diffusion time dependency of extracellular diffusion},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2023},
+  volume  = {89},
+  number  = {5},
+  pages   = {1944--1958},
+  doi     = {10.1002/mrm.29594}
+}
+
+@article{Assaf2008,
+  author  = {Assaf, Y. and Blumenfeld-Katzir, T. and Yovel, Y. and Basser, P.J.},
+  title   = {{AxCaliber}: a method for measuring axon diameter distribution from
+             diffusion {MRI}},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2008},
+  volume  = {59},
+  number  = {6},
+  pages   = {1347--1354},
+  doi     = {10.1002/mrm.21577}
+}
+
+@article{Fieremans2016,
+  author  = {Fieremans, E. and Burcaw, L.M. and Lee, H.-H. and Lemberskiy, G.
+             and Veraart, J. and Novikov, D.S.},
+  title   = {In vivo observation and biophysical interpretation of time-dependent
+             diffusion in human white matter},
+  journal = {NeuroImage},
+  year    = {2016},
+  volume  = {129},
+  pages   = {414--427},
+  doi     = {10.1016/j.neuroimage.2016.01.018}
+}
+
+@article{Lundell2019,
+  author  = {Lundell, H. and Nilsson, M. and Dyrby, T.B. and Parker, G.J.M.
+             and {Hubbard Cristinacce}, P.L. and Zhou, F.-L. and Topgaard, D. and Lasic, S.},
+  title   = {Multidimensional diffusion {MRI} with spectrally modulated gradients
+             reveals unprecedented microstructural detail},
+  journal = {Scientific Reports},
+  year    = {2019},
+  volume  = {9},
+  pages   = {9026},
+  doi     = {10.1038/s41598-019-45235-7}
+}
+
+% ── EXCHANGE AND SURFACE RELAXIVITY ──────────────────────────────────────────
+
+@article{Karger1985,
+  author  = {K{\"a}rger, J.},
+  title   = {{NMR} self-diffusion studies in heterogeneous systems},
+  journal = {Advances in Colloid and Interface Science},
+  year    = {1985},
+  volume  = {23},
+  pages   = {129--148},
+  doi     = {10.1016/0001-8686(85)80018-X}
+}
+
+@incollection{Karger1988,
+  author    = {K{\"a}rger, J. and Pfeifer, H. and Heink, W.},
+  title     = {Principles and Applications of Self-Diffusion Measurements
+               by Nuclear Magnetic Resonance},
+  booktitle = {Advances in Magnetic Resonance},
+  year      = {1988},
+  volume    = {12},
+  pages     = {1--89},
+  publisher = {Academic Press},
+  doi       = {10.1016/B978-0-12-025512-2.50004-X}
+}
+
+@article{Mitra1993,
+  author  = {Mitra, P.P. and Sen, P.N. and Schwartz, L.M.},
+  title   = {Short-time behavior of the diffusion coefficient as a
+             geometrical probe of porous media},
+  journal = {Physical Review B},
+  year    = {1993},
+  volume  = {47},
+  number  = {14},
+  pages   = {8565--8574},
+  doi     = {10.1103/PhysRevB.47.8565}
+}
+
+
+@article{Abdollahzadeh2019,
+  author  = {Abdollahzadeh, A. and Belevich, I. and Jokitalo, E. and
+             Sierra, A. and Tohka, J.},
+  title   = {Automated {3D} axonal morphometry of white matter},
+  journal = {Scientific Reports},
+  year    = {2019},
+  volume  = {9},
+  pages   = {6084},
+  doi     = {10.1038/s41598-019-42648-2}
+}
+
+% ── B-TENSOR ENCODING AND TENSOR-VALUED dMRI ─────────────────────────────────
+
+@article{Mitra1995,
+  author  = {Mitra, P.P.},
+  title   = {Multiple wave-vector extensions of the {NMR} pulsed-field-gradient
+             spin-echo diffusion measurement},
+  journal = {Physical Review B},
+  year    = {1995},
+  volume  = {51},
+  pages   = {15074--15078},
+  doi     = {10.1103/PhysRevB.51.15074}
+}
+
+@article{Eriksson2015,
+  author  = {Eriksson, S. and Lasi{\v{c}}, S. and Nilsson, M. and Westin, C.-F. and Topgaard, D.},
+  title   = {{NMR} diffusion-encoding with axial symmetry and variable anisotropy:
+             distinguishing between prolate and oblate microscopic diffusion tensors
+             with unknown orientation distribution},
+  journal = {Journal of Chemical Physics},
+  year    = {2015},
+  volume  = {142},
+  pages   = {104201},
+  doi     = {10.1063/1.4913502}
+}
+
+@article{Westin2016,
+  author  = {Westin, C.-F. and Knutsson, H. and Pasternak, O. and Szczepankiewicz, F.
+             and {\"O}zarslan, E. and van Westen, D. and Nilsson, M.},
+  title   = {{Q}-space trajectory imaging for multidimensional diffusion {MRI}
+             of the human brain},
+  journal = {NeuroImage},
+  year    = {2016},
+  volume  = {135},
+  pages   = {345--362},
+  doi     = {10.1016/j.neuroimage.2016.02.039}
+}
+
+@article{Topgaard2017,
+  author  = {Topgaard, D.},
+  title   = {Multidimensional diffusion {MRI}},
+  journal = {Journal of Magnetic Resonance},
+  year    = {2017},
+  volume  = {275},
+  pages   = {98--113},
+  doi     = {10.1016/j.jmr.2016.12.007}
+}
+
+@article{Reisert2017,
+  author  = {Reisert, M. and Kellner, E. and Dhital, B. and Hennig, J. and Kiselev, V.G.},
+  title   = {Disentangling micro from mesostructure by diffusion {MRI}: a {Bayesian} approach},
+  journal = {NeuroImage},
+  year    = {2017},
+  volume  = {147},
+  pages   = {964--975},
+  doi     = {10.1016/j.neuroimage.2016.09.058}
+}
+
+@article{Reisert2019,
+  author  = {Reisert, M. and Kiselev, V.G. and Dhital, B.},
+  title   = {A unique analytical solution of the white matter standard model using
+             linear and planar encodings},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2019},
+  volume  = {81},
+  pages   = {3819--3825},
+  doi     = {10.1002/mrm.27685}
+}
+
+@article{Szczepankiewicz2019a,
+  author  = {Szczepankiewicz, F. and Westin, C.-F. and Nilsson, M.},
+  title   = {{Maxwell}-compensated design of asymmetric gradient waveforms for
+             tensor-valued diffusion encoding},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2019},
+  volume  = {82},
+  pages   = {1424--1437},
+  doi     = {10.1002/mrm.27828}
+}
+
+@article{Szczepankiewicz2021,
+  author  = {Szczepankiewicz, F. and Westin, C.-F. and Nilsson, M.},
+  title   = {Gradient waveform design for tensor-valued encoding in diffusion {MRI}},
+  journal = {Journal of Neuroscience Methods},
+  year    = {2021},
+  volume  = {348},
+  pages   = {109007},
+  doi     = {10.1016/j.jneumeth.2020.109007}
+}
+
+@article{Sjolund2015,
+  author  = {Sj{\"o}lund, J. and Szczepankiewicz, F. and Nilsson, M. and Topgaard, D.
+             and Westin, C.-F. and Knutsson, H.},
+  title   = {Constrained optimization of gradient waveforms for generalized
+             diffusion encoding},
+  journal = {Journal of Magnetic Resonance},
+  year    = {2015},
+  volume  = {261},
+  pages   = {157--168},
+  doi     = {10.1016/j.jmr.2015.10.012}
+}
+
+@article{Chakwizira2023,
+  author  = {Chakwizira, A. and Zhu, A. and Foo, T. and Westin, C.-F.
+             and Szczepankiewicz, F. and Nilsson, M.},
+  title   = {Diffusion {MRI} with free gradient waveforms on a high-performance
+             gradient system: probing restriction and exchange in the human brain},
+  journal = {NeuroImage},
+  year    = {2023},
+  volume  = {283},
+  pages   = {120409},
+  doi     = {10.1016/j.neuroimage.2023.120409}
+}
+
+% ── MONTE CARLO SIMULATION AND VALIDATION ─────────────────────────────────────
+
+@article{Hall2009,
+  author  = {Hall, M.G. and Alexander, D.C.},
+  title   = {Convergence and parameter choice for {Monte-Carlo} simulations
+             of diffusion {MRI}},
+  journal = {IEEE Transactions on Medical Imaging},
+  year    = {2009},
+  volume  = {28},
+  pages   = {1354--1364},
+  doi     = {10.1109/TMI.2009.2015756}
+}
+
+@article{Fieremans2010,
+  author  = {Fieremans, E. and Novikov, D.S. and Jensen, J.H. and Helpern, J.A.},
+  title   = {Monte {Carlo} study of a two-compartment exchange model of diffusion},
+  journal = {NMR in Biomedicine},
+  year    = {2010},
+  volume  = {23},
+  pages   = {711--724},
+  doi     = {10.1002/nbm.1577}
+}
+
+@inproceedings{Ianus2016,
+  author    = {Ianus, A. and Alexander, D.C. and Drobnjak, I.},
+  title     = {Microstructure Imaging Sequence Simulation Toolbox},
+  booktitle = {Simulation and Synthesis in Medical Imaging (SASHIMI 2016)},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {9968},
+  year      = {2016},
+  publisher = {Springer},
+  doi       = {10.1007/978-3-319-46630-9_4}
+}
+
+@article{Kerkela2020,
+  author  = {Kerkel{\"a}, L. and Nery, F. and Hall, M.G. and Clark, C.A.},
+  title   = {Disimpy: a massively parallel {Monte Carlo} simulator for generating
+             diffusion-weighted {MRI} data in {Python}},
+  journal = {Journal of Open Source Software},
+  year    = {2020},
+  volume  = {5},
+  pages   = {2527},
+  doi     = {10.21105/joss.02527}
+}
+
+@article{Li2019,
+  author  = {Li, J.-R. and Nguyen, V.-D. and Tran, T.N. and Valdman, J.
+             and Trang, C.-B. and Nguyen, K.V. and Vu, D.T.S. and Tran, H.A.
+             and Tran, H.T.A. and Nguyen, T.M.P.},
+  title   = {{SpinDoctor}: a {MATLAB} toolbox for diffusion {MRI} simulation},
+  journal = {NeuroImage},
+  year    = {2019},
+  volume  = {202},
+  pages   = {116120},
+  doi     = {10.1016/j.neuroimage.2019.116120}
+}
+
+@article{Drobnjak2010,
+  author  = {Drobnjak, I. and Siow, B. and Alexander, D.C.},
+  title   = {Optimizing gradient waveforms for microstructure sensitivity in
+             diffusion-weighted {MR}},
+  journal = {Journal of Magnetic Resonance},
+  year    = {2010},
+  volume  = {206},
+  pages   = {41--51},
+  doi     = {10.1016/j.jmr.2010.05.017}
+}
+
+@article{Drobnjak2011a,
+  author  = {Drobnjak, I. and Zhang, H. and Hall, M.G. and Alexander, D.C.},
+  title   = {The matrix formalism for generalised gradients with time-varying
+             orientation in diffusion {NMR}},
+  journal = {Journal of Magnetic Resonance},
+  year    = {2011},
+  volume  = {210},
+  pages   = {151--157},
+  doi     = {10.1016/j.jmr.2011.02.022}
+}
+
+@article{Drobnjak2011b,
+  author  = {Drobnjak, I. and Alexander, D.C.},
+  title   = {Optimising time-varying gradient orientation for microstructure
+             sensitivity in diffusion-weighted {MR}},
+  journal = {Journal of Magnetic Resonance},
+  year    = {2011},
+  volume  = {212},
+  pages   = {344--354},
+  doi     = {10.1016/j.jmr.2011.07.017}
+}
+
+@article{Ozarslan2013,
+  author  = {{\"O}zarslan, E. and Koay, C.G. and Shepherd, T.M. and Komlosh, M.E.
+             and {\.I}rfano{\u{g}}lu, M.O. and Pierpaoli, C. and Basser, P.J.},
+  title   = {Mean apparent propagator ({MAP}) {MRI}: a novel diffusion imaging
+             method for mapping tissue microstructure},
+  journal = {NeuroImage},
+  year    = {2013},
+  volume  = {78},
+  pages   = {16--32},
+  doi     = {10.1016/j.neuroimage.2013.04.016}
+}
+
+% ── ACQUISITION OPTIMIZATION AND FISHER INFORMATION ──────────────────────────
+
+@article{KieferWolfowitz1960,
+  author  = {Kiefer, J. and Wolfowitz, J.},
+  title   = {The equivalence of two extremum problems},
+  journal = {Canadian Journal of Mathematics},
+  year    = {1960},
+  volume  = {12},
+  pages   = {363--366},
+  doi     = {10.4153/CJM-1960-030-4}
+}
+
+@book{Pukelsheim1993,
+  author    = {Pukelsheim, F.},
+  title     = {Optimal Design of Experiments},
+  publisher = {Wiley},
+  address   = {New York},
+  year      = {1993}
+}
+
+@misc{jaxopt2021,
+  author       = {Blondel, M. and Berthet, Q. and Cuturi, M. and Frostig, R.
+                  and Heek, J. and Leblond, C. and Owens, A. and Bertrand, O.},
+  title        = {{JAXopt}: Hardware-accelerated implicit differentiation in {JAX}},
+  year         = {2021},
+  howpublished = {arXiv:2105.15183},
+  doi          = {10.48550/arXiv.2105.15183}
+}
+
+@article{Alexander2008,
+  author  = {Alexander, D.C.},
+  title   = {A general framework for experiment design in diffusion {MRI} and
+             its application in measuring direct tissue-microstructure features},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2008},
+  volume  = {60},
+  pages   = {439--448},
+  doi     = {10.1002/mrm.21646}
+}
+
+@article{Jones1999,
+  author  = {Jones, D.K. and Horsfield, M.A. and Simmons, A.},
+  title   = {Optimal strategies for measuring diffusion in anisotropic systems
+             by magnetic resonance imaging},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {1999},
+  volume  = {42},
+  pages   = {515--525},
+  doi     = {10.1002/(SICI)1522-2594(199909)42:3<515::AID-MRM14>3.0.CO;2-Q}
+}
+
+@article{Poot2010,
+  author  = {Poot, D.H.J. and den Dekker, A.J. and Achten, E. and Verhoye, M. and Sijbers, J.},
+  title   = {Optimal experimental design for diffusion kurtosis imaging},
+  journal = {IEEE Transactions on Medical Imaging},
+  year    = {2010},
+  volume  = {29},
+  pages   = {819--829},
+  doi     = {10.1109/TMI.2009.2037915}
+}
+
+% ── SPHERICAL HARMONICS / CSD ────────────────────────────────────────────────
+
+@article{Tournier2004,
+  author  = {Tournier, J.-D. and Calamante, F. and Gadian, D.G. and Connelly, A.},
+  title   = {Direct estimation of the fiber orientation density function from
+             diffusion-weighted {MRI} data using spherical deconvolution},
+  journal = {NeuroImage},
+  year    = {2004},
+  volume  = {23},
+  pages   = {1176--1185},
+  doi     = {10.1016/j.neuroimage.2004.07.038}
+}
+
+@article{tournier2007,
+  author  = {Tournier, J.-D. and Calamante, F. and Connelly, A.},
+  title   = {Robust determination of the fibre orientation distribution in
+             diffusion {MRI}: non-negativity constrained super-resolved
+             spherical deconvolution},
+  journal = {NeuroImage},
+  year    = {2007},
+  volume  = {35},
+  number  = {4},
+  pages   = {1459--1472},
+  doi     = {10.1016/j.neuroimage.2007.02.016}
+}
+
+@article{tournier2013,
+  author  = {Tournier, J.-D. and Calamante, F. and Connelly, A.},
+  title   = {Determination of the appropriate b value and number of gradient
+             directions for high-angular-resolution diffusion-weighted imaging},
+  journal = {NMR in Biomedicine},
+  year    = {2013},
+  volume  = {26},
+  number  = {12},
+  pages   = {1775--1786},
+  doi     = {10.1002/nbm.3017}
+}
+
+% ── MICROSTRUCTURE REVIEWS AND LANDSCAPE ─────────────────────────────────────
+
+@article{Jelescu2017,
+  author  = {Jelescu, I.O. and Budde, M.D.},
+  title   = {Design and validation of diffusion {MRI} models of white matter},
+  journal = {Frontiers in Physics},
+  year    = {2017},
+  volume  = {5},
+  pages   = {61},
+  doi     = {10.3389/fphy.2017.00061}
+}
+
+@article{Novikov2018,
+  author  = {Novikov, D.S. and Veraart, J. and Jelescu, I.O. and Fieremans, E.},
+  title   = {Rotationally-invariant mapping of scalar and orientational metrics
+             of neuronal microstructure with diffusion {MRI}},
+  journal = {NeuroImage},
+  year    = {2018},
+  volume  = {174},
+  pages   = {518--538},
+  doi     = {10.1016/j.neuroimage.2018.03.006}
+}
+
+@article{Kiselev2017,
+  author  = {Kiselev, V.G.},
+  title   = {Fundamentals of diffusion {MRI} physics},
+  journal = {NMR in Biomedicine},
+  year    = {2017},
+  volume  = {30},
+  pages   = {e3602},
+  doi     = {10.1002/nbm.3602}
+}
+
+@article{Ferizi2017,
+  author  = {Ferizi, U. and Scherrer, B. and Schneider, T. and others},
+  title   = {Diffusion {MRI} microstructure models with in vivo human brain
+             {Connectome} data: results from a multi-group comparison},
+  journal = {NMR in Biomedicine},
+  year    = {2017},
+  volume  = {30},
+  pages   = {e3734},
+  doi     = {10.1002/nbm.3734}
+}
+
+% ── dMRI SOFTWARE TOOLS ───────────────────────────────────────────────────────
+
+% ── RELAXOMETRY AND MYELIN WATER TOOLBOXES ────────────────────────────────────
+% DOIs for CanalesTool2021 and Tabelow2019 added without verification —
+% please confirm before submission.
+
+@article{CanalesTool2021,
+  author  = {Canales-Rodr{\'i}guez, E.J. and Pizzolato, M. and Piredda, G.F.
+             and Hilbert, T. and Kunz, N. and Pot, C. and Yu, T. and
+             Salvador, R. and Pomarol-Clotet, E. and Kober, T. and
+             Thiran, J.P. and Daducci, A.},
+  title   = {Non-parametric hierarchical {Bayesian} modelling and estimation
+             of {T2} distribution in multi-exponential {T2}-relaxometry},
+  journal = {Medical Image Analysis},
+  year    = {2021},
+  volume  = {72},
+  pages   = {102141},
+  doi     = {10.1016/j.media.2021.102141}
+}
+
+@article{Tabelow2019,
+  author  = {Tabelow, K. and Balteau, E. and Ashburner, J. and Callaghan, M.F.
+             and Draganski, B. and Helms, G. and Kherif, F. and Leutritz, T.
+             and Lutti, A. and Phillips, C. and Reimer, E. and Ruthotto, L.
+             and Seif, M. and Weiskopf, N. and Ziegler, G. and Mohammadi, S.},
+  title   = {{hMRI} -- {A} toolbox for quantitative {MRI} in neuroscience
+             and clinical research},
+  journal = {NeuroImage},
+  year    = {2019},
+  volume  = {194},
+  pages   = {191--210},
+  doi     = {10.1016/j.neuroimage.2019.01.029}
+}
+
+@article{Fick2019,
+  author  = {Fick, R.H.J. and Wassermann, D. and Deriche, R.},
+  title   = {The Dmipy Toolbox: diffusion {MRI} multi-compartment modeling and
+             microstructure recovery made easy},
+  journal = {Frontiers in Neuroinformatics},
+  year    = {2019},
+  volume  = {13},
+  pages   = {64},
+  doi     = {10.3389/fninf.2019.00064}
+}
+
+@article{Daducci2015,
+  author  = {Daducci, A. and Canales-Rodr{\'i}guez, E.J. and Zhang, H. and Dyrby, T.B.
+             and Alexander, D.C. and Thiran, J.-P.},
+  title   = {Accelerated {Microstructure Imaging via Convex Optimization} ({AMICO})
+             from diffusion {MRI} data},
+  journal = {NeuroImage},
+  year    = {2015},
+  volume  = {105},
+  pages   = {32--44},
+  doi     = {10.1016/j.neuroimage.2014.10.026}
+}
+
+@article{Harms2017,
+  author  = {Harms, R.L. and Fritz, F.J. and Tobisch, A. and Goebel, R. and Roebroeck, A.},
+  title   = {Robust and fast nonlinear optimization of diffusion {MRI} microstructure models},
+  journal = {NeuroImage},
+  year    = {2017},
+  volume  = {155},
+  pages   = {82--96},
+  doi     = {10.1016/j.neuroimage.2017.04.064}
+}
+
+% ── CLINICAL APPLICATIONS ────────────────────────────────────────────────────
+
+@article{Panagiotaki2014,
+  author  = {Panagiotaki, E. and Walker-Samuel, S. and Siow, B. and Johnson, S.P.
+             and Rajkumar, V. and Pedley, R.B. and Lythgoe, M.F. and Alexander, D.C.},
+  title   = {Noninvasive quantification of solid tumor microstructure using
+             {VERDICT} {MRI}},
+  journal = {Cancer Research},
+  year    = {2014},
+  volume  = {74},
+  pages   = {1902--1912},
+  doi     = {10.1158/0008-5472.CAN-13-2511}
+}
+
+@article{VanEssen2013,
+  author  = {Van Essen, D.C. and Smith, S.M. and Barch, D.M. and Behrens, T.E.J.
+             and Yacoub, E. and Ugurbil, K. and {WU-Minn HCP Consortium}},
+  title   = {The {WU-Minn} {Human Connectome Project}: an overview},
+  journal = {NeuroImage},
+  year    = {2013},
+  volume  = {80},
+  pages   = {62--79},
+  doi     = {10.1016/j.neuroimage.2013.05.041}
+}
+
+% ── SOFTWARE PACKAGES ─────────────────────────────────────────────────────────
+
+@misc{Gong2024,
+  author       = {Gong, T. and Yendiki, A.},
+  title        = {{Microstructure.jl}: A {Julia} package for microstructure
+                  imaging with diffusion {MRI}},
+  year         = {2024},
+  howpublished = {arXiv:2407.06379},
+  doi          = {10.48550/arXiv.2407.06379}
+}
+
+@article{Coelho2022,
+  author  = {Coelho, S. and Fieremans, E. and Novikov, D.S.},
+  title   = {Standard model of diffusion in white matter with fiber dispersion
+             and b-tensor encoding},
+  journal = {NeuroImage},
+  year    = {2022},
+  volume  = {249},
+  pages   = {119290},
+  doi     = {10.1016/j.neuroimage.2022.119290}
+}
+
+@article{Cottaar2025,
+  author  = {Cottaar, M. and Zheng, Z. and Miller, K.L. and Tendler, B.C. and Jbabdi, S.},
+  title   = {Multi-modal {Monte Carlo} {MRI} simulator of tissue microstructure},
+  journal = {Imaging Neuroscience},
+  year    = {2026},
+  doi     = {10.1162/IMAG.a.1177}
+}
+
+@article{Grebenkov2007,
+  author  = {Grebenkov, D.S.},
+  title   = {{NMR} survey of reflected {Brownian} motion},
+  journal = {Reviews of Modern Physics},
+  volume  = {79},
+  pages   = {1077--1137},
+  year    = {2007},
+  doi     = {10.1103/RevModPhys.79.1077}
+}
+
+@article{Blum2023,
+  author  = {Blum, J.A. and Bhanu, M. and Chow, M. and others},
+  title   = {{simDRIFT}: A {Monte Carlo} simulator for diffusion {MRI}},
+  journal = {Journal of Open Source Software},
+  year    = {2023},
+  volume  = {8},
+  pages   = {5621},
+  doi     = {10.21105/joss.05621}
+}
+
+@article{Loecher2022,
+  author  = {Loecher, M. and Ennis, D.B.},
+  title   = {{GrOpt}: A {Python} package for numerical gradient waveform
+             optimization},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2022},
+  volume  = {87},
+  pages   = {2170--2179},
+  doi     = {10.1002/mrm.29118}
+}
+
+@article{Tournier2019,
+  author  = {Tournier, J.-D. and Smith, R. and Raffelt, D. and Tabbara, R.
+             and Dhollander, T. and Pietsch, M. and Christiaens, D.
+             and Jeurissen, B. and Yeh, C.-H. and Connelly, A.},
+  title   = {{MRtrix3}: A fast, flexible and open software framework for
+             medical image processing and visualisation},
+  journal = {NeuroImage},
+  year    = {2019},
+  volume  = {202},
+  pages   = {116137},
+  doi     = {10.1016/j.neuroimage.2019.116137}
+}
+
+@article{Garyfallidis2014,
+  author  = {Garyfallidis, E. and Brett, M. and Amirbekian, B. and Rokem, A.
+             and van der Walt, S. and Descoteaux, M. and Nimmo-Smith, I.
+             and {Dipy Contributors}},
+  title   = {Dipy, a library for the analysis of diffusion {MRI} data},
+  journal = {Frontiers in Neuroinformatics},
+  year    = {2014},
+  volume  = {8},
+  pages   = {8},
+  doi     = {10.3389/fninf.2014.00008}
+}
+
+% ── MULTI-SITE HARMONIZATION ──────────────────────────────────────────────────
+
+@article{Mirzaalian2016,
+  author  = {Mirzaalian, H. and Ning, L. and Savadjiev, P. and others},
+  title   = {Inter-site and inter-scanner diffusion {MRI} data harmonization},
+  journal = {NeuroImage},
+  year    = {2016},
+  volume  = {135},
+  pages   = {311--323},
+  doi     = {10.1016/j.neuroimage.2016.04.041}
+}
+
+@article{Hahn1950,
+  author  = {Hahn, Erwin L.},
+  title   = {Spin Echoes},
+  journal = {Physical Review},
+  year    = {1950},
+  volume  = {80},
+  number  = {4},
+  pages   = {580--594},
+  doi     = {10.1103/PhysRev.80.580}
+}
+
+@article{Stejskal1965,
+  author  = {Stejskal, Edward O. and Tanner, John E.},
+  title   = {Spin Diffusion Measurements: Spin Echoes in the Presence of a Time-Dependent Field Gradient},
+  journal = {The Journal of Chemical Physics},
+  year    = {1965},
+  volume  = {42},
+  number  = {1},
+  pages   = {288--292},
+  doi     = {10.1063/1.1695690}
+}
+
+@article{Yablonskiy1994,
+  author  = {Yablonskiy, Dmitriy A. and Haacke, E. Mark},
+  title   = {Theory of {NMR} signal behavior in magnetically inhomogeneous tissues: the static dephasing regime},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {1994},
+  volume  = {32},
+  number  = {6},
+  pages   = {749--763},
+  doi     = {10.1002/mrm.1910320610}
+}
+
+@article{He2009,
+  author  = {He, Xiang and Yablonskiy, Dmitriy A.},
+  title   = {Biophysical mechanisms of phase contrast in gradient echo {MRI}},
+  journal = {Proceedings of the National Academy of Sciences},
+  year    = {2009},
+  volume  = {106},
+  number  = {32},
+  pages   = {13558--13563},
+  doi     = {10.1073/pnas.0904899106}
+}
+
+@article{Wharton2012,
+  author  = {Wharton, Sam and Bowtell, Richard},
+  title   = {Fiber orientation-dependent white matter contrast in gradient echo {MRI}},
+  journal = {Proceedings of the National Academy of Sciences},
+  year    = {2012},
+  volume  = {109},
+  number  = {45},
+  pages   = {18559--18564},
+  doi     = {10.1073/pnas.1211075109}
+}
+
+@article{Liu2010,
+  author  = {Liu, Chunlei},
+  title   = {Susceptibility tensor imaging},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2010},
+  volume  = {63},
+  number  = {6},
+  pages   = {1471--1477},
+  doi     = {10.1002/mrm.22482}
+}
+
+@article{Sati2012,
+  author  = {Sati, Pascal and Silva, Afonso C. and van Gelderen, Peter and
+             Gaitan, M. Illan and Wohler, John E. and Jacobson, Steven and
+             Duyn, Jeff H. and Reich, Daniel S.},
+  title   = {In vivo quantification of {T2$^*$} anisotropy in white matter
+             fibers in marmoset monkeys},
+  journal = {NeuroImage},
+  year    = {2012},
+  volume  = {59},
+  number  = {2},
+  pages   = {979--985},
+  doi     = {10.1016/j.neuroimage.2011.08.064}
+}
+
+@article{Jensen2000,
+  author  = {Jensen, Jens H. and Chandra, Rajan},
+  title   = {{NMR} relaxation in tissues with weak magnetic inhomogeneities},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2000},
+  volume  = {44},
+  number  = {1},
+  pages   = {144--156},
+  doi     = {10.1002/1522-2594(200007)44:1<144::AID-MRM21>3.0.CO;2-O}
+}
+
+@article{Sukstanskii2003,
+  author  = {Sukstanskii, Alexander L. and Yablonskiy, Dmitriy A.},
+  title   = {Gaussian approximation in the theory of {MR} diffusion
+             measurements in biological tissues},
+  journal = {Journal of Magnetic Resonance},
+  year    = {2003},
+  volume  = {163},
+  number  = {2},
+  pages   = {236--247},
+  doi     = {10.1016/S1090-7807(03)00149-0}
+}
+
+@article{Beaulieu2002,
+  author  = {Beaulieu, C.},
+  title   = {The basis of anisotropic water diffusion in the nervous system
+             --- a technical review},
+  journal = {NMR in Biomedicine},
+  year    = {2002},
+  volume  = {15},
+  pages   = {435--455},
+  doi     = {10.1002/nbm.782}
+}
+
+@article{Veraart2020,
+  author  = {Veraart, J. and Nunes, D. and Rudrapatna, U. and Fieremans, E.
+             and Jones, D.K. and Novikov, D.S. and Shemesh, N.},
+  title   = {Noninvasive quantification of axon radii using diffusion {MRI}},
+  journal = {eLife},
+  year    = {2020},
+  volume  = {9},
+  pages   = {e49855},
+  doi     = {10.7554/eLife.49855}
+}
+
+@article{Golkov2016,
+  author  = {Golkov, V. and Dosovitskiy, A. and Sperl, J.I. and Menzel, M.I.
+             and Czisch, M. and S{\"a}mann, P. and Brox, T. and Cremers, D.},
+  title   = {q-Space Deep Learning: Twelve-Fold Shorter and Model-Free
+             Diffusion {MRI} Scans},
+  journal = {IEEE Transactions on Medical Imaging},
+  year    = {2016},
+  volume  = {35},
+  number  = {5},
+  pages   = {1344--1351},
+  doi     = {10.1109/TMI.2016.2551324}
+}
+
+@inproceedings{Dhollander2016,
+  author    = {Dhollander, T. and Raffelt, D. and Connelly, A.},
+  title     = {Unsupervised 3-tissue response function estimation from
+               single-shell or multi-shell diffusion {MR} data without a
+               co-registered {T1} image},
+  booktitle = {ISMRM Workshop on Breaking the Barriers of Diffusion MRI},
+  year      = {2016},
+  pages     = {5}
+}
+
+@article{VanGelderen1994,
+  author  = {Van Gelderen, P. and DesPres, D. and Van Zijl, P.C.M. and Moonen, C.T.W.},
+  title   = {Evaluation of restricted diffusion in cylinders.
+             {Phosphocreatine} in rabbit leg muscle},
+  journal = {Journal of Magnetic Resonance, Series B},
+  year    = {1994},
+  volume  = {103},
+  number  = {3},
+  pages   = {255--260},
+  doi     = {10.1006/jmrb.1994.1038}
+}
+
+@article{Tariq2016,
+  author  = {Tariq, M. and Schneider, T. and Alexander, D.C. and
+             Wheeler-Kingshott, C.A.G. and Zhang, H.},
+  title   = {{Bingham-NODDI}: Mapping anisotropic orientation dispersion
+             of neurites using diffusion {MRI}},
+  journal = {NeuroImage},
+  year    = {2016},
+  volume  = {133},
+  pages   = {207--223},
+  doi     = {10.1016/j.neuroimage.2016.01.046}
+}
+
+@article{Pierpaoli1996,
+  author  = {Pierpaoli, C. and Jezzard, P. and Basser, P.J. and Barnett, A.
+             and Di Chiro, G.},
+  title   = {Diffusion tensor {MR} imaging of the human brain},
+  journal = {Radiology},
+  year    = {1996},
+  volume  = {201},
+  number  = {3},
+  pages   = {637--648},
+  doi     = {10.1148/radiology.201.3.8939209}
+}
+
+@article{Chomiak2009,
+  author  = {Chomiak, T. and Hu, B.},
+  title   = {What is the optimal value of the g-ratio for myelinated fibers
+             in the rat {CNS}? {A} theoretical approach},
+  journal = {PLoS ONE},
+  year    = {2009},
+  volume  = {4},
+  number  = {11},
+  pages   = {e7754},
+  doi     = {10.1371/journal.pone.0007754}
+}
+
+@article{Gil2016,
+  author  = {Gil, Roberto and Khabipova, Dilnoza and Zwiers, Marcel and Hilbert, Tom
+             and Kober, Tobias and Marques, Jos{\'e} P.},
+  title   = {An in vivo study of the orientation-dependent and independent components
+             of transverse relaxation rates in white matter},
+  journal = {NMR in Biomedicine},
+  volume  = {29},
+  number  = {12},
+  pages   = {1780--1790},
+  year    = {2016},
+  doi     = {10.1002/nbm.3616}
+}
+
+@article{Knight2017,
+  author  = {Knight, Michael J. and Wood, Brandon and Zelaya, Fernando
+             and Dillon, Stephanie and Bhattacharya, Saroojini},
+  title   = {Quantification of macroscopic and microscopic tissue parameters with
+             multiple-echo gradient- and spin-echo {MRI}},
+  journal = {Biophysical Journal},
+  volume  = {112},
+  number  = {7},
+  pages   = {1561--1575},
+  year    = {2017},
+  doi     = {10.1016/j.bpj.2017.02.026}
+}
+
+@article{Tax2021,
+  author  = {Tax, Chantal M. W. and Kleban, Elena and Chamberland, Maxime
+             and Barakovi{\'c}, Muhamed and Rudrapatna, Umesh and Jones, Derek K.},
+  title   = {Measuring compartmental {T2}-orientational dependence in human
+             brain white matter using a tiltable {RF} coil and diffusion-{T2}
+             correlation {MRI}},
+  journal = {NeuroImage},
+  volume  = {236},
+  pages   = {117967},
+  year    = {2021},
+  doi     = {10.1016/j.neuroimage.2021.117967}
+}
+
+
+@article{Aggarwal2020,
+  author  = {Aggarwal, Manisha and Smith, Matthew D. and Calabresi, Peter A.},
+  title   = {Diffusion-{T2} characterization of white matter injury after mild
+             traumatic brain injury at ultrahigh field},
+  journal = {Magnetic Resonance in Medicine},
+  volume  = {84},
+  number  = {6},
+  pages   = {3287--3300},
+  year    = {2020},
+  doi     = {10.1002/mrm.28346}
+}
+
+@article{Kleban2023,
+  author  = {Kleban, Elena and Jones, Derek K. and Tax, Chantal M. W.},
+  title   = {The impact of head orientation with respect to {B0} on diffusion
+             tensor {MRI} measures},
+  journal = {Imaging Neuroscience},
+  volume  = {1},
+  pages   = {1--18},
+  year    = {2023},
+  doi     = {10.1162/imag_a_00012}
+}
+
+@article{Winther2024,
+  author  = {Winther, Sidsel Borup and Lundell, Henrik and Rafael-Pati{\~{n}}o, Jonathan
+             and Andersson, Mariam and Thiran, Jean-Philippe and Dyrby, Tim B.},
+  title   = {Susceptibility-induced internal gradients reveal axon morphology
+             in ex vivo white matter},
+  journal = {Scientific Reports},
+  volume  = {14},
+  pages   = {29636},
+  year    = {2024},
+  doi     = {10.1038/s41598-024-79043-5}
+}
+
+@article{Alvarez2017,
+  author  = {{\'A}lvarez, Gonzalo A. and Shemesh, Noam and Frydman, Lucio},
+  title   = {Internal gradient distributions: A susceptibility-derived tensor
+             delivering morphologies by magnetic resonance},
+  journal = {Scientific Reports},
+  volume  = {7},
+  pages   = {3311},
+  year    = {2017},
+  doi     = {10.1038/s41598-017-03277-9}
+}
+
+@article{Zhong1991,
+  author  = {Zhong, Jianhui and Kennan, Richard P. and Gore, John C.},
+  title   = {Effects of susceptibility variations on {NMR} measurements of diffusion},
+  journal = {Journal of Magnetic Resonance},
+  volume  = {95},
+  number  = {2},
+  pages   = {267--280},
+  year    = {1991},
+  doi     = {10.1016/0022-2364(91)90218-J}
+}
+
+@article{Raffelt2012,
+  author  = {Raffelt, David and Tournier, Jacques-Donald and Rose, Stephen
+             and Ridgway, Gerard R. and Henderson, Robert and Dwyer, David
+             and Salvado, Olivier and Connelly, Alan},
+  title   = {Apparent Fibre Density: A novel measure for the analysis of
+             diffusion-weighted magnetic resonance images},
+  journal = {NeuroImage},
+  volume  = {59},
+  number  = {4},
+  pages   = {3976--3994},
+  year    = {2012},
+  doi     = {10.1016/j.neuroimage.2011.10.045}
+}
+
+@article{Raffelt2017,
+  author  = {Raffelt, David A. and Smith, Robert E. and Ridgway, Gerard R.
+             and Tournier, Jacques-Donald and Vaughan, David N. and Rose,
+             Stephen and Henderson, Robert and Connelly, Alan},
+  title   = {Connectivity-based fixel enhancement: Whole-brain statistical
+             analysis of diffusion {MRI} measures in the presence of crossing
+             fibres},
+  journal = {NeuroImage},
+  volume  = {117},
+  pages   = {40--55},
+  year    = {2015},
+  doi     = {10.1016/j.neuroimage.2015.05.039}
+}
+
+@article{Schneider2017,
+  author  = {Schneider, Torben and Brownlee, Wallace and Zhang, Hui and
+             Ciccarelli, Olga and Miller, David H. and Wheeler-Kingshott,
+             Claudia A. M. Gandini},
+  title   = {Sensitivity of multi-shell {NODDI} to multiple sclerosis white
+             matter changes: a pilot study},
+  journal = {Functional Neurology},
+  volume  = {32},
+  number  = {2},
+  pages   = {97--101},
+  year    = {2017},
+  doi     = {10.11138/FNeur/2017.32.2.097}
+}
+
+@article{Jelescu2016,
+  author  = {Jelescu, Ileana O. and Zurek, Matthew and Winters, Kristin V.
+             and Veraart, Jelle and Rajaratnam, Arvind and Kim, Nancy S.
+             and Babb, James S. and Shepherd, Timothy M. and Novikov, Dmitry S.
+             and Kim, Sungheon Gene and Fieremans, Els},
+  title   = {In vivo quantification of demyelination and recovery using
+             compartment-specific diffusion {MRI} metrics validated by electron
+             microscopy},
+  journal = {NeuroImage},
+  volume  = {132},
+  pages   = {104--114},
+  year    = {2016},
+  doi     = {10.1016/j.neuroimage.2016.02.004}
+}
+
+@article{Sandgaard2025,
+  author  = {Sandgaard, Anders Dyhr and Gyori, Noemi G. and Shemesh, Noam
+             and Jespersen, Sune N.},
+  title   = {Orientation dependence of the {MRI} signal from white matter:
+             separating myelin and diffusion contributions},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2025},
+  note    = {Epub ahead of print},
+  doi     = {10.1002/mrm.30394}
+}
+
+@article{Weigel2015,
+  author  = {Weigel, Matthias},
+  title   = {Extended phase graphs: dephasing, {RF} pulses, and echoes --- pure
+             and simple},
+  journal = {Journal of Magnetic Resonance Imaging},
+  volume  = {41},
+  number  = {2},
+  pages   = {266--295},
+  year    = {2015},
+  doi     = {10.1002/jmri.24619}
+}
+
+@article{Hennig1988,
+  author  = {Hennig, J.},
+  title   = {Multiecho imaging sequences with low refocusing flip angles},
+  journal = {Journal of Magnetic Resonance},
+  volume  = {78},
+  number  = {3},
+  pages   = {397--407},
+  year    = {1988},
+  doi     = {10.1016/0022-2364(88)90128-X}
+}
+
+@article{Malik2018,
+  author  = {Malik, Shaihan J. and Teixeira, Rui Pedro A. G. and Hajnal, Joseph V.},
+  title   = {Extended phase graph formalism for systems with magnetization transfer
+             and exchange},
+  journal = {Magnetic Resonance in Medicine},
+  volume  = {80},
+  number  = {2},
+  pages   = {767--779},
+  year    = {2018},
+  doi     = {10.1002/mrm.27040}
+}
+
+@misc{Anthropic2024,
+  author       = {{Anthropic}},
+  title        = {Claude: A Family of Large Language Models},
+  year         = {2024},
+  howpublished = {Technical Report, Anthropic},
+  url          = {https://www.anthropic.com/research}
+}
+
+@article{Bloch1946,
+  author  = {Bloch, Felix},
+  title   = {Nuclear Induction},
+  journal = {Physical Review},
+  volume  = {70},
+  pages   = {460--474},
+  year    = {1946},
+  doi     = {10.1103/PhysRev.70.460}
+}
+
+@article{Ozarslan2008,
+  author  = {{\"O}zarslan, Evren and Shepherd, Timothy M and Vemuri, Baba C and Blackband, Stephen J and Mareci, Thomas H},
+  title   = {Resolution of complex tissue microarchitecture using the diffusion orientation transform ({DOT})},
+  journal = {NeuroImage},
+  volume  = {31},
+  number  = {3},
+  pages   = {1086--1103},
+  year    = {2006},
+  doi     = {10.1016/j.neuroimage.2006.01.024}
+}
+
+@article{Merlet2013,
+  author  = {Merlet, Sylvain L and Deriche, Rachid},
+  title   = {Continuous diffusion signal, {EAP} and {ODF} estimation via compressive sensing in diffusion {MRI}},
+  journal = {Medical Image Analysis},
+  volume  = {17},
+  number  = {5},
+  pages   = {556--572},
+  year    = {2013},
+  doi     = {10.1016/j.media.2013.02.010}
+}
+
+@article{Wasserthal2018,
+  author  = {Wasserthal, Jakob and Neher, Peter and Maier-Hein, Klaus H.},
+  title   = {{TractSeg} --- Fast and accurate white matter tract segmentation},
+  journal = {NeuroImage},
+  volume  = {183},
+  pages   = {239--253},
+  year    = {2018},
+  doi     = {10.1016/j.neuroimage.2018.07.070}
+}
+
+@article{Xu2018,
+  author  = {Xu, Tianyou and Foxley, Sean and Kleinnijenhuis, Michiel and
+             Chen, Way Cherng and Miller, Karla L.},
+  title   = {The effect of realistic geometries on the susceptibility-weighted
+             {MR} signal in white matter},
+  journal = {Magnetic Resonance in Medicine},
+  volume  = {79},
+  number  = {1},
+  pages   = {489--500},
+  year    = {2018},
+  doi     = {10.1002/mrm.26689},
+}
+
+@article{Birkl2021,
+  author  = {Birkl, Christoph and Doucette, Jonathan and Fan, Mike and
+             Hernández-Torres, Enedino and Rauscher, Alexander},
+  title   = {Myelin water imaging depends on white matter fiber orientation in
+             the human brain},
+  journal = {Magnetic Resonance in Medicine},
+  volume  = {85},
+  number  = {4},
+  pages   = {2221--2231},
+  year    = {2021},
+  doi     = {10.1002/mrm.28543},
+}
+
+@article{Does2018,
+  author  = {Does, Mark D.},
+  title   = {Inferring brain tissue composition and microstructure via {MR} relaxometry},
+  journal = {NeuroImage},
+  year    = {2018},
+  volume  = {182},
+  pages   = {136--148},
+  doi     = {10.1016/j.neuroimage.2017.12.087}
+}
+
+@article{Benjamini2016,
+  author  = {Benjamini, Dan and Basser, Peter J.},
+  title   = {Use of marginal distributions constrained optimization ({MADCO}) for accelerated {2D} {MRI} relaxometry and diffusometry},
+  journal = {Journal of Magnetic Resonance},
+  year    = {2016},
+  volume  = {271},
+  pages   = {40--45},
+  doi     = {10.1016/j.jmr.2016.08.004}
+}
+
+@article{Benjamini2017,
+  author  = {Benjamini, Dan and Basser, Peter J.},
+  title   = {Magnetic resonance microdynamic imaging reveals distinct tissue microenvironments},
+  journal = {NeuroImage},
+  year    = {2017},
+  volume  = {163},
+  pages   = {183--196},
+  doi     = {10.1016/j.neuroimage.2017.09.033}
+}
+
+@incollection{Pizzolato2020,
+  author    = {Pizzolato, Marco and Palombo, Marco and Bonet-Carne, Elisenda and Tax, Chantal M. W. and Grussu, Francesco and Ianus, Andrada and others},
+  title     = {Acquiring and Predicting Multidimensional Diffusion ({MUDI}) Data: An Open Challenge},
+  booktitle = {Computational Diffusion MRI},
+  series    = {Mathematics and Visualization},
+  publisher = {Springer},
+  year      = {2020},
+  pages     = {195--208},
+  doi       = {10.1007/978-3-030-52893-5_17}
+}
+
+@article{Lasic2011,
+  author  = {Lasi{\v{c}}, Samo and Nilsson, Markus and L{\"a}tt, Jimmy and St{\aa}hlberg, Freddy and Topgaard, Daniel},
+  title   = {Apparent exchange rate mapping with diffusion {MRI}},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2011},
+  volume  = {66},
+  number  = {2},
+  pages   = {356--365},
+  doi     = {10.1002/mrm.22782}
+}
+
+@article{Kiselev2003,
+  author  = {Kiselev, Valerij G.},
+  title   = {Calculation of diffusion effect for arbitrary pulse sequences},
+  journal = {Journal of Magnetic Resonance},
+  year    = {2003},
+  volume  = {164},
+  number  = {2},
+  pages   = {205--211},
+  doi     = {10.1016/S1090-7807(03)00241-6}
+}
+
+@article{Weigel2010,
+  author  = {Weigel, Matthias and Schwenk, S{\"o}ren and Kiselev, Valerij G. and Scheffler, Klaus and Hennig, J{\"u}rgen},
+  title   = {Extended phase graphs with anisotropic diffusion},
+  journal = {Journal of Magnetic Resonance},
+  year    = {2010},
+  volume  = {205},
+  number  = {2},
+  pages   = {276--285},
+  doi     = {10.1016/j.jmr.2010.05.011}
+}
+
+@article{Weigel2012,
+  author  = {Weigel, Matthias and Hennig, J{\"u}rgen},
+  title   = {Diffusion sensitivity of turbo spin echo sequences},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2012},
+  volume  = {67},
+  number  = {6},
+  pages   = {1528--1537},
+  doi     = {10.1002/mrm.24286}
+}
+
+@article{Whittall1997,
+  author  = {Whittall, K.P. and MacKay, A.L. and Graeb, D.A. and Nugent, R.A. and Li, D.K.B. and Paty, D.W.},
+  title   = {In vivo measurement of {T2} distributions and water contents in normal human brain},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {1997}, volume = {37}, number = {1}, pages = {34--43},
+  doi     = {10.1002/mrm.1910370107}
+}
+
+@article{Prasloski2012,
+  author  = {Prasloski, Thomas and Rauscher, Alexander and MacKay, Alex L. and Hodgson, Madeline and Vavasour, Irene M. and Laule, Cornelia and M{\"a}dler, Burkhard},
+  title   = {Rapid whole cerebrum myelin water imaging using a {3D} {GRASE} sequence},
+  journal = {NeuroImage},
+  year    = {2012}, volume = {63}, number = {1}, pages = {533--539},
+  doi     = {10.1016/j.neuroimage.2012.06.064}
+}
+
+@article{Prasloski2012sec,
+  author  = {Prasloski, Thomas and M{\"a}dler, Burkhard and Xiang, Qing-San and MacKay, Alex and Jones, Craig},
+  title   = {Applications of stimulated echo correction to multicomponent {T2} analysis},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2012}, volume = {67}, number = {6}, pages = {1803--1814},
+  doi     = {10.1002/mrm.23157}
+}
+
+@article{Doucette2020,
+  author  = {Doucette, Jonathan and Kames, Christian and Rauscher, Alexander},
+  title   = {{DECAES} -- {DE}composition and {C}omponent {A}nalysis of
+             {E}xponential {S}ignals},
+  journal = {Zeitschrift f{\"u}r Medizinische Physik},
+  year    = {2020}, volume = {30}, number = {4}, pages = {271--278},
+  doi     = {10.1016/j.zemedi.2020.04.001}
+}
+
+@book{Bernstein2004,
+  author    = {Bernstein, Matt A. and King, Kevin F. and Zhou, Xiaohong Joe},
+  title     = {Handbook of {MRI} Pulse Sequences},
+  publisher = {Academic Press},
+  address   = {Burlington, MA},
+  year      = {2004},
+  isbn      = {978-0-12-092861-3}
+}
+
+@incollection{Larson2023,
+  author    = {Larson, Peder E. Z.},
+  title     = {{T2} Relaxation during Radiofrequency ({RF}) Pulses},
+  booktitle = {{MRI} of Short- and Ultrashort-{T2} Tissues},
+  editor    = {Seifert, Alan C. and Wehrli, Felix W.},
+  publisher = {Springer},
+  year      = {2023},
+  doi       = {10.1007/978-3-031-35197-6_12},
+  note      = {Preprint arXiv:2312.00384}
+}
+
+@article{Nam2015,
+  author  = {Nam, Yoonho and Lee, Jongho and Hwang, Dosik and Kim, Dong-Hyun},
+  title   = {Improved estimation of myelin water fraction using complex model fitting},
+  journal = {NeuroImage},
+  year    = {2015}, volume = {116}, pages = {214--221},
+  doi     = {10.1016/j.neuroimage.2015.03.081}
+}
+
+@article{Lee2012,
+  author  = {Lee, Jongho and Shmueli, Karin and Kang, Byeong-Teck and Yao, Bing and Fukunaga, Masaki and van Gelderen, Peter and Palumbo, Sara and Bosetti, Francesca and Silva, Afonso C. and Duyn, Jeff H.},
+  title   = {The contribution of myelin to magnetic susceptibility-weighted contrasts in high-field {MRI} of the brain},
+  journal = {NeuroImage},
+  year    = {2012}, volume = {59}, number = {4}, pages = {3967--3975},
+  doi     = {10.1016/j.neuroimage.2011.10.076}
+}
+
+@article{Oh2013,
+  author  = {Oh, Se-Hong and Kim, Young-Bo and Cho, Zang-Hee and Lee, Jongho},
+  title   = {Origin of {B0} orientation dependent {R2$^*$} ({=}1/{T2$^*$}) in white matter},
+  journal = {NeuroImage},
+  year    = {2013}, volume = {73}, pages = {71--79},
+  doi     = {10.1016/j.neuroimage.2013.01.051}
+}
+
+@article{Lee2010,
+  author  = {Lee, Jongho and Shmueli, Karin and Fukunaga, Masaki and van Gelderen, Peter and Merkle, Hellmut and Silva, Afonso C. and Duyn, Jeff H.},
+  title   = {Sensitivity of {MRI} resonance frequency to the orientation of brain tissue microstructure},
+  journal = {Proceedings of the National Academy of Sciences},
+  year    = {2010}, volume = {107}, number = {11}, pages = {5130--5135},
+  doi     = {10.1073/pnas.0910222107}
+}
+
+@article{Sukstanskii2014,
+  author  = {Sukstanskii, Alexander L. and Yablonskiy, Dmitriy A.},
+  title   = {On the role of neuronal magnetic susceptibility and structure symmetry on gradient echo {MR} signal formation},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2014}, volume = {71}, number = {1}, pages = {345--353},
+  doi     = {10.1002/mrm.24629}
+}
+
+@article{Rudko2014,
+  author  = {Rudko, David A. and Klassen, L. Martyn and de Chickera, Sonali N. and Gati, Joseph S. and Dekaban, Gregory A. and Menon, Ravi S.},
+  title   = {Origins of {R2$^*$} orientation dependence in gray and white matter},
+  journal = {Proceedings of the National Academy of Sciences},
+  year    = {2014}, volume = {111}, number = {1}, pages = {E159--E167},
+  doi     = {10.1073/pnas.1306516111}
+}
+
+@article{Pang2023,
+  author  = {Pang, Yuxi},
+  title   = {Orientation dependent proton transverse relaxation in human brain white matter: The magic angle effect on a cylindrical helix},
+  journal = {Magnetic Resonance Imaging},
+  year    = {2023}, volume = {100}, pages = {73--83},
+  doi     = {10.1016/j.mri.2023.03.010}
+}
+
+@article{Sandgaard2023,
+  author  = {Sandgaard, Anders Dyhr and Shemesh, Noam and Kiselev, Valerij G. and Jespersen, Sune N{\o}rh{\o}j},
+  title   = {{Larmor} frequency shift from magnetized cylinders with arbitrary orientation distribution},
+  journal = {NMR in Biomedicine},
+  year    = {2023}, volume = {36}, number = {3}, pages = {e4859},
+  doi     = {10.1002/nbm.4859}
+}
+
+@article{Lee2017,
+  author  = {Lee, Jingu and Shin, Hyeong-Geol and Jung, Woojin and Nam, Yoonho and Oh, Se-Hong and Lee, Jongho},
+  title   = {An {R2$^*$} model of white matter for fiber orientation and myelin concentration},
+  journal = {NeuroImage},
+  year    = {2017}, volume = {162}, pages = {269--275},
+  doi     = {10.1016/j.neuroimage.2017.08.050}
+}
+
+@article{Wharton2015,
+  author  = {Wharton, Samuel and Bowtell, Richard},
+  title   = {Effects of white matter microstructure on phase and susceptibility maps},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2015}, volume = {73}, number = {3}, pages = {1258--1269},
+  doi     = {10.1002/mrm.25189}
+}
+
+@article{Stikov2015,
+  author  = {Stikov, Nikola and Campbell, Jennifer S.W. and Stroh, Thomas and others},
+  title   = {In vivo histology of the myelin g-ratio with magnetic resonance imaging},
+  journal = {NeuroImage},
+  year    = {2015}, volume = {118}, pages = {397--405},
+  doi     = {10.1016/j.neuroimage.2015.05.023}
+}
+
+@article{Campbell2018,
+  author  = {Campbell, Jennifer S.W. and Leppert, Ilana R. and Narayanan, Sridar and Boudreau, Mathieu and Duval, Tanguy and Cohen-Adad, Julien and Pike, G. Bruce and Stikov, Nikola},
+  title   = {Promise and pitfalls of g-ratio estimation with {MRI}},
+  journal = {NeuroImage},
+  year    = {2018}, volume = {182}, pages = {80--96},
+  doi     = {10.1016/j.neuroimage.2017.08.038}
+}
+
+@article{Mohammadi2021,
+  author  = {Mohammadi, Siawoosh and Callaghan, Martina F.},
+  title   = {Towards in vivo g-ratio mapping using {MRI}: unifying myelin and diffusion imaging},
+  journal = {Journal of Neuroscience Methods},
+  year    = {2021}, volume = {348}, pages = {108990},
+  doi     = {10.1016/j.jneumeth.2020.108990}
+}
+
+@article{Jung2018,
+  author  = {Jung, Woojin and Lee, Jingu and Shin, Hyeong-Geol and Nam, Yoonho and Zhang, Hui and Oh, Se-Hong and Lee, Jongho},
+  title   = {Whole brain g-ratio mapping using myelin water imaging ({MWI}) and neurite orientation dispersion and density imaging ({NODDI})},
+  journal = {NeuroImage},
+  year    = {2018}, volume = {182}, pages = {379--388},
+  doi     = {10.1016/j.neuroimage.2017.09.053}
+}
+
+@article{Lampinen2023,
+  author  = {Lampinen, Bj{\"o}rn and Szczepankiewicz, Filip and L{\"a}tt, Jimmy and Knutsson, Linda and M{\aa}rtensson, Johan and Bj{\"o}rkman-Burtscher, Isabella M. and van Westen, Danielle and Sundgren, Pia C. and St{\aa}hlberg, Freddy and Nilsson, Markus},
+  title   = {Probing brain tissue microstructure with {MRI}: principles, challenges, and the role of multidimensional diffusion-relaxation encoding},
+  journal = {NeuroImage}, year = {2023}, volume = {282}, pages = {120338},
+  doi     = {10.1016/j.neuroimage.2023.120338}
+}
+
+@article{Palombo2023,
+  author  = {Palombo, Marco and Valindria, Vanya and Singh, Saurabh and Chiou, Eleni and Giganti, Francesco and Pye, Hayley and Whitaker, Hayley C. and Atkinson, David and Punwani, Shonit and Alexander, Daniel C. and Panagiotaki, Eleftheria},
+  title   = {Joint estimation of relaxation and diffusion tissue parameters for prostate cancer with relaxation-{VERDICT} {MRI}},
+  journal = {Scientific Reports}, year = {2023}, volume = {13}, pages = {2999},
+  doi     = {10.1038/s41598-023-30182-1}
+}
+
+@article{Jiang2025,
+  author  = {Jiang, Xiaoyu and Harkins, Kevin D. and Xie, Jingping and Wang, Jian and Zu, Zhongliang and Gore, John C. and Xu, Junzhong},
+  title   = {Joint estimation of compartment-specific {T2} relaxation and tumor microstructure using multi-{TE} {IMPULSED} {MRI}},
+  journal = {Magnetic Resonance in Medicine}, year = {2025}, volume = {93}, number = {1}, pages = {96--107},
+  doi     = {10.1002/mrm.30254}
+}
+
+@article{Uhl2024,
+  author  = {Uhl, Quentin and Pavan, Tommaso and Molendowska, Malwina and Jones, Derek K. and Palombo, Marco and Jelescu, Ileana O.},
+  title   = {Quantifying human gray matter microstructure using neurite exchange imaging ({NEXI}) and 300~{mT/m} gradients},
+  journal = {Imaging Neuroscience}, year = {2024}, volume = {2}, pages = {1--19},
+  doi     = {10.1162/imag_a_00104}
+}
+
+@article{Uhl2025,
+  author  = {Uhl, Quentin and Pavan, Tommaso and Feiweier, Thorsten and Piredda, Gian Franco and Jelescu, Ileana O.},
+  title   = {Human gray matter microstructure mapped using neurite exchange imaging ({NEXI}) on a clinical scanner},
+  journal = {Imaging Neuroscience}, year = {2025}, volume = {3},
+  doi     = {10.1162/IMAG.a.32}
+}
+
+@article{Barakovic2020,
+  author  = {Barakovic, Muhamed and Tax, Chantal M. W. and Rudrapatna, Umesh and Chamberland, Maxime and Rafael-Pati{\~n}o, Jonathan and Granziera, Cristina and Thiran, Jean-Philippe and Daducci, Alessandro and Canales-Rodr{\'i}guez, Erick J. and Jones, Derek K.},
+  title   = {Resolving bundle-specific intra-axonal {T2} values within a voxel using diffusion-relaxation tract-based estimation},
+  journal = {NeuroImage}, year = {2020}, volume = {227}, pages = {117617},
+  doi     = {10.1016/j.neuroimage.2020.117617}
+}
+
+@misc{Gong2024peptide,
+  author       = {Gong, Ting and Fair, Merlin J. and Setsompop, Kawin and Zhang, Hui},
+  title        = {Compartment-specific estimation of {T2} and {T2$^*$} with diffusion-{PEPTIDE} {MRI}},
+  year         = {2024}, howpublished = {arXiv:2408.10432},
+  doi          = {10.48550/arXiv.2408.10432}
+}
+
+@article{Afzali2022,
+  author  = {Afzali, Maryam and Mueller, Lars and Sakaie, Ken and Hu, Siyuan and Chen, Yong and Szczepankiewicz, Filip and Griswold, Mark A. and Jones, Derek K. and Ma, Dan},
+  title   = {{MR} fingerprinting with b-tensor encoding for simultaneous quantification of relaxation and diffusion in a single scan},
+  journal = {Magnetic Resonance in Medicine}, year = {2022}, volume = {88}, number = {5}, pages = {2043--2057},
+  doi     = {10.1002/mrm.29352}
+}
+
+@article{Sandgaard2024susc,
+  author  = {Sandgaard, Anders Dyhr and Kiselev, Valerij G. and Henriques, Rafael Neto and Shemesh, Noam and Jespersen, Sune N{\o}rhoej},
+  title   = {Incorporating the effect of white matter microstructure in the estimation of magnetic susceptibility in ex vivo mouse brain},
+  journal = {Magnetic Resonance in Medicine}, year = {2024}, volume = {91}, number = {2}, pages = {699--715},
+  doi     = {10.1002/mrm.29867}
+}
+
+@article{Sandgaard2024larmor,
+  author  = {Sandgaard, Anders Dyhr and Shemesh, Noam and {\O}stergaard, Leif and Kiselev, Valerij G. and Jespersen, Sune N{\o}rhoej},
+  title   = {The {Larmor} frequency shift of a white matter magnetic microstructure model with multiple sources},
+  journal = {NMR in Biomedicine}, year = {2024}, volume = {37}, number = {8}, pages = {e5150},
+  doi     = {10.1002/nbm.5150}
+}
+
+@article{Sandgaard2025mc,
+  author  = {Sandgaard, Anders Dyhr and Jespersen, Sune N{\o}rhoej},
+  title   = {Predicting mesoscopic {Larmor} frequency shifts in white matter with diffusion {MRI} --- a {Monte Carlo} study in axonal phantoms},
+  journal = {NMR in Biomedicine}, year = {2025}, volume = {38}, number = {3}, pages = {e70004},
+  doi     = {10.1002/nbm.70004}
+}
+
+@article{Sisman2025,
+  author  = {{\c{S}}i{\c{s}}man, Mert and Nguyen, Thanh D. and Roberts, Alexandra G. and Romano, Dominick J. and Dimov, Alexey V. and Kovanlikaya, Ilhami and Spincemaille, Pascal and Wang, Yi},
+  title   = {Microstructure-informed myelin mapping ({MIMM}) from routine multi-echo gradient echo data using multiscale physics modeling of iron and myelin effects and {QSM}},
+  journal = {Magnetic Resonance in Medicine}, year = {2025}, volume = {93}, number = {4}, pages = {1499--1515},
+  doi     = {10.1002/mrm.30369}
+}
+
+@article{Lu2025,
+  author  = {Lu, Wen Da and Nelson, Mark C. and Leppert, Ilana R. and Campbell, Jennifer S. W. and Schiavi, Simona and Pike, G. Bruce and Rowley, Christopher D. and Daducci, Alessandro and Tardif, Christine L.},
+  title   = {Mapping the aggregate g-ratio of white matter tracts using multi-modal {MRI}},
+  journal = {Imaging Neuroscience}, year = {2025}, volume = {3},
+  doi     = {10.1162/imag.a.49}
+}
+
+@article{Hendriks2025,
+  author  = {Hendriks, Tom and Arends, Gerrit and Versteeg, Edwin and Vilanova, Anna and Chamberland, Maxime and Tax, Chantal M. W.},
+  title   = {Implicit neural representations for accurate estimation of the {Standard} {Model} of white matter},
+  journal = {Communications Biology}, year = {2025}, volume = {9}, pages = {120},
+  doi     = {10.1038/s42003-025-09399-5}
+}
+
+@article{Gong2026,
+  author  = {Gong, Ting and Yendiki, Anastasia},
+  title   = {{Microstructure.jl}: a {Julia} package for probabilistic microstructure model fitting with diffusion {MRI}},
+  journal = {Imaging Neuroscience}, year = {2026}, volume = {4},
+  doi     = {10.1162/IMAG.a.1102}
+}
+
+@article{Wiggermann2021,
+  author  = {Wiggermann, Vanessa and MacKay, Alex L. and Rauscher, Alexander and Helms, Gunther},
+  title   = {In vivo investigation of the multi-exponential {T2} decay in human white matter at 7 {T}: Implications for myelin water imaging at {UHF}},
+  journal = {NMR in Biomedicine},
+  year    = {2021},
+  volume  = {34},
+  number  = {2},
+  pages   = {e4429},
+  doi     = {10.1002/nbm.4429},
+}
+
+% ── AXON-DIAMETER HISTOLOGY (substrate grounding; DOIs verified 2026-06-09) ────
+@article{Liewald2014,
+  author  = {Liewald, Daniel and Miller, Robert and Logothetis, Nikos and Wagner, Hans-Joachim and Sch{\"u}z, Almut},
+  title   = {Distribution of axon diameters in cortical white matter: an electron-microscopic study on three human brains and a macaque},
+  journal = {Biological Cybernetics},
+  year    = {2014},
+  volume  = {108},
+  number  = {5},
+  pages   = {541--557},
+  doi     = {10.1007/s00422-014-0626-2},
+}
+
+@article{Barazany2009,
+  author  = {Barazany, Daniel and Basser, Peter J. and Assaf, Yaniv},
+  title   = {In vivo measurement of axon diameter distribution in the corpus callosum of rat brain},
+  journal = {Brain},
+  year    = {2009},
+  volume  = {132},
+  number  = {5},
+  pages   = {1210--1220},
+  doi     = {10.1093/brain/awp042},
+}
+
+@article{Mikelberg1989,
+  author  = {Mikelberg, Frederick S. and Drance, Stephen M. and Schulzer, Michael and Yidegiligne, Hadas M. and Weis, Margaret M.},
+  title   = {The normal human optic nerve: axon count and axon diameter distribution},
+  journal = {Ophthalmology},
+  year    = {1989},
+  volume  = {96},
+  number  = {9},
+  pages   = {1325--1328},
+  doi     = {10.1016/S0161-6420(89)32718-7},
+}
+
+@article{Firmin2014,
+  author  = {Firmin, Laurence and Field, Paul and Maier, Marc A. and Kraskov, Alexander and Kirkwood, Peter A. and Nakajima, Kazuhiko and Lemon, Roger N. and Glickstein, Mitchell},
+  title   = {Axon diameters and conduction velocities in the macaque pyramidal tract},
+  journal = {Journal of Neurophysiology},
+  year    = {2014},
+  volume  = {112},
+  number  = {6},
+  pages   = {1229--1240},
+  doi     = {10.1152/jn.00720.2013},
+}
+
+% ── FIELD-MATCHED RELAXATION CONSTANTS (3T/7T; DOIs CrossRef-verified 2026-06-10) ──
+@article{Wright2008,
+  author  = {Wright, P. J. and Mougin, O. E. and Totman, J. J. and Peters, A. M. and Brookes, M. J. and Coxon, R. and Morris, P. E. and Clemence, M. and Francis, S. T. and Bowtell, R. W. and Gowland, P. A.},
+  title   = {Water proton {T1} measurements in brain tissue at 7, 3, and 1.5\,{T} using {IR-EPI}, {IR-TSE}, and {MPRAGE}: results and optimization},
+  journal = {Magnetic Resonance Materials in Physics, Biology and Medicine},
+  year    = {2008},
+  volume  = {21},
+  number  = {1-2},
+  pages   = {121--130},
+  doi     = {10.1007/s10334-008-0104-8},
+}
+
+@article{Rioux2015,
+  author  = {Rioux, James A. and Levesque, Ives R. and Rutt, Brian K.},
+  title   = {Biexponential longitudinal relaxation in white matter: characterization and impact on {T1} mapping with {IR-FSE} and {MP2RAGE}},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2015},
+  volume  = {75},
+  number  = {6},
+  pages   = {2265--2277},
+  doi     = {10.1002/mrm.25729},
+}
+
+@article{Kauppinen2025,
+  author  = {Kauppinen, Risto A. and others},
+  title   = {Fiber orientation-dependent {T1} angular features in human white matter at 1.5, 3, and 7\,{T}},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2025},
+  doi     = {10.1002/mrm.70009},
+}
+
+@article{Rooney2007,
+  author  = {Rooney, William D. and Johnson, Glyn and Li, Xin and Cohen, Eric R. and Kim, Seong-Gi and Ugurbil, Kamil and Springer, Charles S.},
+  title   = {Magnetic field and tissue dependencies of human brain longitudinal {1H2O} relaxation in vivo},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2007},
+  volume  = {57},
+  number  = {2},
+  pages   = {308--318},
+  doi     = {10.1002/mrm.21122},
+}
+
+@article{Piechnik2009,
+  author  = {Piechnik, Stefan K. and Evans, Jullie and Bary, L. H. and Wise, Richard G. and Jezzard, Peter},
+  title   = {Functional changes in {CSF} volume estimated using measurement of water {T2} relaxation},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2009},
+  volume  = {61},
+  number  = {3},
+  pages   = {579--586},
+  doi     = {10.1002/mrm.21897},
+}
+
+@article{Spijkerman2017,
+  author  = {Spijkerman, Jeroen M. and Petersen, Esben T. and Hendrikse, Jeroen and Luijten, Peter and Zwanenburg, Jaco J. M.},
+  title   = {{T2} mapping of cerebrospinal fluid: 3\,{T} versus 7\,{T}},
+  journal = {Magnetic Resonance Materials in Physics, Biology and Medicine},
+  year    = {2017},
+  volume  = {31},
+  number  = {3},
+  pages   = {415--424},
+  doi     = {10.1007/s10334-017-0659-3},
+}
+
+@article{Harkins2012,
+  author  = {Harkins, Kevin D. and Dula, Adrienne N. and Does, Mark D.},
+  title   = {Effect of intercompartmental water exchange on the apparent myelin
+             water fraction in multiexponential {$T_2$} measurements},
+  journal = {Magnetic Resonance in Medicine},
+  volume  = {67}, number = {3}, pages = {793--800}, year = {2012},
+  doi     = {10.1002/mrm.23053}
+}
+
+@article{Dula2010,
+  author  = {Dula, Adrienne N. and Gochberg, Daniel F. and Valentine, Holly L.
+             and Valentine, William M. and Does, Mark D.},
+  title   = {Multiexponential {$T_2$}, magnetization transfer, and quantitative
+             histology in white matter tracts of rat spinal cord},
+  journal = {Magnetic Resonance in Medicine},
+  volume  = {63}, number = {4}, pages = {902--909}, year = {2010},
+  doi     = {10.1002/mrm.22267}
+}
+
+@article{Laule2006,
+  author  = {Laule, Cornelia and Leung, Eric and Li, David K. B. and
+             Traboulsee, Anthony L. and Paty, Donald W. and MacKay, Alex L. and
+             Moore, G. R. Wayne},
+  title   = {Myelin water imaging in multiple sclerosis: quantitative correlations
+             with histopathology},
+  journal = {Multiple Sclerosis Journal},
+  volume  = {12}, number = {6}, pages = {747--753}, year = {2006},
+  doi     = {10.1177/1352458506070928}
+}
+
+@article{Laule2004,
+  author  = {Laule, Cornelia and Vavasour, Irene M. and Moore, G. R. Wayne and
+             Oger, Joel and Li, David K. B. and Paty, Donald W. and MacKay, Alex L.},
+  title   = {Water content and myelin water fraction in multiple sclerosis: a
+             {T2} relaxation study},
+  journal = {Journal of Neurology},
+  volume  = {251}, number = {3}, pages = {284--293}, year = {2004},
+  doi     = {10.1007/s00415-004-0306-6}
+}
+
+@article{Kitzler2012,
+  author  = {Kitzler, Hagen H. and Su, Jason and Zeineh, Michael and Harper-Little,
+             Caroline and Leung, Alex and Kremenchutzky, Marcelo and Deoni, Sean C. L.
+             and Rutt, Brian K.},
+  title   = {Deficient {MWF} imaging detects demyelination in the corpus callosum of
+             multiple sclerosis patients},
+  journal = {NeuroImage},
+  volume  = {59}, number = {3}, pages = {2670--2677}, year = {2012},
+  doi     = {10.1016/j.neuroimage.2011.08.052}
+}
+
+@article{NovikovKiselev2010,
+  author  = {Novikov, Dmitry S. and Kiselev, Valerij G.},
+  title   = {Effective medium theory of a diffusion-weighted signal},
+  journal = {NMR in Biomedicine},
+  volume  = {23}, number = {7}, pages = {682--697}, year = {2010},
+  doi     = {10.1002/nbm.1584}
+}
+
+@article{Mitra1992,
+  author  = {Mitra, Partha P. and Sen, Pabitra N. and Schwartz, Lawrence M. and Le Doussal, Pierre},
+  title   = {Diffusion propagator as a probe of the structure of porous media},
+  journal = {Physical Review Letters},
+  volume  = {68}, number = {24}, pages = {3555--3558}, year = {1992},
+  doi     = {10.1103/PhysRevLett.68.3555}
+}
+
+@article{Lebel2010,
+  author  = {Lebel, R. Marc and Wilman, Alan H.},
+  title   = {Transverse relaxometry with stimulated echo compensation},
+  journal = {Magnetic Resonance in Medicine},
+  volume  = {64}, number = {4}, pages = {1005--1014}, year = {2010},
+  doi     = {10.1002/mrm.22487}
+}

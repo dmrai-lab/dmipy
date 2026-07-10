@@ -1,0 +1,73 @@
+% ============================================================================
+\section{Introduction}
+\label{sec:intro}
+% ============================================================================
+
+White-matter microstructure imprints more than one MR contrast, and sometimes the
+same physics drives two of them. When a water molecule diffuses among myelinated
+axons it repeatedly strikes their walls, and each collision does two things at once:
+it interrupts the molecule's displacement --- the event whose statistics,
+accumulated over the fibre packing, make the extra-axonal diffusion coefficient
+time-dependent \citep{Novikov2014, Burcaw2015} --- and it exposes the spin to the
+wall's relaxation sink, adding \emph{surface relaxivity} \citep{Brownstein1979} at a
+rate proportional to the pore surface-to-volume ratio \SV{}. Surface relaxivity and
+time-dependent diffusion are, in this sense, two readouts of one wall-collision
+process on one substrate. A diffusion gradient resolves that substrate's
+\emph{orientational} structure --- the fibre orientation distribution (FOD) --- and
+its \emph{temporal} structure, $D(t)$; the gradient-free multi-echo spin echo reads
+its scalar, orientation-integrated projection, the rate $\rho\,(S/V)$, fused into
+what the experiment calls ``$T_2$''.
+
+This shared origin touches both communities, and the usual assumption that diffusion is
+``relaxivity-blind'' is only half true. A same-echo-time $b{=}0$ normalisation cancels the
+\emph{common} surface factor $e^{-\mathrm{TE}\,\rho(S/V)}$, so the total signal and the fibre
+orientation are indeed blind to it --- but intra- and extra-axonal water sit against
+\emph{different} walls with different $S/V$, and that \emph{differential} $T_2$ does not
+cancel. It reweights the compartments in the very $b{=}0$ that every diffusion microstructure
+model normalises by, biasing the recovered \textbf{intra-axonal signal fraction}
+$f_{\mathrm{intra}}$ (NODDI, spherical-mean, standard model). The same $S/V$ physics reads
+through relaxometry as a bias in the \textbf{myelin water fraction (MWF)} --- the short-$T_2$
+component of the multi-echo (CPMG / GRASE) decay, one of the most widely used myelin indices
+\citep{Mackay1994, Laule2007, Whittall1997}, fit with a non-negative least-squares (NNLS)
+$T_2$ spectrum and a fixed myelin-water window \citep{Whittall1997, Prasloski2012}. The
+transverse rate the MWF is fit to is a \emph{material} bulk term $1/T_{2,\mathrm{bulk}}$ plus
+the \emph{geometric} surface term $\rho\,(S/V)$ (Eq.~\eqref{eq:r2app}); both isotropic and
+TE-linear, a non-identifiable combination no multi-echo measurement can separate
+(Sec.~\ref{sec:theory:inseparability}). Surface relaxivity shortens the apparent
+intra/extra-axonal $T_2$ toward the myelin window; for the thinnest axons it drags that $T_2$
+\emph{below} the window, where the water is counted as myelin, so fine white matter of
+\emph{identical myelin volume} reads myelin-\emph{richer}. Both effects are distinct from, and
+additive to, the known microstructure dependences of these metrics --- $B_1$/flip angle
+\citep{Prasloski2012, Lebel2010}, iron and susceptibility, and inter-compartment exchange
+(itself an $S/V$-driven, axon-size-dependent MWF bias \citep{Harkins2012, Dula2010}); to our
+knowledge neither has been reported as a surface-relaxivity term inseparable from the bulk
+$T_2$.
+
+We develop this on analytical footings and confirm it by simulation. We derive closed forms
+for the interior (Brownstein--Tarr) and exterior (Novikov--Burcaw) surface rates over the
+myelinated-cylinder FOD, and validate them with a wall-counting Monte Carlo that contains
+\emph{no} analytical relaxivity model --- a parameter-free boundary-local-time estimator
+consistent with the established simulator \textsc{MCMRSimulator} \citep{Cottaar2025}
+(App.~\ref{sec:app:estimator}). We then carry the rate to the two microstructure metrics. For
+the diffusion intra-axonal fraction, a closed-form packing law --- the interior/exterior $S/V$
+ratio is $(1-\mathrm{VF})/(g\,\mathrm{VF})$ --- over-weights the intra-axonal signal (the
+leading-order $f_{\mathrm{intra}}$ bias) by ${\approx}12\%$ on physiologically dense white
+matter at clinical echo time, with a testable, packing-dependent TE drift. That compartment
+fractions drift with TE when their $T_2$ differ is itself established \citep{Veraart2018}; our
+contribution is to attribute that difference to a surface-relaxivity rate set by calibre and
+packing, and the closed-form sign law that follows. For relaxometry, the same physics gives the
+smaller MWF bias (fine WM reads myelin-richer, super-linear in the poorly-known $\rho$). Finally we ask whether the surface
+term corrupts a longitudinal (lumen-preserving) demyelination measurement, and this is where the
+g-ratio unifies the two metrics: the MWF bias is lumen-set (the interior wall), hence nearly
+constant and \emph{cancels} in the change, whereas the $f_{\mathrm{intra}}$ bias --- set by the
+interior-\emph{minus}-exterior differential --- \emph{drifts} strongly as the exterior wall
+retreats with the myelin. One $S/V$ physics, longitudinally opposite readouts: the relaxometry
+change is a cross-region confound only, but a diffusion $f_{\mathrm{intra}}$ change across a
+demyelinating tract carries a large surface artefact.
+
+Throughout we adopt the simplification the standard MWF analysis already makes ---
+instantaneous, ideal refocusing pulses --- so that only bulk $T_2$ and surface
+relaxivity are in play. In particular we exclude susceptibility, the \emph{other},
+genuinely orientation-dependent fibre-angle dependence of MWF \citep{Birkl2021}; it and
+finite-pulse coherence effects are orthogonal to the degeneracy shown here and treated
+elsewhere.

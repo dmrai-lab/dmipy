@@ -1,0 +1,263 @@
+% ============================================================================
+\section{Methods}
+\label{sec:methods}
+% ============================================================================
+
+A wall-counting Monte Carlo shows the multi-echo rate absorbs $\rho\,(S/V)$ with no
+gradient (Sec.~\ref{sec:methods:mc}); that validated rate is then carried, over the full
+calibre distribution, into two microstructure readouts on a fixed-myelin substrate --- the
+diffusion intra-axonal signal fraction (Sec.~\ref{sec:methods:fintra}) and the standard
+myelin-water analysis (Sec.~\ref{sec:methods:mwf}). All constants are in
+Table~\ref{tab:constants}.
+
+\subsection{Canonical white-matter substrate}
+\label{sec:methods:substrate}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.96\linewidth]{fig_substrate_cross_section.pdf}
+  \caption{\textbf{White-matter substrates: synthetic packs at fixed myelin volume,
+  and a real cross-section beside the cylinders fitted to it.}
+  \emph{Panels 1--2:} small- and large-calibre random packs of Gamma-distributed
+  myelinated cylinders at the same scale, fibre fraction $f=0.55$, g-ratio $g=0.70$, and
+  \emph{the same myelin volume}; small axons pack more wall per unit volume (higher
+  $S/V$), so the absorbed $\rho\,(S/V)$ is larger and the recovered MWF (annotated, from
+  the Fig.~\ref{fig:mwf} forward model) is lower at identical myelin content.
+  \emph{Panels 3--4:} a real rat spinal-cord cross-section (AxonDeepSeg, $0.13\,\mu$m/px;
+  \citealp{Zaimi2018}) and the myelinated cylinders fitted to it
+  (Sec.~\ref{sec:methods:real}; dashed border) --- one of the $10$ cross-sections whose
+  $S/V$ range is the rug in Fig.~\ref{fig:mwf}B.}
+  \label{fig:substrate}
+  {\footnotesize\textit{Reproducible from} \texttt{figures/fig\_substrate\_cross\_section.py}.}
+\end{figure*}
+
+We act on three substrates (Fig.~\ref{fig:substrate}): two synthetic packs that
+bracket the physiological calibre range and one real rat cross-section. Each
+synthetic substrate is a random pack of myelinated cylinders with Gamma-distributed
+inner diameters (shape $\alpha=2$), g-ratio $g=0.70$, and fibre (axon$+$myelin)
+volume fraction $f=0.55$, giving a myelin volume fraction
+$\mathrm{MVF}=f(1-g^2)=0.28$ and, with a myelin water content $w_{\mathrm m}=0.40$
+\citep{West2018}, a true myelin water signal fraction of $13.5\%$
+\citep{Aboitiz1992, Assaf2008, Fieremans2011}. \emph{The myelin volume is held
+fixed throughout.} Axon calibre is swept by changing the Gamma scale (mean inner
+diameter $0.5$--$3\,\mu$m) at fixed $g$ and $f$, so the surface-to-volume ratio
+varies by a factor of six while the myelin volume fraction is identically
+constant. The relevant interior moment is the \emph{area/spin-weighted}
+$\svin=4/[\beta(\alpha+1)]$ (Sec.~\ref{sec:theory:closedforms}),
+not the bare $4/d$. The reference relaxivity $\rho=1.16\,\mu$m/s is a
+histology-calibrated model coefficient \citep{Barakovic2023}, not an independently
+measured axolemma relaxivity, so we sweep $\rho$ over $0$--$2.5\,\mu$m/s and report the
+result as a bound (Sec.~\ref{sec:results:mwf}).
+
+\begin{table}[t]
+\centering
+\small
+\caption{Constants used. White-matter values are the canonical substrate of the
+companion modelling work; sources as cited. Orientation dispersion is listed for
+completeness: being orientation-blind it does \emph{not} affect surface relaxivity
+or the MWF bias.}
+\label{tab:constants}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Symbol & Quantity & Value \\
+\midrule
+$\alpha$ & Gamma diameter shape & $2$ \\
+$d$ & mean inner diameter (swept) & $0.5$--$3.0\,\mu$m \\
+$g$ & g-ratio \citep{Stikov2015} & $0.70$ \\
+$f$ & fibre volume fraction & $0.55$ \\
+$\mathrm{MVF}$ & myelin volume fraction ($=f(1-g^2)$, fixed) & $0.28$ \\
+$w_{\mathrm m}$ & myelin water content \citep{West2018} & $0.40$ \\
+$\rho$ & transverse surface relaxivity \citep{Barakovic2023} & $1.16\,\mu$m/s \\
+$T_{2,\mathrm{b}}^{\mathrm{IE}}$ & intrinsic (surface-free) IE bulk $T_2$ & $75$\,ms \\
+$T_2^{\mathrm{MW}}$ & myelin water $T_2$ & $12$\,ms \\
+$D_0$ & intrinsic diffusivity & $1.7$--$2.0\,\mu$m$^2$/ms \\
+$\mathrm{ODI}$ & orientation dispersion index, typical WM \citep{Zhang2012,Tariq2016}
+  & $0.1$--$0.2$ \\
+\multicolumn{2}{@{}l}{CPMG: $32$ echoes, $\mathrm{TE}=10$\,ms, ideal $180^\circ$} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Monte Carlo: surface relaxivity by wall counting}
+\label{sec:methods:mc}
+
+The simulator (dmipy-sim) propagates $4\times10^{4}$ random walkers through the
+explicit packed geometry under Brownian dynamics, with specular reflection at the
+cylinder walls. Surface relaxation is applied inline during propagation: at each
+wall encounter the walker's transverse magnetisation is multiplied by
+$\exp(-2\rho\,d_\perp/D)$, where $d_\perp$ is the perpendicular overshoot of the
+reflected step, and these per-encounter factors accumulate into a walker weight
+$\exp(-\rho\,\mathcal L_{\partial\Omega}/D)$ with $\mathcal L_{\partial\Omega}$ the
+total wall contact --- a realised-overshoot estimator of the boundary local time that
+realises the Brownstein--Tarr Robin condition without any analytical relaxivity model in
+the propagation (App.~\ref{sec:app:estimator} derives the local-time construction,
+verifies it against the closed form, and confirms it is consistent with the established
+estimator of \citealp{Cottaar2025}). The local time is resolved by sub-stepping the walk
+to the extra-axonal pore scale ($\mathrm{step}\!\lesssim\!(S_{\mathrm{ext}}/V)^{-1}/8$):
+the confined intra-axonal walkers fully sample the inner wall and are accurate at any step,
+but the fast extra-axonal walkers under-count grazing outer-wall contact at a coarse step,
+so both compartments converge onto the closed form only when the extra pore is resolved. The
+Brownstein--Tarr behaviour, if it emerges, emerges from
+counting wall encounters. The myelin is
+made impermeable ($\kappa=0$) so that the intra- and extra-axonal compartments are
+not contaminated by exchange into the short-$T_2$ myelin pool, isolating surface
+relaxivity as the only wall effect. The pure surface factor of each compartment is
+the mean surviving weight
+$\langle\exp(-\rho\,\mathcal L_{\partial\Omega}/D)\rangle$ over that compartment's
+walkers (no diffusion gradient, no bulk-$T_2$ term), and compared against its closed
+form --- the area/spin-weighted Brownstein--Tarr interior term and the
+Novikov--Burcaw exterior term --- over the realised pack, versus echo time at the
+canonical substrate (Fig.~\ref{fig:mwf}A). As a unit check, the same wall-counting
+on a single cylinder of radius $R$ reproduces the Brownstein--Tarr rate $\rho\,(2/R)$
+to $<1\%$ across radii at the production sub-step.
+
+\subsection{Intra-axonal signal-fraction bias}
+\label{sec:methods:fintra}
+
+The diffusion intra-axonal fraction $f_{\mathrm{intra}}$ is estimated from signal
+normalised by a $b{=}0$ at the same echo time, under the assumption of a shared
+compartment $T_2$; surface relaxivity breaks that assumption by giving the interior and
+exterior walls different $S/V$ (Sec.~\ref{sec:theory:closedforms}), hence different
+apparent $T_2$. We compute the resulting bias two ways, which agree to
+${\lesssim}2$\,pp. The \emph{exact} calculation carries the full calibre distribution: at
+diffusion echo times the myelin water has decayed, so the two surviving compartments are
+the intra-axonal lumen (volume $\propto\mathrm{VF}\,g^2$, relaxing over the distributed
+interior rate $\rho\,(4/d)$ weighted by water volume $\propto d^2 P(d)$) and the
+extra-axonal water (volume $\propto 1-\mathrm{VF}$, at the exterior rate
+$\rho\,S_{\mathrm{ext}}/V_{\mathrm{ext}}$); the apparent fraction is the TE-weighted ratio
+of these attenuated amplitudes. The \emph{closed form} replaces the distributed intra pool
+by its mean rate, giving the single-exponential odds rescaling of Eq.~\eqref{eq:fbias}
+governed by the calibre-independent ratio Eq.~\eqref{eq:svratio_theory}. Both are evaluated
+over fibre volume fraction ($0.30$--$0.85$), calibre, and echo time
+(Fig.~\ref{fig:fintra}); no estimator or Monte-Carlo replay is involved, the bias being an
+analytic consequence of the two validated wall rates.
+
+\subsection{Spherical-mean fit and the injected-prior correction}
+\label{sec:methods:smt}
+
+To confirm the signal-weight bias survives an actual estimator (Fig.~\ref{fig:smt}), we
+forward-simulate a dense white-matter multi-shell diffusion signal ($\mathrm{VF}=0.68$,
+$3$ shells $b=1,2,3\,$ms/$\mu$m$^2$, $90$ directions each plus $8$ $b{=}0$, PGSE
+$\delta/\Delta=12/40\,$ms) from the analytical white-matter model with the surface factors on,
+at echo times $50$--$90\,$ms, and fit each with the standard spherical-mean technique (SMT: a
+stick intra-axonal $+$ zeppelin extra-axonal spherical-mean model \citep{Kaden2016}) in
+\texttt{dmipy-fit}. The compartment diffusivities are fixed to their known values (leaving the
+fraction the only free parameter), because a free-diffusivity fit is degenerate on this heavily
+$T_2$-reweighted signal. To isolate the \emph{surface} bias from the SMT model-mismatch
+(a two-compartment stick$+$zeppelin fit to a three-compartment substrate) we fit the
+\emph{same} model to a surface-off ($\rho=0$) forward at each TE; the surface-off recovered
+fraction is TE-independent (spread ${<}0.01$ across $50$--$90\,$ms), confirming the TE drift of
+the surface-on fit is the surface term and not a fitting artefact. The injected-prior
+correction takes the region's histology calibre prior (fixed $\alpha$, outer scale, $g$,
+$f_{\mathrm{axon}}$, $\rho$), from which $\rho\,[(S/V)_{\mathrm{int}}-(S/V)_{\mathrm{ext}}]$ is
+known, and inverts the odds rescaling of Eq.~\eqref{eq:fbias} at each single TE.
+
+\subsection{Instantaneous-pulse CPMG and the standard MWF estimate}
+\label{sec:methods:mwf}
+
+We adopt the standard multi-echo protocol ($32$ echoes, $\mathrm{TE}=10$\,ms) with
+ideal, instantaneous $180^\circ$ refocusing --- the conventional assumption, under which
+the only transverse-decay mechanisms are bulk relaxation and surface relaxivity. The MWF
+is estimated with the standard chi-square-regularised NNLS $T_2$ spectrum (zero-order
+Tikhonov weight set per signal within a factor $1.02$ of the unregularised misfit, the
+Whittall--MacKay\,/\,Prasloski\,/\,DECAES choice; myelin signal integrated below a
+$25$\,ms cutoff) \citep{Whittall1997, Prasloski2012, Doucette2020} --- the same basic NNLS
+optimisation the standard pipelines use. The intrinsic IE bulk $T_2$
+is fixed at $T_{2,\mathrm{b}}^{\mathrm{IE}}=75$\,ms (a single material constant), which at
+the canonical $S/V$ reproduces the literature apparent IE $T_2$ of $\sim$$50$--$70$\,ms
+once the surface term is added.
+
+The decay fed to the estimator is a fixed-myelin forward model carrying the
+Monte-Carlo--validated rate (Sec.~\ref{sec:methods:mc}) as its only surface input; using
+a forward model rather than raw simulated signal isolates the surface confound from
+protocol-specific spectral artefacts and, crucially, \emph{retains the full calibre
+distribution} that the simulator's step-size truncation removes from the raw walk. There
+is a myelin-water pool ($T_2^{\mathrm{MW}}=12$\,ms), an extra-axonal pool at
+$1/T_{2,\mathrm{b}}^{\mathrm{IE}}+\rho\,(S_{\mathrm{ext}}/V)$, and --- the key ingredient
+--- a \emph{calibre-distributed intra-axonal pool}: each inner diameter $d$ in the Gamma
+population relaxes at $1/T_{2,\mathrm{b}}^{\mathrm{IE}}+\rho\,(4/d)$, water-volume-weighted,
+so the intra signal is a spectrum rather than a single exponential (a lumped mean rate
+misses the thin-calibre tail entirely, and reverses the sign of the recovered bias). The
+amplitudes are fixed by the fixed myelin volume: with fibre fraction $f=0.55$, $g=0.70$ and
+myelin water content $w_{\mathrm m}=0.40$, the water-weighted volumes are myelin
+$f(1-g^2)w_{\mathrm m}=0.112$, intra (lumen) $f g^2=0.270$, and extra $1-f=0.45$, normalising
+to the signal fractions $f_{\mathrm m}=0.135$, $f_{\mathrm{ia}}=0.324$,
+$f_{\mathrm{ea}}=0.541$. The bulk $T_2$ is a fixed material constant, and only the geometric
+$S/V$ (through calibre) and the unknown $\rho$ vary. We assign intra and extra the \emph{same}
+intrinsic bulk $T_2$, so their apparent difference is the surface term alone; a genuine
+intrinsic intra/extra $T_2$ difference would add to it, and our bias is the surface
+contribution on top of any such offset. The
+robust readout needs no estimator: the short-$T_2$ signal fraction --- myelin water plus
+the intra water with $T_2$ below the $25$\,ms cutoff, i.e.\ from axons thinner than
+$d^{\ast}=4\rho/(1/T_2^{\mathrm{cut}}-1/T_{2,\mathrm{b}}^{\mathrm{IE}})$ --- is a grid-free
+property of the decay, which we report alongside the standard NNLS (which reproduces its
+sign and amplifies it). Robustness is checked under the chi-square-adaptive weight, fixed
+zero-order weights ($0.01$, $0.02$), and Rician noise (single-voxel $\mathrm{SNR}=150$).
+
+\subsection{End-to-end check: MWF from the full Monte-Carlo signal}
+\label{sec:methods:engine}
+
+As an end-to-end check, free of any forward model, we simulate the full multi-echo CPMG
+decay with the forward Monte Carlo (instantaneous $180^\circ$; a per-echo
+gradient-free walk carrying per-compartment bulk $T_2$ and first-principles wall relaxivity,
+no analytical decay) and run the same NNLS estimator on it. The intrinsic bulk $T_2$ is a
+fixed material value ($75$\,ms) at the actual walls, so turning surface relaxivity on adds
+$\rho\,(S/V)$ and produces the calibre-dependent apparent decay. Over the long CPMG train the
+surface local time is sub-stepped at the extra-axonal pore/2 (Sec.~\ref{sec:methods:mc}), a
+coarser resolution than the Panel-A validation but ample for the decay. We walk four calibres
+(surface on and off on each), add Rician noise at $\mathrm{SNR}=200$ ($150$ realisations), and
+NNLS-fit each. This end-to-end walk reproduces the decay and the IE-pool spectral shift, but
+its \emph{integrated} short-$T_2$ fraction barely moves: we deliberately do not walk the
+sub-micron crossing calibres here (below ${\sim}0.4\,\mu$m an impermeable-wall walk needs
+prohibitively small steps and compute), so the quantitative MWF bias is carried by the
+full-distribution forward model above (Sec.~\ref{sec:methods:mwf}).
+
+\subsection{Real white-matter cross-sections}
+\label{sec:methods:real}
+
+To anchor the substrate in real tissue and to test that the operating point was not
+cherry-picked, we use every manually-segmented cross-section in the
+AxonDeepSeg SEM dataset (rat spinal cord, $8$ animals, $10$ cross-sections,
+$0.07$--$0.18\,\mu$m/px; \citealp{Zaimi2018}). Each cross-section is represented as
+a pack of myelinated cylinders fitted to its segmentation: every segmented axon
+becomes a cylinder at its true centroid, with inner radius the area-equivalent
+radius of the lumen and outer radius the area-equivalent radius of the lumen plus
+its watershed-assigned myelin ring, giving a \emph{per-axon} diameter and g-ratio.
+This preserves the geometry the physics depends on --- the axon-size distribution
+and packing, hence $S/V$ --- while routing the walk through the validated exact-circle
+reflection (the irregular-segmentation walk does not confine the extra-axonal
+walkers; the fitted-cylinder representation does). The fitted reconstruction is
+shown beside the raw segmentation in Fig.~\ref{fig:substrate} for transparency. The
+interior area-weighted moment $\svin$ across the $10$ cross-sections
+spans $0.9$--$2.3\,\mu$m$^{-1}$ (the rug in Fig.~\ref{fig:mwf}B), confirming that
+real white matter populates the swept $S/V$ range.
+
+\subsection{Demyelination trajectory}
+\label{sec:methods:demyel}
+
+To ask how the surface-relaxivity bias behaves as a tract demyelinates, we trace a
+\emph{within-subject} series rather than compare independently sampled substrates. For
+each of $N_{\mathrm{subj}}=24$ ``subjects'' we draw a Gamma axon population
+($\alpha=2$, canonical calibre, $N=300$ cylinders) and pack the outer (myelin) cylinders
+\emph{once}, at the baseline g-ratio $g_0=0.70$ --- the thickest myelin, hence the
+largest outer walls; packing the largest-ever cylinders first guarantees every later,
+thinner state is overlap-free. We then \emph{freeze the centres and the inner (axon)
+radii} and demyelinate by raising $g$ toward $1$ at fixed axon, so the outer wall shrinks
+($r_{\mathrm{out}}=r_{\mathrm{in}}/g$) while the axon count and lumen are preserved. Each
+subject is thus its own longitudinal series on one fixed axon distribution, not a fresh
+random substrate per stage. At every stage we read the geometry directly off the realised
+pack --- the myelin volume fraction
+$\mathrm{MVF}=\sum\pi(r_{\mathrm{out}}^2-r_{\mathrm{in}}^2)/L^2$ (hence the true MWF), the
+interior $\svin$ (unchanged, the axon lumen being preserved), and the
+exterior $S_{\mathrm{ext}}/V_{\mathrm{ext}}=\sum 2\pi r_{\mathrm{out}}/(L^2-\sum\pi r_{\mathrm{out}}^2)$
+(which falls as the outer walls retreat) --- and feed the \emph{frozen inner-radius
+distribution} to the same calibre-distributed forward model as Sec.~\ref{sec:methods:mwf},
+read as the grid-free short-$T_2$ fraction, at $\rho=0$ (true MWF) and at the cited $\rho$
+(apparent MWF), averaging over subjects. Because the crossing that sets the bias depends on
+the inner radii --- which this trajectory holds fixed --- the offset is nearly constant and
+cancels in the within-subject change; the exterior $S/V$ that halves plays no role in it. No new wall
+rate is introduced: the surface rate is the one the Monte Carlo validated in
+Sec.~\ref{sec:methods:mc}, applied to the demyelinating geometry. The $24$ packs differ
+only in random cylinder placement, so the spread across them measures packing-realisation
+variance (negligible here) rather than biological variability; the trajectory is, in
+effect, deterministic.

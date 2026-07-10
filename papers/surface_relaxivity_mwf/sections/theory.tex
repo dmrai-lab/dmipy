@@ -1,0 +1,249 @@
+% ============================================================================
+\section{Theory}
+\label{sec:theory}
+% ============================================================================
+
+\subsection{The myelin water fraction and surface relaxivity}
+\label{sec:theory:mwf}
+
+Myelin-water imaging reads the myelin water fraction (MWF) --- one of the most widely
+used non-invasive indices of myelin content --- from the multi-echo spin-echo decay,
+decomposing it with a non-negative $T_2$ spectrum into a short-$T_2$ pool (water trapped
+between the myelin bilayers, $T_2\!\approx\!10$\,ms) and a long-$T_2$ intra/extra-axonal
+(IE) pool ($T_2\!\approx\!50$--$80$\,ms), and reporting the short-$T_2$ signal fraction
+\citep{Mackay1994, Whittall1997, Laule2007, Prasloski2012}.
+
+The decay it fits, however, is not set by the molecular environment alone. A water
+molecule diffusing among myelinated axons repeatedly strikes their walls, and each
+collision shortens its transverse coherence --- \emph{surface relaxivity}
+\citep{Brownstein1979} --- at a rate proportional to the pore surface-to-volume ratio
+$S/V$. This geometric rate $\rho\,(S/V)$ adds to the bulk relaxation the fit is meant to
+read, shortens the IE pool's apparent $T_2$ towards the myelin window, and is set by
+axon calibre and packing --- microstructure the relaxometry experiment cannot resolve.
+Two voxels of \emph{identical myelin volume} but different calibre or packing therefore
+report different MWF. The rest of this section makes that precise: the surface term is
+formally inseparable from the bulk $T_2$ (Sec.~\ref{sec:theory:inseparability}); it is
+the relaxometric face of the same wall collisions diffusion MRI reads as time-dependent
+diffusion (Sec.~\ref{sec:theory:dual}); and it has closed forms over the
+myelinated-cylinder distribution (Sec.~\ref{sec:theory:closedforms}).
+
+\subsection{The apparent transverse rate is non-identifiable}
+\label{sec:theory:inseparability}
+
+Two processes shorten the transverse magnetisation between the ideal refocusing pulses.
+The first is intrinsic (\emph{bulk}) relaxation $1/T_{2,\mathrm{b}}$, set by the
+molecular environment. The second is the surface loss introduced above ---
+microscopically, paramagnetic surface sites and the field inhomogeneity of the interface:
+in the fast-diffusion (motional-narrowing) limit, where a spin samples the whole pore
+many times within an echo period, Brownstein and Tarr showed it is mono-exponential at a
+rate proportional to the surface-to-volume ratio \citep{Brownstein1979},
+\begin{equation}
+  \frac{1}{T_{2,\mathrm{surf}}} \;=\; \rho\,\frac{S}{V},
+  \label{eq:bt_rate}
+\end{equation}
+with $\rho$ the (transverse) surface relaxivity, a property of the wall.
+
+The two processes add, so the rate the experiment actually decays at is
+\begin{equation}
+  R_2^{\mathrm{app}} \;=\; \frac{1}{T_{2,\mathrm{b}}} \;+\; \rho\,\frac{S}{V}.
+  \label{eq:r2app}
+\end{equation}
+Crucially, the two terms of Eq.~\eqref{eq:r2app} are \emph{not separately observable in
+a multi-echo measurement}, for two simultaneous reasons:
+
+\begin{enumerate}
+  \item \textbf{They share the same signal subspace.} Both terms are
+  \emph{isotropic} --- surface relaxivity, like bulk relaxation, acts whenever the
+  magnetisation is transverse, with no gradient or orientation dependence --- and both
+  accrue \emph{at a constant rate in echo time}: in the motional-narrowing limit the
+  surface attenuation is $\exp(-\rho\,(S/V)\,t)$, the same single-exponential form as
+  $\exp(-t/T_{2,\mathrm{b}})$. For a single pore size they are exactly degenerate; a
+  pore-size \emph{distribution} makes the surface term mildly multi-exponential, but its
+  leading effect is a mean shift $\rho\,\langle S/V\rangle$ that is itself degenerate
+  with the bulk rate, and the residual curvature does not lift the degeneracy in a
+  standard fit.
+
+  \item \textbf{The geometry term is unobserved.} The surface term depends on $S/V$, a
+  property of the sub-voxel geometry that a relaxometry experiment does not resolve ---
+  many substrates of different calibre or packing give near-identical decays --- so
+  $\rho\,(S/V)$ cannot be predicted and subtracted, and $\rho$ itself is not
+  independently established for myelin. It is an \emph{unobserved} addition to what the
+  fit reports as $1/T_2$.
+\end{enumerate}
+
+In short: what the fit calls $T_2$ is already a mixture of the material
+$1/T_{2,\mathrm{b}}$ and a geometric $\rho\,(S/V)$ that no multi-echo measurement can
+disentangle --- and this holds even with no diffusion-encoding gradient, since the
+spins strike walls regardless.
+
+\subsection{One wall-collision process, two observables}
+\label{sec:theory:dual}
+
+The surface term in Eq.~\eqref{eq:r2app} is not an exotic addition; it is the
+quantitative-MRI face of a process the diffusion-MRI community already
+characterises in detail. Novikov, Fieremans, Burcaw and colleagues
+\citep{Novikov2014, Burcaw2015, NovikovKiselev2010} showed that in randomly packed media the
+\emph{extra-axonal} diffusion coefficient is time-dependent: as the diffusion
+time grows, walkers encounter more of the disordered packing, and the
+ensemble-averaged $D(t)$ relaxes towards its tortuosity limit $D_\infty$ (the
+long-time plateau diffusivity) at a rate set by the two-point density correlation
+function $\Gamma(\mathbf r)$ --- how the cylinder positions correlate across the pack ---
+\begin{equation}
+  D(t) \;\approx\; D_\infty + \frac{\Gamma_0}{2\pi}\,\frac{\ln(4 D_\infty t/e\zeta^2)}{t}
+  \qquad\text{(2D random cylinder packing)},
+  \label{eq:dt}
+\end{equation}
+with $\Gamma_0$ and $\zeta$ the disorder strength and correlation length. The
+diffusion experiment reads this off as a $b$-value-encoded, time-dependent
+attenuation.
+
+The same wall collisions that produce the time dependence of $D(t)$ are, from the
+qMRI side, surface-relaxivity events. \emph{Every} encounter of a spin with a wall
+both (i) interrupts its free displacement --- the event whose statistics, summed
+over the packing, give $D(t)$ --- and (ii) exposes it to the wall's relaxation
+sink, accumulating surface local time. It is the \emph{same walls}, counted two
+ways. How tightly the two rates share a functional object depends on the regime. At
+\emph{short} times both are governed by the small-wavevector limit of the same packing
+correlation function $\Gamma(\mathbf r)$: the Mitra $t^{-1/2}$ surface term of the
+relaxation is the literal twin of the $\sqrt{t}$ correction to $D(t)$
+\citep{Mitra1992, NovikovKiselev2010}. At the \emph{long} times a myelin-water train runs,
+however, $D(t)$ still carries $\Gamma$'s shape (its approach to the tortuosity plateau,
+Eq.~\eqref{eq:dt}) whereas the surface rate has saturated to the motional-narrowing
+plateau $\rho\,\langle S/V\rangle$ --- set by the \emph{mean} exterior surface density
+(the normalisation of $\Gamma$), not its shape. So the honest statement is not ``one
+correlation function, two observables'' at all times, but: two readouts of one
+wall-collision process on one substrate, sharing a common short-time origin and a common
+mean geometry. The diffusion measurement plays a gradient and so resolves that
+substrate's \emph{orientational} structure (the fibre orientation distribution) and its
+\emph{temporal} structure $D(t)$; the relaxometry measurement plays no gradient and reads
+only the scalar, orientation-integrated projection, the rate $\rho\,(S/V)$.
+
+This is literal in the spherical-convolution picture of white matter. The voxel is
+one fibre orientation distribution (FOD) $\mathcal F(\hat{\mathbf n})$ convolved with
+one per-fibre response kernel $\mathcal K$ \citep{tournier2007},
+\begin{equation}
+  S(\hat{\mathbf g},b,\mathrm{TE})=\int_{S^2}\mathcal F(\hat{\mathbf n})\,
+  \mathcal K(\hat{\mathbf g}\!\cdot\!\hat{\mathbf n};b,\mathrm{TE})\,\mathrm d\hat{\mathbf n},
+  \qquad
+  \mathcal K=\!\!\sum_{c\in\{\mathrm i,\mathrm e,\mathrm m\}}\!\! f_c\,
+  e^{-\mathrm{TE}\,R_{2,c}}\,E_c(\hat{\mathbf g}\!\cdot\!\hat{\mathbf n},b),
+  \label{eq:fod_conv}
+\end{equation}
+each compartment carrying its transverse rate $R_{2,c}$ ---
+$R_{2,\mathrm i}=1/T_{2,\mathrm b}+\rho\,\svin$ (interior wall),
+$R_{2,\mathrm e}=1/T_{2,\mathrm b}+\rho\,S_{\mathrm{ext}}/V_{\mathrm{ext}}$ (exterior;
+Sec.~\ref{sec:theory:closedforms}) --- and its diffusion attenuation $E_c$. The
+surface-relaxivity rate is gradient-free, so it sits entirely in the $\ell=0$ monopole of
+this kernel, $\kappa_0(\mathrm{TE})=\sum_c f_c\,e^{-\mathrm{TE}R_{2,c}}$: a multi-echo
+experiment carries the surface term in full (fused into the $R_{2,c}$) but is blind to
+the FOD's shape, which is why relaxometry reports a scalar $\rho\,(S/V)$ with no
+fibre-angle dependence (absent susceptibility).
+
+Standard diffusion processing, conversely, normalises that factor away. A diffusion
+experiment divides by its own $b{=}0$ image at the \emph{same} echo time, so the common
+relaxation factor $e^{-\mathrm{TE}(1/T_{2,\mathrm b}+\rho S/V)}$ cancels and the FOD it
+estimates is, to leading order, \emph{relaxivity-blind} --- exact for a single
+compartment, with a multi-compartment voxel leaving only a second-order TE-reweighting of
+the compartment fractions,
+\begin{equation}
+  E(\hat{\mathbf g},b)=\sum_c w_c(\mathrm{TE})\,E_c(\hat{\mathbf g},b),
+  \qquad
+  w_c(\mathrm{TE})=\frac{f_c\,e^{-\mathrm{TE}\,R_c}}{\sum_{c'} f_{c'}\,e^{-\mathrm{TE}\,R_{c'}}},
+  \label{eq:te_weights}
+\end{equation}
+the same effect that makes the apparent intra-axonal fraction TE-dependent
+\citep{Veraart2018}. The surface term is thus the one substrate property that relaxometry
+cannot separate from the bulk $T_2$ (Sec.~\ref{sec:theory:inseparability}) and that
+diffusion divides out --- carried by both signals, resolved by neither, yet set by the
+same wall geometry. Whether a tailored diffusion acquisition could nonetheless recover
+that geometry is a separate question we return to, and qualify, in the Discussion.
+
+\subsection{Closed forms over the myelinated-cylinder distribution}
+\label{sec:theory:closedforms}
+
+A myelinated axon is two concentric walls: the spins of the intra-axonal
+compartment diffuse in the lumen and bounce on the \emph{inner} wall at the inner
+(axonal) diameter $d$, while the extra-axonal spins bounce on the \emph{outer}
+myelin surface at diameter $d/g$, with $g$ the g-ratio. White-matter inner
+diameters follow a Gamma distribution $P(d)\propto d^{\alpha-1}e^{-d/\beta}$ with
+shape $\alpha\!\approx\!2$ \citep{Aboitiz1992, Assaf2008}; the outer-diameter
+distribution is the same scaled by $1/g$. The two walls therefore set two
+contributions to the surface-relaxivity attenuation, one keyed to $d$ and one to
+$d/g$.
+
+\paragraph{Interior wall (intra-axonal water).} For a cylinder of inner diameter
+$d$, the surface-to-volume ratio is $S/V=4/d$. Spins are populated by
+cross-sectional area ($\propto d^2$), so the compartment attenuation is the
+\emph{area-weighted} (``spin-weighted'') average of the Brownstein--Tarr factor
+over $P(d)$ --- the same population weighting the AxCaliber diffusion signal uses
+\citep{Assaf2008}. With $S/V=4/d$ the relevant moment is
+\begin{equation}
+  \Big\langle \tfrac{4}{d}\Big\rangle_{V}
+  \;=\; \frac{\int 4/d\;d^2 P(d)\,\mathrm dd}{\int d^2 P(d)\,\mathrm dd}
+  \;=\; \frac{4}{\beta(\alpha+1)},
+  \label{eq:area_moment}
+\end{equation}
+so the area-weighted attenuation is a modified-Bessel form in $t$ with effective
+rate $\rho\,\svin$.
+
+\paragraph{Exterior wall (extra-axonal water).} Extra-axonal spins bounce on the
+outer (myelin) surfaces, at diameter $d/g$, of the surrounding cylinders --- so the
+exterior surface density $S_{\mathrm{ext}}/V_{\mathrm{ext}}$ carries the g-ratio.
+Its surface-relaxivity rate is governed by the \emph{same} disordered packing that sets
+the time-dependent diffusion of Eq.~\eqref{eq:dt} --- sharing its short-time
+$\Gamma$-controlled behaviour and, as we now show, saturating at long times to a plateau
+fixed by the mean exterior surface density.
+
+At \emph{short} diffusion times the exterior rate follows the Mitra $t^{-1/2}$
+surface-to-volume law \citep{Mitra1992, Mitra1993} from the same small-wavevector
+correlations $\Gamma(k)\sim k^p$ ($p=0$ for randomly packed cylinders) that set $D(t)$
+\citep{NovikovKiselev2010} --- the short-time relaxometric twin of the Mitra $D(t)$
+expansion. Multi-echo myelin-water trains, however, run to \emph{long} echo times
+($t\gg\zeta^2/D_\infty$) in the \emph{fast-diffusion} (motional-narrowing) regime
+\citep{Brownstein1979}, where $\rho\,\ell/D_\infty\ll1$; both hold comfortably for
+myelinated white matter (with $\zeta\!\sim\!1\,\mu$m and $D_\infty\!\sim\!1\,\mu$m$^2$/ms
+the crossover $\zeta^2/D_\infty\!\sim\!1$\,ms sits far below the $10$--$320$\,ms echo
+times, and $\rho\,\ell/D_\infty\!\approx\!10^{-3}$). A walker therefore samples the full
+exterior geometry many times per echo, the rate saturates to a constant plateau,
+\begin{equation}
+  \frac{1}{T_{2,\mathrm{surf}}^{\mathrm{ext}}}
+  \;=\; \rho^{\mathrm{ext}}\,\frac{S_{\mathrm{ext}}}{V_{\mathrm{ext}}},
+  \label{eq:b_ext_long}
+\end{equation}
+identical in form to the interior term and to Eq.~\eqref{eq:bt_rate}. Two distinct
+statistical objects are at play here, and it is worth separating them cleanly. The long-time
+plateau rate is a \emph{one-point} quantity --- the \emph{mean} exterior surface density
+$S_{\mathrm{ext}}/V_{\mathrm{ext}}$ (number density $\times$ per-cylinder outer perimeter over
+extra-axonal area). It equals $\rho\,\langle S/V\rangle$ because, in the fast-diffusion limit,
+the lowest Robin eigenvalue of the connected extra-axonal domain reduces to $\rho$ times its
+total surface over total volume whenever the corresponding eigenmode is uniform across the pore
+network --- i.e.\ under motional narrowing over the whole extra-axonal space. The \emph{approach}
+to that plateau, by contrast, is governed by the \emph{two-point} density correlation
+$\Gamma(\mathbf r)$ (Eq.~\eqref{eq:dt}) --- the same object that sets the time-dependence of
+$D(t)$, and whose small-wavevector limit gives the short-time Mitra twin. So the two observables
+share the two-point $\Gamma$ in their \emph{time-dependence} and share only the one-point mean
+geometry at the \emph{plateau} the multi-echo train integrates over. The mean-field plateau is
+moreover exact only when the extra-axonal water motionally averages over the \emph{local}
+distribution of $S/V$ within an echo; where tight near-contacts kinetically isolate high-$S/V$
+pockets the uniform-eigenmode assumption fails and the arithmetic mean is a lower bound (by
+Jensen, the convex Robin response to a distribution of local $S/V$ exceeds the response to the
+mean), a limit we return to in Sec.~\ref{sec:discussion}. Both walls therefore contribute an
+isotropic, TE-linear Brownstein--Tarr rate to Eq.~\eqref{eq:r2app}, tied through $d$ and $g$ to
+the substrate geometry the relaxometry experiment does not resolve.
+
+For the ratio of the two walls the calibre distribution drops out entirely. Writing the
+exterior density as total outer-wall perimeter over extra-axonal area,
+$S_{\mathrm{ext}}/V_{\mathrm{ext}}=\sum 2\pi r_{\mathrm{out}}/(L^2-\sum\pi r_{\mathrm{out}}^2)$,
+and using $r_{\mathrm{in}}=g\,r_{\mathrm{out}}$ with the fibre (outer) volume fraction
+$\mathrm{VF}=\sum\pi r_{\mathrm{out}}^2/L^2$, the interior-to-exterior ratio reduces to a
+purely geometric factor,
+\begin{equation}
+  \frac{\svin}{S_{\mathrm{ext}}/V_{\mathrm{ext}}}
+  \;=\; \frac{1-\mathrm{VF}}{g\,\mathrm{VF}},
+  \label{eq:svratio_theory}
+\end{equation}
+\emph{independent of the calibre distribution}, which sets only the common scale. The two
+rates cross at $\mathrm{VF}^{\ast}=1/(1+g)$: below it the interior wall dominates, above it
+the extra-axonal water --- squeezed into thin, high-$S/V$ crevices between tightly packed
+fibres --- relaxes faster. This single ratio governs the intra-axonal signal-fraction bias
+of Sec.~\ref{sec:results:fintra}.

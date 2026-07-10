@@ -1,0 +1,400 @@
+% ============================================================================
+\section{Results}
+\label{sec:results}
+% ============================================================================
+
+\subsection{Surface relaxivity enters the signal and the apparent $T_2$}
+\label{sec:results:signal}
+
+Figure~\ref{fig:signal}A shows the surface attenuation of the intra- and
+extra-axonal water at $b=0$ --- with no diffusion-encoding gradient --- as a
+function of echo time, on the canonical substrate. The simulator contains no
+analytical relaxivity model: it propagates walkers, reflects them specularly at the
+walls, and accumulates the wall-contact local time, so the surface attenuation
+$\langle\exp(-\rho\,\mathcal L_{\partial\Omega}/D)\rangle$ read off the recorded
+contact is the simulator's first-principles wall dephasing. It lands on the
+closed-form surface factor for both walls --- the interior Brownstein--Tarr term
+over the realised inner-diameter distribution and the exterior Novikov--Burcaw
+term (Fig.~\ref{fig:signal}A), removing $36.4\%$ (Monte Carlo) versus $36.6\%$ (closed form) of
+the intra-axonal amplitude and $34.0\%$ versus $34.0\%$ of the extra-axonal amplitude by
+$\mathrm{TE}=60$\,ms --- both walls reproduced to ${\lesssim}0.2$\,pp. (The boundary-local-time
+estimator is resolved by sub-stepping the walk to the extra-axonal pore scale, so it is
+converged for both compartments; Sec.~\ref{sec:methods:mc}.) This pack-level agreement is an
+internal consistency check --- Monte Carlo and closed form both evaluate the motional-narrowing
+rate over the same realised geometry, so it confirms bookkeeping rather than the physics. The genuinely independent
+validation is against the \emph{exact} lowest Robin eigenvalue on a single cylinder (the root
+of $(kR)J_1/J_0=\rho R/D$, not merely its leading $\rho\,(2/R)$ limit;
+App.~\ref{sec:app:estimator}): the wall-counting estimator lands on it to $<1\%$ across radii,
+down to the sub-micron calibres that matter below --- so the rate the next section carries
+across the calibre distribution is validated at the small-diameter end, not extrapolated. The central
+physical fact follows from first principles: every wall encounter the Novikov--Burcaw
+theory counts toward the time-dependent diffusion $D(t)$ is also a surface-relaxation
+event, and the resulting rate $\rho\,(S/V)\approx5$\,s$^{-1}$ at the operating point
+enters the transverse decay even though no gradient is present to encode the displacement.
+
+The same physics shows directly in the multi-echo signal. Walking the \emph{full}
+CPMG train with the forward Monte Carlo --- per-compartment bulk relaxation plus
+first-principles wall relaxivity, with and without surface relaxivity, holding the
+intrinsic bulk $T_2$ and the myelin volume fixed (Sec.~\ref{sec:methods:engine}) ---
+the surface term visibly speeds the decay (Fig.~\ref{fig:signal}B), and more for the
+fine, high-$S/V$ substrate than for the coarse one, even though both share the same
+bulk $T_2$. Fed to the standard NNLS $T_2$-spectrum analysis, the apparent long-$T_2$
+intra/extra (IE) pool shifts toward the short-$T_2$ myelin window (Fig.~\ref{fig:signal}C):
+surface relaxivity shortens the apparent IE $T_2$, the more so at high $S/V$. In the raw walk
+the \emph{integrated} short-$T_2$ fraction barely moves --- the sub-micron axons whose water
+actually crosses the window lie below the simulator's calibre floor --- so the quantitative
+myelin-water bias is carried by the full-distribution forward model of the next section, of
+which this is the estimator-free, spectral-shift counterpart. The apparent $T_2$ of the intra/extra water is thus
+$1/(1/T_{2,\mathrm{b}}+\rho\,S/V)$, with the geometric term inseparable from the
+material one (Sec.~\ref{sec:theory:inseparability}); because $S/V=4/d$ for the
+interior wall and scales likewise for the exterior, the shift is set by axon calibre
+and packing --- the dependence the next section carries into the myelin water
+fraction.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig_signal.pdf}
+  \caption{\textbf{Surface relaxivity enters the multi-echo signal and the apparent
+  $T_2$.}
+  \textbf{(A)} Forward Monte Carlo surface attenuation at $b=0$ (wall counting, no
+  analytical relaxivity model; markers) versus the closed-form interior (Brownstein--Tarr,
+  circles) and exterior (Novikov--Burcaw, squares) factors (solid lines) --- both walls
+  reproduced to ${\lesssim}0.2$\,pp (the engine sub-steps the boundary local time to the
+  extra-axonal pore scale). So wall-counting reproduces $\rho\,(S/V)$, and the multi-echo
+  $T_2$ carries it with no gradient.
+  \textbf{(B)} Engine-simulated gradient-free CPMG decay (log scale), surface on (solid)
+  for small/large calibre vs the calibre-independent surface-off reference (dashed grey):
+  the surface term speeds the decay, more at high $S/V$.
+  \textbf{(C)} Standard-NNLS $T_2$ spectra, surface on vs off: surface relaxivity shifts
+  the long-$T_2$ IE pool toward the $25$\,ms myelin window, more at high
+  $S/V$.}
+  \label{fig:signal}
+  {\footnotesize\textit{Reproducible from} \texttt{figures/fig\_cpmg\_mwf\_engine.py} (panel~A reads \texttt{fig\_mwf\_sv\_bias.py}).}
+\end{figure}
+
+\subsection{Surface relaxivity biases the intra-axonal signal fraction}
+\label{sec:results:fintra}
+
+The most consequential reading of that $T_2$ shift is on the diffusion side. Every diffusion
+microstructure model --- NODDI, the spherical-mean technique, the standard model --- estimates
+an intra-axonal signal fraction $f_{\mathrm{intra}}$ and normalises the diffusion-weighted
+signal by a $b{=}0$ acquired at the \emph{same} echo time, assuming the compartments share one
+$T_2$. They do not: the interior and exterior walls carry different $S/V$, so surface relaxivity
+gives the intra- and extra-axonal water different apparent $T_2$. To leading order the fraction
+an unbiased estimator returns is the TE-weighted signal fraction
+$w_c(\mathrm{TE})=f_c e^{-\mathrm{TE}R_c}/\sum_{c'}f_{c'}e^{-\mathrm{TE}R_{c'}}$
+(Eq.~\eqref{eq:te_weights}), so the recovered $f_{\mathrm{intra}}$ inherits the surface
+reweighting to leading order. That fractions are TE-dependent when compartment $T_2$ differ is
+established \citep{Veraart2018}; what is new here is the \emph{source} we assign to the
+compartmental $T_2$ difference --- a surface-relaxivity rate $\rho\,(S/V)$ tied to axon calibre
+and packing --- and the resulting closed-form \emph{sign law}, below. We quantify the effect as
+the bias in the signal weight $w_{\mathrm{intra}}$; this is the leading-order term that
+propagates to any fraction estimator. This signal weight is distinct from the \emph{geometric}
+fibre volume fraction $VF$ that sets $S/V$: it is a $b{=}0$-normalised, $T_2$-weighted water
+fraction, related to $VF$ only through the compartment geometry and relaxation, and it is exactly
+the quantity surface relaxivity biases (which is why the correction injects $VF$ as a prior rather
+than reading it off the fit). It is not a strict upper bound on the recovered-parameter
+bias: a fit with the diffusivities constrained returns the weight essentially directly,
+and estimator model-mismatch can even \emph{amplify} it --- our spherical-mean fit below recovers
+a bias of the same order as, and at points exceeding, the signal-weight estimate. We therefore
+treat $w_{\mathrm{intra}}$ as the representative first-order magnitude, and confirm it with an
+actual estimator (Fig.~\ref{fig:smt}).
+
+The interior surface-to-volume is the per-axon $4/d$ (area/spin-weighted
+$\langle 4/d\rangle_V=2\langle r\rangle/\langle r^2\rangle$, set by calibre alone); the exterior
+is set by packing --- total outer-wall perimeter over extra-axonal area. Their ratio
+(Eq.~\eqref{eq:svratio_theory}) reduces to the purely geometric $(1-\mathrm{VF})/(g\,\mathrm{VF})$,
+\emph{independent of the calibre distribution} (which sets only the absolute scale), and the two
+are equal at a crossover packing $\mathrm{VF}^{\ast}=1/(1+g)\approx0.59$ (Fig.~\ref{fig:fintra}A):
+below it the interior wall dominates and intra water relaxes faster; above it the extra-axonal
+water, squeezed into thin high-$S/V$ crevices between tightly packed fibres, relaxes faster.
+
+Carried into the fraction estimate, the intra/extra \emph{odds} are rescaled by a single
+exponential,
+\begin{equation}
+  \frac{f_{\mathrm{intra}}^{\mathrm{app}}}{1-f_{\mathrm{intra}}^{\mathrm{app}}}
+  = \frac{f_{\mathrm{intra}}}{1-f_{\mathrm{intra}}}\,
+    \exp\!\big[-\mathrm{TE}\,\rho\,\big((S/V)_{\mathrm{int}}-(S/V)_{\mathrm{ext}}\big)\big],
+  \label{eq:fbias}
+\end{equation}
+so $f_{\mathrm{intra}}$ is \emph{under}-estimated in loosely packed white matter and
+\emph{over}-estimated in densely packed white matter, crossing zero at $\mathrm{VF}^{\ast}$
+(Fig.~\ref{fig:fintra}B; the closed form of Eq.~\eqref{eq:fbias} reproduces the sign law and
+crossover exactly and tracks the magnitude of the exact distributed-calibre calculation to
+${\lesssim}4$\,pp, slightly \emph{under}-estimating it --- by Jensen, the distributed thin-calibre
+tail leaves the surviving intra water higher than the mean-rate approximation). Physiological
+white matter (fibre
+$\mathrm{VF}\approx0.65$--$0.8$) sits \emph{above} the crossover, where at clinical PGSE
+($\mathrm{TE}=80$\,ms) and the cited $\rho$ the intra-axonal signal weight is over-estimated by
+${\approx}12\%$ at $\mathrm{VF}=0.65$, rising to ${\approx}22\%$ by $\mathrm{VF}=0.72$. At the
+denser end the exterior $S/V$ approaches ${\sim}11\,\mu$m$^{-1}$ (sub-$0.1\,\mu$m crevices) and
+the mean-field plateau of Eq.~\eqref{eq:svratio_theory} becomes marginal (extra-axonal water may
+not motionally average over the local $S/V$; Sec.~\ref{sec:discussion}), so the largest values
+are an upper edge, not a central estimate --- and, since the local-$S/V$ distribution can only
+raise the exterior rate (Jensen), the robust ${\approx}12\%$ at $\mathrm{VF}\,0.65$ is a
+\emph{lower} bound on the dense side. For traceability:
+at $\mathrm{VF}=0.65$ the interior and exterior densities are $\svin\!\approx\!6.3$ and
+$S_{\mathrm{ext}}/V_{\mathrm{ext}}\!\approx\!8.3\,\mu$m$^{-1}$, a differential surface rate
+$\rho\,(S_{\mathrm{ext}}/V-\svin)\!\approx\!2.3\,$s$^{-1}$ that over $\mathrm{TE}=80$\,ms shifts
+the intra/extra odds by ${\approx}20\%$ --- a ${\approx}{+}9\%$ mean-rate fraction bias, which
+the exact calibre-distributed calculation (Fig.~\ref{fig:fintra}B) raises to ${+}12\%$ (the
+${\lesssim}3$\,pp closed-vs-exact gap, from the thin-calibre tail). All $f_{\mathrm{intra}}$
+percentages here are \emph{relative} fraction biases.
+
+The exponent of Eq.~\eqref{eq:fbias} is \emph{linear} in $\rho$, so the same order-of-magnitude
+uncertainty that bounds the MWF result below applies here directly and symmetrically: the
+${\approx}12\%$ is quoted at the cited $\rho$ and scales roughly linearly with it (the
+log-odds shift doubles as $\rho$ doubles). Unlike the MWF term below --- which we show rides
+${\sim}50\times$ beneath \emph{single-voxel} noise --- this is a first-order bias on a headline
+metric; being deterministic in the substrate it is a \emph{spatially structured systematic},
+not zero-mean noise, so it does not average down as $1/\sqrt{N}$ but shifts a regional or cohort
+mean by close to its full value. Whether it clears single-voxel diffusion-fit scatter depends on
+the protocol and is not established here; its signature is regional and cross-cohort, not
+per-voxel.
+
+The bias carries a \emph{testable} signature: it grows monotonically with echo time
+(Fig.~\ref{fig:fintra}C), so an $f_{\mathrm{intra}}$ that drifts with TE at fixed $b$ is
+consistent with it. This is necessary but not sufficient evidence --- the same TE drift arises
+from any compartmental $T_2$ difference (intrinsic intra/extra bulk $T_2$, CSF partial volume,
+exchange), the generic TEdDI effect \citep{Veraart2018}. What would distinguish the surface term
+is its \emph{packing dependence}: the sign and magnitude track fibre volume fraction through
+Eq.~\eqref{eq:svratio_theory}, reversing below $\mathrm{VF}^{\ast}$, whereas an intrinsic-$T_2$
+offset does not.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig_fintra_bias.pdf}
+  \caption{\textbf{Surface relaxivity biases the intra-axonal signal fraction, with a sign set
+  by packing.}
+  \textbf{(A)} Interior $S/V$ (calibre-set, flat) vs exterior $S/V$ (packing-set, rising) vs
+  fibre volume fraction; they cross at $\mathrm{VF}^{\ast}=1/(1+g)$, and physiological WM (grey
+  band) sits above it where the exterior wall dominates.
+  \textbf{(B)} Intra-axonal signal-weight $w_{\mathrm{intra}}$ relative bias (the
+  leading-order recovered-$f_{\mathrm{intra}}$ bias) vs fibre VF at clinical
+  $\mathrm{TE}=80$\,ms (lines: exact distributed calculation; circles: closed form
+  Eq.~\eqref{eq:fbias}): under-estimated when loose, over-estimated when dense, zero at
+  $\mathrm{VF}^{\ast}$; ${+}12\%$ (relative) at $\mathrm{VF}=0.65$, rising to ${+}22\%$ at $0.72$.
+  \textbf{(C)} The bias grows with echo time --- the testable fingerprint --- for loose,
+  crossover, and dense packing.}
+  \label{fig:fintra}
+  {\footnotesize\textit{Reproducible from} \texttt{figures/fig\_fintra\_bias.py}.}
+\end{figure}
+
+So far the bias is the reweighting of the intra-axonal \emph{signal weight}; we confirm it
+survives an actual estimator and that a prior corrects it (Fig.~\ref{fig:smt}). We forward-simulate
+a dense-WM multi-shell signal with surface relaxivity on, and fit it with the standard
+spherical-mean technique (SMT: intra stick $+$ extra zeppelin) \citep{Kaden2016}. Because the
+surface factor is $b$-independent it propagates through the whole multi-shell fit, so the
+recovered $f_{\mathrm{intra}}$ inherits the bias and \emph{drifts with echo time} --- from
+${\approx}{+}15\%$ at $\mathrm{TE}=50$\,ms to ${\approx}{+}30\%$ at $90$\,ms (the surface term
+isolated by differencing against a surface-off fit, whose recovered fraction is TE-independent
+to ${<}0.01$, so the drift is the surface term and not a fitting artefact;
+Sec.~\ref{sec:methods:smt}). This confirms the effect is not merely a $b{=}0$ prefactor: it
+propagates to what a real estimator returns, at a magnitude comparable to (here somewhat above)
+the analytical signal-weight bias. A cohort of healthy controls scanned at different echo
+times --- routine across sites --- would thus report spuriously different $f_{\mathrm{intra}}$
+for identical tissue. The degeneracy that forbids \emph{estimating} the surface term at one TE
+(Sec.~\ref{sec:theory:inseparability}) does not forbid \emph{correcting} for it: injecting a
+region's histology-derived calibre prior (so that
+$\rho\,[(S/V)_{\mathrm{int}}-(S/V)_{\mathrm{ext}}]$ is known, as NODDI already fixes
+diffusivities) undoes the odds rescaling of Eq.~\eqref{eq:fbias} at a single TE, collapsing the
+$15$--$30\%$ drift to a ${\sim}6\%$ residual (Fig.~\ref{fig:smt}) and harmonising the cohort.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.92\linewidth]{fig_smt_fintra.pdf}
+  \caption{\textbf{A standard SMT fit returns the surface-biased $f_{\mathrm{intra}}$, and a
+  histology prior corrects it at a single TE.} Dense WM ($\mathrm{VF}=0.68$), analytical WM
+  forward with surface relaxivity on, fit by the standard spherical-mean technique in
+  \texttt{dmipy-fit}.
+  \textbf{(A)} Recovered $f_{\mathrm{intra}}$ vs echo time: surface-blind SMT (orange) drifts
+  well above the surface-free truth (dashed); injecting the histology prior (blue) recovers it.
+  \textbf{(B)} The same tissue read at different TE gives a spurious $f_{\mathrm{intra}}$ spread
+  of ${\approx}15$--$30\%$ under a blind fit (a multi-site confound), removed by the prior.}
+  \label{fig:smt}
+  {\footnotesize\textit{Reproducible from} \texttt{figures/fig\_smt\_fintra.py}.}
+\end{figure}
+
+\subsection{Surface relaxivity also biases the recovered myelin water fraction}
+\label{sec:results:mwf}
+
+The same $S/V$ difference reads through relaxometry too, in the myelin water fraction --- a
+smaller, structural companion that ties the diffusion and relaxometry pictures to one physics.
+Carrying that surface rate into the standard myelin-water analysis at \emph{fixed
+myelin volume} (Sec.~\ref{sec:methods:mwf}), the signal-weighted IE apparent $T_2$
+swings from $68.2$\,ms for large-calibre ($3\,\mu$m outer) fibres to $44.9$\,ms for fine
+($0.45\,\mu$m outer) fibres --- a ${\sim}34\%$ change driven entirely by the surface term
+$\rho\,(S/V)$, with no change in intrinsic tissue $T_2$ and none in myelin content.
+This $T_2$ shift is NNLS-independent (Eq.~\eqref{eq:r2app} read directly) and is the
+paper's most robust quantitative statement.
+
+That shift has a specific, and at first counter-intuitive, consequence for the recovered
+MWF. The intra-axonal water is not one $T_2$ but a distribution over calibre: each axon of
+\emph{inner} (axon) diameter $d_{\mathrm i}=g\,d$ carries an interior $S/V=4/d_{\mathrm i}$, so its
+water relaxes at $1/T_{2,\mathrm b}+\rho\,(4/d_{\mathrm i})$, and the \emph{thinnest} axons are
+shortened most. Once the inner diameter falls below a critical calibre
+$d^{\ast}=4\rho\,/\,(1/T_2^{\mathrm{cut}}-1/T_{2,\mathrm b})$ --- $0.17\,\mu$m (an inner/axon
+diameter) at the cited $\rho$ --- that axon's water crosses \emph{below} the $25$\,ms myelin
+window and is counted, by the window's own definition, as myelin water (Fig.~\ref{fig:mwf}A). Fine
+white matter therefore reads myelin-\emph{richer}, not poorer: the short-$T_2$ signal
+fraction, computed grid-free with no NNLS, rises above the true myelin fraction of $13.49\%$
+(recovered exactly at large calibre) to ${\approx}14.3\%$ at the finest calibre swept
+(Fig.~\ref{fig:mwf}B); between the reference calibres of the bound below the fine ($0.6\,\mu$m
+outer) vs large ($2.0\,\mu$m outer) excess is ${\approx}0.33$\,pp at the cited $\rho$.
+The standard chi-square-regularised NNLS estimator reproduces the same sign and amplifies
+it ($13.44\!\to\!14.35\%$; dashed), as it also assigns near-window intra water to the
+short-$T_2$ pool. The crossing is not merely a forward-model construction. Walking \emph{isolated} confined
+axons across a range of inner calibres with the wall-counting Monte Carlo --- which is exact
+for the confined interior (its single-cylinder rate matches the closed form $\rho\,(4/d)$ to
+the digit and the exact Robin eigenvalue to $<1\%$, App.~\ref{sec:app:estimator}) --- recovers
+an apparent intra-axonal $T_2=1/(1/T_{2,\mathrm b}+\rho\,4/d_{\mathrm i})$ that falls from
+$27.4$\,ms at $d_{\mathrm i}=0.20\,\mu$m to $22.6$\,ms at $0.15\,\mu$m and $19.2$\,ms at
+$0.12\,\mu$m --- crossing \emph{below} the $25$\,ms window at $d^{\ast}\approx0.17\,\mu$m
+(Fig.~\ref{fig:crossing}). What the from-scratch simulator cannot yet integrate is a
+\emph{packed} substrate: a dense pack's calibre floor (step cost $\propto 1/R^2$) truncates the
+sub-micron tail, so the packed CPMG shows the spectral shift but a negligible integrated MWF
+drift. The crossing is an interior effect, however, so the single-axon walk establishes it, and
+the distributed forward model then carries it across the calibre distribution.
+
+Read as myelin \emph{content} --- MWF's purpose --- the effect is larger than the
+water-fraction bias. The contaminating signal is intra-axonal water (${\approx}100\%$
+water) misassigned to the myelin pool, whose water content is only $W_M{\approx}0.4$
+(${\approx}60\%$ dry lipid and protein) \citep{West2018}; converting apparent MWF to
+myelin volume at that ratio over-states myelin by $1/W_M{\approx}2.5\times$ the
+water-fraction bias. The $0.33$\,pp fine-vs-large MWF excess at the cited $\rho$ thus
+implies a ${\approx}0.82$\,pp over-estimate of myelin content between the two regions at
+equal true myelin (Fig.~\ref{fig:mwf}B, right axis).
+
+The magnitude is contingent on $\rho$, which for myelinated tissue is not independently
+established --- the cited $\rho=1.16\,\mu$m/s is a coefficient of a relaxation--diffusion
+model fitted to histology \citep{Barakovic2023}, not a measured axolemma relaxivity, and
+is plausibly uncertain by an order of magnitude. Because $d^{\ast}$ grows linearly with
+$\rho$ while the volume-weighted fraction of axons below it grows super-linearly, the
+effect climbs steeply: the fine-vs-large MWF excess rises from $0.33$\,pp at the cited
+$\rho$ to $3.36$\,pp at $2.5\,\mu$m/s --- equivalently, $0.82\!\to\!8.4$\,pp of inferred
+myelin content (Fig.~\ref{fig:mwf}C), no longer negligible at the upper end and a fraction
+of the $2$--$5$\,pp MWF change attributed to demyelination
+\citep{Laule2004, Laule2006, Kitzler2012}. The structural claim ($S/V$ and $\rho$
+unobserved, the term inseparable) does not depend on the value. Being deterministic in the
+substrate the bias does not average away, but at clinical SNR it rides far beneath the
+\emph{single-voxel} noise: at $\mathrm{SNR}=150$ a single substrate's recovered MWF scatters by
+${\sim}4.7$\,pp, ${\sim}14\times$ the cited-$\rho$ systematic. That factor compares a single
+voxel's absolute-MWF scatter against the cross-region excess and so overstates how buried the
+\emph{contrast} is --- some of the NNLS ill-conditioning and realisation variance cancels in a
+matched fine-vs-large difference. The systematic is nonetheless exposed only by averaging: since
+it is spatially structured (it tracks calibre and packing) rather than zero-mean, it survives
+averaging that noise does not, but exposing a ${\sim}0.33$\,pp offset above a ${\sim}4.7$\,pp
+single-voxel floor still needs a region of order $(4.7/0.33)^2\!\sim\!200$ voxels even in the
+favourable uncorrelated-noise case. It is thus a small, cohort- or ROI-level systematic, not a
+per-voxel readout.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig_mwf_bias.pdf}
+  \caption{\textbf{Surface relaxivity biases the recovered myelin water fraction: fine
+  white matter reads myelin-richer.}
+  \textbf{(A)} Mechanism. Each axon relaxes at $1/T_{2,\mathrm b}+\rho\,(4/d)$, so the
+  intra-axonal $T_2$ is a distribution over calibre; for fine axons ($0.6\,\mu$m, orange)
+  it shifts down and grows a tail that crosses \emph{below} the $25$\,ms myelin window
+  (shaded), where it is counted as myelin water --- the large-calibre pool (blue) does
+  not.
+  \textbf{(B)} At fixed myelin volume, the apparent MWF (short-$T_2$ fraction, grid-free)
+  rises above the true myelin fraction $F_M$ (dotted) as $S/V$ increases --- fine WM reads
+  myelin-richer; standard NNLS (dashed) amplifies it. Right axis: inferred excess myelin
+  content ($\times 1/W_M$), the $2.5\times$-amplified reading. Green rug: interior $S/V$ of
+  $10$ real rat cross-sections (AxonDeepSeg; Sec.~\ref{sec:methods:real}).
+  \textbf{(C)} The bound: fine- ($0.6\,\mu$m outer) vs large-calibre ($2.0\,\mu$m outer) MWF
+  excess vs the poorly-known $\rho$ --- $0.33$\,pp (${\approx}0.82$\,pp myelin content) at the
+  cited $\rho$, climbing super-linearly to $3.4$\,pp (${\approx}8.4$\,pp myelin) at
+  $2.5\,\mu$m/s.}
+  \label{fig:mwf}
+  {\footnotesize\textit{Reproducible from} \texttt{figures/fig\_mwf\_sv\_bias.py}.}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.62\linewidth]{fig_crossing_mc.pdf}
+  \caption{\textbf{Fine axons cross below the myelin window --- shown directly in the
+  Monte Carlo.} Gradient-free wall-counting walks in \emph{isolated} reflecting cylinders
+  (confined interior, where the estimator is exact) recover the apparent intra-axonal $T_2$
+  (circles) at a range of inner calibres. They sit on the closed form
+  $1/(1/T_{2,\mathrm b}+\rho\,4/d)$ (blue) to the digit and cross below the $25$\,ms myelin
+  window (shaded) at $d^{\ast}\approx0.17\,\mu$m, confirming the mechanism the distributed
+  forward model integrates over the calibre distribution. The packed CPMG cannot reach this
+  sub-micron tail (step cost $\propto1/R^2$); the interior effect needs only the single-axon
+  walk.}
+  \label{fig:crossing}
+  {\footnotesize\textit{Reproducible from} \texttt{figures/fig\_crossing\_mc.py}.}
+\end{figure}
+
+\subsection{The bias as a tract demyelinates}
+\label{sec:results:demyel}
+
+The bias so far is a cross-region contrast at fixed myelin. The clinically central
+question is longitudinal: as a tract demyelinates, does the surface term make the apparent
+MWF \emph{change} mis-state the true myelin loss? We trace this within-subject (24 realised
+packs; axons frozen, myelin thinned from $g_0=0.70$ toward $g=0.90$;
+Sec.~\ref{sec:methods:demyel}), one subject's cross-section at three stages shown in
+Fig.~\ref{fig:demyel}A --- the axon centres and inner (lumen) radii frozen, only the outer
+myelin wall retreating.
+
+The key is that the crossing which causes the bias is set by the \emph{inner} diameter, and
+primary demyelination preserves the lumen. The bias is therefore a nearly \emph{constant}
+offset: apparent MWF sits just above true throughout, by $+0.34$\,pp at baseline and
+$+0.30$\,pp at $g=0.90$ (Fig.~\ref{fig:demyel}B) --- the small drift coming only from the
+water-fraction normalisation as $40\%$-water myelin converts to $100\%$-water extra-axonal
+space, not from the crossing itself. Because a within-subject \emph{change} subtracts the
+baseline, this near-constant offset cancels: over a trajectory in which the true MWF falls
+$13.49\!\to\!2.63\%$ (a $10.86$\,pp drop) the apparent MWF falls $10.91$\,pp, an
+over-report of ${\sim}0.05$\,pp --- of order $0.4\%$ of the true change, and within the forward
+model's own idealisation (Fig.~\ref{fig:demyel}C). So the
+surface-relaxivity confound is a \emph{cross-region} effect, not a longitudinal one: for
+primary demyelination (a g-ratio rise at preserved axons) it very nearly cancels in
+same-substrate tracking, because it is tied to the axon lumen the pathology leaves intact.
+Axonal loss or a shift in the fine-calibre population would break this cancellation ---
+they alter the very inner-diameter distribution the offset is set by --- so the statement is
+bounded to lumen-preserving demyelination.
+
+Crucially, the \emph{diffusion} intra-axonal fraction behaves oppositely along the same
+trajectory, and the contrast unifies the two halves of this paper through the g-ratio. The MWF
+bias is set by the \emph{interior} crossing (the inner axon wall, which demyelination
+preserves), so it is constant and cancels. The $f_{\mathrm{intra}}$ bias of Eq.~\eqref{eq:fbias}
+is instead set by the interior-\emph{minus}-exterior differential $\rho[(S/V)_{\mathrm{int}}-(S/V)_{\mathrm{ext}}]$,
+and the g-ratio enters both walls: the exterior wall is the fibre boundary at $d_{\mathrm i}/g$,
+so as myelin thins it \emph{retreats} and $(S/V)_{\mathrm{ext}}$ collapses (here $5.4\!\to\!2.9\,\mu$m$^{-1}$
+over $g\,0.70\!\to\!0.90$) while $(S/V)_{\mathrm{int}}$ stays fixed. The differential therefore
+\emph{grows}, and the $f_{\mathrm{intra}}$ bias \emph{drifts} rather than cancels --- from
+${\approx}{-}5\%$ at baseline to ${\approx}{-}21\%$ at $g=0.90$ (Fig.~\ref{fig:demyel}D), at a
+clinical $\mathrm{TE}=80$\,ms. (This trajectory's baseline sits at fibre $\mathrm{VF}=0.55$,
+just \emph{below} the crossover $\mathrm{VF}^{\ast}(g_0)=0.59$, so its $f_{\mathrm{intra}}$ bias
+is \emph{negative} --- interior-dominated, opposite in sign to the dense-WM headline of
+Sec.~\ref{sec:results:fintra} --- and grows more negative as the exterior wall retreats.)
+So one $S/V$ physics gives longitudinally opposite readouts: the
+relaxometry MWF change is nearly confound-free, whereas a diffusion $f_{\mathrm{intra}}$ change
+across a demyelinating tract carries a large, TE-dependent surface artefact --- and, because the
+trajectory sweeps fibre VF across the crossover $\mathrm{VF}^{\ast}=1/(1+g)$, the sign of the
+$f_{\mathrm{intra}}$ bias can even reverse mid-trajectory for a denser healthy baseline.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig_demyelination_bias.pdf}
+  \caption{\textbf{As a tract demyelinates, the surface-relaxivity bias cancels in the
+  longitudinal change.} Within-subject trajectory ($24$ packs; axons frozen, myelin thinned
+  from $g_0=0.70$ to $g=0.90$; Sec.~\ref{sec:methods:demyel}), same forward model and
+  MC-validated rate as Fig.~\ref{fig:mwf}.
+  \textbf{(A)} One subject's substrate at three stages: axon centres and inner radii frozen,
+  the outer myelin wall $r_{\mathrm{out}}=r_{\mathrm{in}}/g$ shrinking.
+  \textbf{(B)} Apparent (solid, cited $\rho$) sits just above true (dashed) MWF, and both
+  fall steeply; the bias (dotted, right axis) is small and nearly constant because it is set
+  by the fixed inner radii, not the retreating outer wall.
+  \textbf{(C)} Apparent vs true MWF \emph{change}: the measured curve lies on the no-bias
+  diagonal --- the lumen-driven offset cancels, so the apparent loss tracks the true loss to
+  within ${\sim}0.4\%$.
+  \textbf{(D)} The unifying contrast: along the same trajectory the relaxometry MWF bias (blue,
+  left axis) stays flat and cancels --- it reads the fixed \emph{interior} wall --- while the
+  diffusion $f_{\mathrm{intra}}$ bias (orange, right axis) \emph{drifts} from ${\approx}{-}5\%$
+  to ${\approx}{-}21\%$, because it reads the interior$-$exterior differential and the exterior
+  wall retreats as myelin thins.}
+  \label{fig:demyel}
+  {\footnotesize\textit{Reproducible from} \texttt{figures/fig\_demyelination\_bias.py}.}
+\end{figure}
