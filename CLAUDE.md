@@ -11,8 +11,9 @@ the engines are the sibling repos.
   autodoc the *installed* `dmipy_sim` / `dmipy_fit`, so the reference is sourced from the real
   engine docstrings (can't drift).
 - `.github/workflows/docs.yml` — build + deploy to GitHub Pages (CNAME → dmipy.org).
-- `papers/surface_relaxivity_mwf/` — the paper (PDF + LaTeX + figures); **removed while the
-  repo is public pre-preprint**, re-added on release (canonical copy kept privately).
+- `papers/` — reproducible manuscripts (PDF + LaTeX + rerunnable figures); index at
+  `papers/README.md`. Currently `papers/surface_relaxivity_bias/` (canonical working copy
+  kept privately).
 
 ## Relationships (don't conflate)
 - **dmipy** (this repo) = the public computational-engine brand + docs + paper.

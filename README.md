@@ -31,8 +31,9 @@ import dmipy_sim, dmipy_fit   # no importable `dmipy`; import the engines direct
 - `pyproject.toml` — the thin `dmipy` meta-package (installs the two engines).
 - `docs/` + `mkdocs.yml` — the [dmipy.org](https://dmipy.org) site (MkDocs Material; built and
   deployed by `.github/workflows/docs.yml`).
-- (on release) `papers/surface_relaxivity_mwf/` — *"Surface relaxivity and bulk T2 are
-  inseparable in multi-echo MRI"* (added when the preprint is posted).
+- `papers/` — reproducible manuscripts (source + PDF + rerunnable figures); currently
+  `papers/surface_relaxivity_bias/` — *"Surface relaxivity biases diffusion and relaxometry
+  microstructure estimates."* See [`papers/README.md`](papers/README.md).
 
 Build the docs locally:
 
