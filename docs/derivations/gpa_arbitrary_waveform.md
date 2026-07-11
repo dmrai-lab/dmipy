@@ -251,6 +251,13 @@ E(\hat{\mathbf n}) = 1$ for all $\hat{\mathbf n} \Rightarrow S = 1$. ✓
 
 ## 6. Monte-Carlo validation
 
+![GPA cylinder: dmipy-fit analytic vs dmipy-sim Monte-Carlo perpendicular attenuation, every point on the identity line across six radii.](media/parity_gpa.png)
+
+The analytical GPA cylinder (`dmipy-fit`) reproduces the `dmipy-sim` Monte-Carlo signal to within
+Monte-Carlo noise across six radii ($0.25$–$3\,\mu$m) and the physiological b-range — every point
+falls on the identity line (max $|\Delta E| = 0.016$, RMSE $0.002$). This is the *consistency check*
+between the two engines described in the scope note above, not an independent proof.
+
 Validated at atol $\le 0.02$ ($b < 3000$ s/mm²) and atol $\le 0.05$ ($b \ge 3000$ s/mm²) against
 500 000-walker MC trajectories for:
 
