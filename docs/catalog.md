@@ -449,6 +449,13 @@ return mcm
 
 ### Relaxometry (multi-TE)
 
+!!! note "Per-compartment T2 is a factor, not a built-in parameter"
+    A bare `C1Stick()`/`G1Ball()` carries **no `T2` parameter** — diffusion compartments are
+    pure diffusion. To give a compartment its own $T_2$ (or surface relaxivity) you wrap it in an
+    `OccupancyGatedModel` with a `TransverseRelaxation()` factor. The model construction *is* the
+    opt-in; that is what makes the multi-TE models below fit `T2_intra`/`T2_extra`. (These fits
+    also need a multi-echo acquisition — see the [surface-relaxivity page](surface_relaxivity_bias.md).)
+
 #### `mte_ball_stick()` <small>I1</small>
 
 Multi-TE Ball-and-Stick with per-compartment T2 relaxation.
@@ -456,8 +463,10 @@ Multi-TE Ball-and-Stick with per-compartment T2 relaxation.
 *[Gong et al. 2020, NeuroImage 217](https://doi.org/10.1016/j.neuroimage.2020.116906)*
 
 ```python
-mcm = MultiCompartmentModel([C1Stick(), G1Ball()])
-return mcm   # T2 on both compartments is free by default
+from dmipy_fit.signal_models.attenuation import OccupancyGatedModel, TransverseRelaxation
+intra = OccupancyGatedModel(C1Stick(), [TransverseRelaxation()])   # exposes ..._T2
+extra = OccupancyGatedModel(G1Ball(),  [TransverseRelaxation()])
+return MultiCompartmentModel([intra, extra])   # T2_intra, T2_extra now free
 ```
 
 #### `mte_noddi()` <small>I2</small>
@@ -474,7 +483,7 @@ bundle.set_equal_parameter('G2Zeppelin_1_lambda_par', 'C1Stick_1_lambda_par')
 bundle.set_fixed_parameter('G2Zeppelin_1_lambda_par', _Da)
 mcm = MultiCompartmentModel([bundle, G1Ball()])
 mcm.set_fixed_parameter('G1Ball_1_lambda_iso', _Dcsf)
-return mcm   # T2 on Stick and Zeppelin inside bundle are free parameters
+return mcm   # wrap each compartment in OccupancyGatedModel([TransverseRelaxation()]) for T2 (see note)
 ```
 
 #### `mte_sandi()` <small>I3</small>
@@ -487,7 +496,7 @@ MTE-SANDI: SANDI with per-compartment T2 relaxation.
 soma = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
 mcm  = MultiCompartmentModel([soma, C1Stick(), G1Ball()])
 mcm.set_fixed_parameter('C1Stick_1_lambda_par', _Da)
-return mcm   # T2 on Stick and Ball compartments are free; soma has no T2 param
+return mcm   # each compartment wrapped in OccupancyGatedModel([TransverseRelaxation()]) for T2 (see note)
 ```
 
 #### `wmti()` <small>I4</small>
@@ -525,7 +534,7 @@ mcm.set_tortuous_parameter(
 )
 mcm.set_equal_parameter('C1Stick_1_mu', 'G2Zeppelin_1_mu')
 mcm.set_equal_parameter('C1Stick_1_lambda_par', 'G2Zeppelin_1_lambda_par')
-return mcm   # T2 on all three compartments are free parameters
+return mcm   # each compartment wrapped in OccupancyGatedModel([TransverseRelaxation()]) for T2 (see note)
 ```
 
 #### `mte_impulsed()` <small>I6</small>

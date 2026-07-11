@@ -1,10 +1,10 @@
 # Generalized Kärger exchange (and NEXI)
 
 Derivation note for the water-exchange models in
-`dmipy_fit.signal_models.exchange_models` — `X0GeneralizedKarger` (wrap *any two*
-compartments with Kärger exchange) and its convenience subclass `X2NEXIModel`
-(Stick + Zeppelin with the tortuosity constraint, i.e. NEXI). GPU forward functions
-live in `dmipy_fit.jax.exchange_models_jax`.
+`dmipy_fit.signal_models.exchange_models` — `X0GeneralizedKarger` wraps *any two*
+compartments with Kärger exchange. NEXI (Stick + Zeppelin with the tortuosity constraint) is
+just that general model with a pre-wired link, exposed as `reference_models.nexi()` — no
+special class. GPU forward functions live in `dmipy_fit.jax.exchange_models_jax`.
 
 **What it is.** When a compartment boundary is *permeable*, spins cross between
 environments during the acquisition, so the signal is no longer a fixed-fraction sum of
@@ -113,12 +113,13 @@ point on the identity line.
 ## In code
 
 ```python
-from dmipy_fit.signal_models.exchange_models import X0GeneralizedKarger, X2NEXIModel
+from dmipy_fit.signal_models.exchange_models import X0GeneralizedKarger
 
-# NEXI: Stick (intra) + Zeppelin (extra) with tortuosity, one exchange rate
-nexi = X2NEXIModel()
+# NEXI = Stick + Zeppelin + tortuosity, built via the general Kärger model:
+from dmipy_fit.custom_optimizers.reference_models import nexi
+model = nexi()
 
-# generalized: wrap ANY two compartments with Kärger exchange
+# or wrap ANY two compartments with Kärger exchange directly:
 from dmipy_fit.signal_models.cylinder_models import C1Stick
 from dmipy_fit.signal_models.gaussian_models import G1Ball
 model = X0GeneralizedKarger(model_intra=C1Stick(), model_extra=G1Ball())

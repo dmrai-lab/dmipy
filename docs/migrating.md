@@ -57,7 +57,8 @@ tool. Beyond the analytical fitting that carried over:
 - **GPU fitting (JAX)** — whole-slice fits in seconds (`solver="jax"`), with **noise-aware Rician
   maximum-likelihood** losses, not only least-squares. See [Inverse — dmipy-fit](fit.md).
 - **Water-exchange models** — a generalized Kärger model (`X0GeneralizedKarger`, wraps *any two*
-  compartments) and **NEXI** (`X2NEXIModel`), analytical and on the GPU.
+  compartments) — **NEXI** is the Stick + Zeppelin + tortuosity special case, built through the
+  same general model (`reference_models.nexi()`), analytical and on the GPU.
 - **Arbitrary-waveform / b-tensor encoding** — OGSE, LTE/PTE/STE and free `G(t)`; the
   Gaussian-Phase cylinder now answers for rotating / tensor-valued waveforms, not just PGSE
   (see the [GPA derivation](derivations/gpa_arbitrary_waveform.md)).
