@@ -251,7 +251,7 @@ E(\hat{\mathbf n}) = 1$ for all $\hat{\mathbf n} \Rightarrow S = 1$. ✓
 
 ## 6. Monte-Carlo validation
 
-![GPA cylinder: dmipy-fit analytic vs dmipy-sim Monte-Carlo perpendicular attenuation, every point on the identity line across six radii.](media/parity_gpa.png)
+![GPA cylinder: dmipy-fit analytic vs dmipy-sim Monte-Carlo perpendicular attenuation, every point on the identity line across six radii.](../media/parity_gpa.png)
 
 The analytical GPA cylinder (`dmipy-fit`) reproduces the `dmipy-sim` Monte-Carlo signal to within
 Monte-Carlo noise across six radii ($0.25$–$3\,\mu$m) and the physiological b-range — every point
