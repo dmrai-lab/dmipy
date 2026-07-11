@@ -355,6 +355,14 @@ soma = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
 return MultiCompartmentModel([soma, G1Ball()])
 ```
 
+!!! tip "The method *is* the acquisition"
+    IMPULSED is just a sphere and a ball — the cell-size sensitivity comes entirely from the
+    **acquisition**: a composite scheme mixing **OGSE at several frequencies with PGSE**, fed as
+    one object (`AcquisitionScheme.concatenate([pgse, ogse_50Hz, ogse_100Hz, ...])`). Because dmipy
+    is [sequence-agnostic](sequences.md#composite-mixed-encoding-schemes), the same two compartments
+    resolve cell diameter with no model change — you just hand them a richer waveform set. Same
+    story for `mte_impulsed()` (OGSE+PGSE across several TEs).
+
 
 ### Membrane exchange
 

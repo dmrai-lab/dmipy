@@ -1,6 +1,6 @@
 # dmipy
 
-## Reading brain tissue from an MRI signal — without leaving physics out
+## Reading brain tissue from a physics-complete MRI signal
 
 MRI scanners don't measure brain tissue directly. They measure a **signal**, and a physics model
 translates that signal into the numbers researchers and clinicians actually read — *axon

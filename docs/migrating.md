@@ -75,3 +75,8 @@ tool. Beyond the analytical fitting that carried over:
   analytic ↔ Monte-Carlo agreement.
 - **Pedagogy** — real Monte-Carlo-walk movies of the intra / myelin / extra water pools. See
   [Pedagogy](pedagogy.md).
+- **Citation governance + automatic Methods generation** — every model, distribution, optimiser
+  and acquisition carries its literature attribution in a citation graph. `walk_citation_graph(model)`
+  collects who to cite for a fitted or constructed model, and `generate_methods_section(...)` emits
+  a ready-to-paste Markdown Methods paragraph + numbered references (and BibTeX) — so the people
+  who invented each approach get credited automatically, without you hunting down DOIs.
