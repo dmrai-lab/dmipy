@@ -104,3 +104,34 @@ Build from an arbitrary gradient waveform; b numerically from G.
 from_waveform(G, dt, gradient_directions, delta=None, Delta=None, TE=None, allow_unrefocused=False)
 ```
 
+
+## Composite / mixed-encoding schemes
+
+Because a scheme is **waveform-first** — `G(t)` per measurement, with per-measurement `delta`,
+`Delta`, `TE` and OGSE fields — the measurements in a *single* scheme need not share an encoding.
+You can concatenate shells from different constructors (PGSE, OGSE, b-tensor LTE/PTE/STE, or raw
+`from_waveform`) into one scheme, and every model, fitter, and multi-tissue CSD consumes it as a
+**single signal**: each measurement is evaluated from its own waveform, so nothing special-cases
+the encoding.
+
+```python
+from dmipy_fit.core.acquisition_scheme import AcquisitionScheme
+
+# build each block with whatever constructor fits its encoding
+# (from_pgse / from_ogse / from_btensor_* / from_waveform) ...
+pgse_block = ...   # a PGSE scheme
+ogse_block = ...   # an OGSE scheme
+
+# concatenate along the measurement axis -> ONE scheme, per-measurement timing preserved
+scheme = AcquisitionScheme.concatenate([pgse_block, ogse_block])   # or: pgse_block + ogse_block
+
+model.fit(scheme, data, solver="jax")     # models / CSD read the mix transparently
+```
+
+Mixed PGSE + OGSE concatenation is exercised in the test suite
+(`core/tests/test_ogse_acquisition_scheme.py`).
+
+This is a direct consequence of the free-waveform design, not a bespoke feature — which is why
+unusual protocols (for example **mixed OGSE + PGSE multi-tissue CSD**) work for free. It is also
+why the analytical models must answer for *any* `G(t)`; see the
+[GPA-for-arbitrary-waveforms derivation](derivations/gpa_arbitrary_waveform.md).
