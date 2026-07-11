@@ -131,6 +131,23 @@ model.fit(scheme, data, solver="jax")     # models / CSD read the mix transparen
 Mixed PGSE + OGSE concatenation is exercised in the test suite
 (`core/tests/test_ogse_acquisition_scheme.py`).
 
+### Normalizing a composite scheme
+
+Because the $b=0$ signal carries no diffusion weighting, it is **independent of the gradient
+waveform shape** — PGSE, OGSE and STE all give the same $b=0$ at a given echo time; it depends
+only on TE (through $T_2$). Normalization is therefore keyed on **TE, not on encoding**:
+
+- a scheme at a **single TE** is normalized by the mean of all its $b=0$ measurements;
+- a scheme spanning **multiple TE** is normalized *per-TE segment* — each measurement is divided
+  by the mean of the $b=0$ measurements **at its own TE**.
+
+So mixing OGSE and PGSE at one TE needs a single $b=0$ normalization (nothing to correct — the
+relaxation weighting is shared); only different TE (common when OGSE needs a longer TE) requires
+separate segments, and the fit does this automatically. Every TE must therefore carry its own
+$b=0$ measurement — the scheme raises a `ValueError` otherwise. (When you *fit* $T_2$ explicitly,
+normalization is turned off: the model returns the raw $T_2$-weighted signal, so the decay is the
+data.)
+
 This is a direct consequence of the free-waveform design, not a bespoke feature — which is why
 unusual protocols (for example **mixed OGSE + PGSE multi-tissue CSD**) work for free. It is also
 why the analytical models must answer for *any* `G(t)`; see the

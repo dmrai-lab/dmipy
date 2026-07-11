@@ -46,4 +46,5 @@ nav:
       - Canonical WM parity (fit ↔ sim): examples/canonical_wm_parity.md
   - Derivations:
       - GPA for arbitrary waveforms: derivations/gpa_arbitrary_waveform.md
+      - Generalized Kärger exchange: derivations/karger_exchange.md
   - API reference: api.md
