@@ -148,6 +148,21 @@ $b=0$ measurement — the scheme raises a `ValueError` otherwise. (When you *fit
 normalization is turned off: the model returns the raw $T_2$-weighted signal, so the decay is the
 data.)
 
+!!! warning "Normalization is not the same as fraction consistency"
+    Per-TE $b=0$ normalization makes the **diffusion / encoding contrast** comparable across echo
+    times, but it removes only the *voxel-average* $T_2$ decay — **not** the compartment-*differential*
+    $T_2$ that surface relaxivity induces. Intra- and extra-axonal water have different $S/V$ (set
+    by packing: small axons pack more extra-axonal surface), hence different apparent
+    $T_2 = 1/(1/T_{2,\mathrm{bulk}} + \rho\,S/V)$, and the $b=0$ you divide by is their
+    fraction-weighted sum. The *effective* signal fraction after normalization is therefore
+    **TE-dependent**, $w_i(\mathrm{TE}) \propto f_i\,e^{-\mathrm{TE}/T_{2,i}}$. A plain multi-TE
+    SMT / NODDI fit (no compartment $T_2$) thus returns a **TE-dependent, surface-biased** volume
+    fraction — the effect quantified in [Surface relaxivity & MWF](surface_relaxivity_bias.md). For
+    a consistent fraction you must either **(a)** model compartment-wise $T_2$ explicitly
+    (occupancy-gated $T_2$ / surface-relaxivity factors — e.g. from $T_{2,\mathrm{bulk}}$ +
+    $T_{2,\mathrm{surface}}$ with a geometric volume-fraction / g-ratio assumption), or **(b)**
+    accept the TE-dependent signal fraction and correct it with a histology prior.
+
 This is a direct consequence of the free-waveform design, not a bespoke feature — which is why
 unusual protocols (for example **mixed OGSE + PGSE multi-tissue CSD**) work for free. It is also
 why the analytical models must answer for *any* `G(t)`; see the
