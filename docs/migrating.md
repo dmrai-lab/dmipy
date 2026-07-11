@@ -48,10 +48,30 @@ Watson/Bingham distributed models (`SD1WatsonDistributed`, …) live under
 
 ## What's genuinely new in 2.x
 
-- **`dmipy_sim`** — a GPU Monte-Carlo simulator (arbitrary `G(t)`, restricted diffusion, surface
-  relaxivity, permeability, transverse T2). There was no forward model in 1.x. See
-  [Forward — dmipy-sim](sim.md).
-- **JAX/GPU fitting** in `dmipy_fit` (see [Inverse — dmipy-fit](fit.md)).
+2.x is **not just a rename** — the toolbox you knew (`dmipy_fit`) is now one half of a much larger
+tool. Beyond the analytical fitting that carried over:
+
+- **A forward Monte-Carlo engine (`dmipy_sim`)** — spins random-walk through explicit geometries
+  under arbitrary `G(t)`, with **surface relaxivity, membrane permeability / exchange, and T2**
+  baked into the walk. 1.x had no forward model. See [Forward — dmipy-sim](sim.md).
+- **GPU fitting (JAX)** — whole-slice fits in seconds (`solver="jax"`), with **noise-aware Rician
+  maximum-likelihood** losses, not only least-squares. See [Inverse — dmipy-fit](fit.md).
+- **Water-exchange models** — a generalized Kärger model (`X0GeneralizedKarger`, wraps *any two*
+  compartments) and **NEXI** (`X2NEXIModel`), analytical and on the GPU.
+- **Arbitrary-waveform / b-tensor encoding** — OGSE, LTE/PTE/STE and free `G(t)`; the
+  Gaussian-Phase cylinder now answers for rotating / tensor-valued waveforms, not just PGSE
+  (see the [GPA derivation](derivations/gpa_arbitrary_waveform.md)).
+- **Composite, sequence-agnostic schemes** — one scheme can *mix* encodings (e.g. **mixed
+  OGSE + PGSE multi-tissue CSD**) and every model, fit, and CSD reads it as a single signal.
+  See [Acquisition sequences](sequences.md).
+- **Relaxation on the diffusion signal** — T2 and surface relaxivity as composable,
+  occupancy-gated factors on any compartment; plus CPMG and NNLS myelin-water fraction. See
+  [Surface relaxivity & MWF](surface_relaxivity_bias.md).
+- **Exact analytical spherical harmonics** for Watson / Bingham / Gaussian ODFs — closed form,
+  no numerical projection.
 - **One shared substrate/sequence interface** — the simulator and the analytical models eat the
   same `Waveform` and substrate, so a fit and a simulation describe the same tissue with no
-  conversion layer. The [flagship parity example](fit.md) shows analytic ↔ Monte-Carlo agreement.
+  conversion layer. The [canonical-WM parity example](examples/canonical_wm_parity.md) shows
+  analytic ↔ Monte-Carlo agreement.
+- **Pedagogy** — real Monte-Carlo-walk movies of the intra / myelin / extra water pools. See
+  [Pedagogy](pedagogy.md).
