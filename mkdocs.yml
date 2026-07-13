@@ -43,6 +43,7 @@ nav:
   - Biophysical constants: constants.md
   - Model catalog: catalog.md
   - Surface relaxivity & MWF: surface_relaxivity_bias.md
+  - Coherence-gated physics: coherence_gated_physics.md
   - Examples:
       - Canonical WM parity (fit ↔ sim): examples/canonical_wm_parity.md
   - Derivations:
