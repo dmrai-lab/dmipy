@@ -88,16 +88,22 @@ magnetization points). Wall-adjacent spins keep permeating throughout $T_m$ *wit
 relaxivity toll. Lengthening $T_m$ therefore lets exchange accumulate under a suppressed-relaxivity
 window:
 
-- **PGSE** tends to **under-count permeability**, because surface relaxivity preferentially
-  removes the wall-adjacent, about-to-permeate spins before they are read out.
-- **PGSTE** reads exchange more cleanly, because the mixing time accrues membrane crossing while
+- **PGSE** mis-estimates the exchange time, because surface relaxivity acts on the wall-adjacent,
+  about-to-permeate spins that carry the exchange signal (the *direction* of the error is
+  contrast- and geometry-dependent).
+- **PGSTE** reads exchange far more cleanly, because the mixing time accrues membrane crossing while
   the relaxivity clock is paused.
 
+The robust, sequence-level statement is the **differential**: the PGSE exchange-time bias is
+several times larger than the PGSTE one at the same surface relaxivity.
+
 !!! warning "A consideration, not yet a calibrated correction"
-    This is a physical argument about *which* spins the two sequences weight, backed by the gating
-    above; it is not yet a validated quantitative bias factor. It is cleanest to study away from
-    myelin — a myelinated substrate couples permeability to the sheath and a short myelin-water
-    pool, confounding the effect. Isotropic, single-membrane substrates (the regime of
+    The PGSE-vs-PGSTE robustness differential is demonstrated by Monte-Carlo simulation on a
+    permeable packed-sphere substrate (a companion study), but the absolute magnitude — and the
+    *sign* of the residual PGSE bias — remain contingent on the membrane surface relaxivity, which
+    is not independently measured for neural tissue. This is cleanest to study away from myelin —
+    a myelinated substrate couples permeability to the sheath and a short myelin-water pool,
+    confounding the effect. Isotropic, single-membrane substrates (the regime of
     exchange-sensitive methods such as NEXI / IMPULSED) are the natural place to characterize it.
     See the [generalized Kärger exchange derivation](derivations/karger_exchange.md) for the
     exchange model this connects to.
