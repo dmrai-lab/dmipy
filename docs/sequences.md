@@ -72,6 +72,14 @@ CPMG multi-echo spin echo; optional per-echo bipolar diffusion lobe.
 from_cpmg(n_echoes, TE, bvalues=None, gradient_directions=None, beta_deg=180.0, n_t_per_echo=100)
 ```
 
+### `from_pgste()`
+
+PGSTE: two encoding lobes bracketing a mixing time $T_m$, during which the magnetization is stored longitudinally. The scheme carries `TM`, which activates the longitudinal ($T_1$) gate; see [Coherence-gated physics](coherence_gated_physics.md).
+
+```python
+from_pgste(bvalues, gradient_directions, delta, TM, TE=None, n_t=1000, slew_rate=200.0)
+```
+
 ### `from_btensor_ste()`
 
 Spherical tensor encoding (b_delta=0): three orthogonal bipolar pairs.
