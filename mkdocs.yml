@@ -40,6 +40,7 @@ nav:
   - Pedagogy — watch the spins: pedagogy.md
   - Acquisition sequences: sequences.md
   - Substrate & geometry: substrate.md
+  - Mesh substrates: mesh_substrates.md
   - Biophysical constants: constants.md
   - Model catalog: catalog.md
   - Surface relaxivity & MWF: surface_relaxivity_bias.md
