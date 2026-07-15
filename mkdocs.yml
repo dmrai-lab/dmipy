@@ -1,7 +1,8 @@
-site_name: dmipy
+site_name: "dmipy 2.x"
 site_description: Diffusion Microstructure Imaging in Python — forward Monte Carlo + analytical inverse
 site_url: https://dmipy.org
-repo_url: https://github.com/dmrai-lab
+repo_url: https://github.com/dmrai-lab/dmipy
+repo_name: dmrai-lab/dmipy
 theme:
   name: material
   font: false            # we load DM Mono + Fraunces ourselves (see extra.css)
@@ -10,9 +11,11 @@ theme:
     primary: black
     accent: teal
   features:
+    - navigation.tabs
     - navigation.sections
     - navigation.top
     - navigation.instant
+    - toc.integrate
     - content.code.copy
     - search.suggest
 markdown_extensions:
@@ -31,22 +34,44 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 plugins:
   - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+            show_root_heading: true
+            show_root_full_path: false
+            heading_level: 3
+            separate_signature: true
+            show_signature_annotations: true
+            docstring_section_style: table
+            members_order: source
+            filters: ["!^_"]
 nav:
   - Home: index.md
   - Install: install.md
-  - Migrating from dmipy 1.x: migrating.md
-  - Inverse — dmipy-fit: fit.md
-  - Forward — dmipy-sim: sim.md
-  - Pedagogy — watch the spins: pedagogy.md
-  - Acquisition sequences: sequences.md
-  - Substrate & geometry: substrate.md
-  - Mesh substrates: mesh_substrates.md
-  - Biophysical constants: constants.md
-  - Model catalog: catalog.md
-  - Surface relaxivity & MWF: surface_relaxivity_bias.md
+  - Migrating: migrating.md
+  - dmipy-fit:
+      - Inverse — overview: fit.md
+      - Model catalog: catalog.md
+      - Derivations:
+          - GPA for arbitrary waveforms: derivations/gpa_arbitrary_waveform.md
+          - Generalized Kärger exchange: derivations/karger_exchange.md
+  - dmipy-sim:
+      - Forward — overview: sim.md
+      - Acquisition sequences: sequences.md
+      - Substrate & geometry: substrate.md
+      - Mesh substrates: mesh_substrates.md
+      - Biophysical constants: constants.md
+      - Pedagogy — watch the spins: pedagogy.md
+  - Physics effects:
+      - Overview: physics/index.md
+      - Diffusion: physics/diffusion.md
+      - Permeability & exchange: physics/permeability.md
+      - Surface relaxivity & MWF: surface_relaxivity_bias.md
+      - Susceptibility: physics/susceptibility.md
+      - Magnetization transfer: physics/magnetization_transfer.md
   - Examples:
       - Canonical WM parity (fit ↔ sim): examples/canonical_wm_parity.md
-  - Derivations:
-      - GPA for arbitrary waveforms: derivations/gpa_arbitrary_waveform.md
-      - Generalized Kärger exchange: derivations/karger_exchange.md
+  - Publications: publications.md
   - API reference: api.md
