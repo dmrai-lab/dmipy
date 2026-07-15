@@ -1,7 +1,8 @@
-site_name: dmipy
+site_name: "dmipy 2.x — towards physics-complete microstructure imaging"
 site_description: Diffusion Microstructure Imaging in Python — forward Monte Carlo + analytical inverse
 site_url: https://dmipy.org
-repo_url: https://github.com/dmrai-lab
+repo_url: https://github.com/dmrai-lab/dmipy
+repo_name: dmrai-lab/dmipy
 theme:
   name: material
   font: false            # we load DM Mono + Fraunces ourselves (see extra.css)
