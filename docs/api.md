@@ -1,22 +1,40 @@
 # API reference
 
-Full per-symbol autodoc is wired in at release (once the engines are pip-installable by tag).
-For now, the key public entry points — the authoritative reference is each engine's own
-docstrings:
+Rendered live from the installed engine docstrings via
+[mkdocstrings](https://mkdocstrings.github.io/) — the docstrings in
+[dmipy-sim](https://github.com/dmrai-lab/dmipy-sim) and
+[dmipy-fit](https://github.com/dmrai-lab/dmipy-fit) are the source of truth, so this reference
+can't drift from the code. For the conceptual entry points see the
+[forward](sim.md) and [inverse](fit.md) overviews.
 
-## dmipy-sim — [github.com/dmrai-lab/dmipy-sim](https://github.com/dmrai-lab/dmipy-sim)
-- `simulate(n_walkers, diffusivity, waveform, geometry, T2=None, ...)` — walker-ensemble signal.
-- `simulate_cpmg(n_walkers, D, cpmg_waveform, geometry, T2=None)` — full CPMG echo train from one walk.
-- `simulate_mixture(compartments, waveform)` — fraction-weighted multi-compartment signal.
-- Encodings: `pgse`, `ogse`, `cpmg`, `ste`, `pte`, `trapezoidal_ogse`; `set_b`, `calc_b`, `calc_btensor`.
-- Geometries: `FreeDiffusion`, `Box1D`, `Sphere`, `Cylinder`, `Ellipsoid`, `PackedCylinders`,
-  `PackedSpheres`, `MyelinatedCylinder`, `PackedMyelinatedCylinders`.
+## dmipy-sim — forward
 
-## dmipy-fit — [github.com/dmrai-lab/dmipy-fit](https://github.com/dmrai-lab/dmipy-fit)
-- `core.modeling_framework.MultiCompartmentModel` — build + `fit(scheme, data, solver=...)`.
-- `signal_models.*` — `C1Stick`, `G1Ball`, `G2Zeppelin`, sphere/plane/capped-cylinder.
-- `signal_models.attenuation.OccupancyGatedModel` + `TransverseRelaxation`,
-  `IntraPoreSurfaceRelaxivity`, `ExteriorSurfaceRelaxivity`.
-- `white_matter.build_white_matter_model(...)` — decoupled diffusion-only canonical WM model.
-- `white_matter.t2_spectrum_mwf(signal, echo_times, ...)` — standard NNLS myelin-water fraction.
-- `white_matter.surface.exterior_surface_to_volume(f_axon, gamma_shape, gamma_scale_outer_diameter)`.
+### Simulation
+
+::: dmipy_sim.simulate
+::: dmipy_sim.simulate_cpmg
+
+### Geometries
+
+::: dmipy_sim.Sphere
+::: dmipy_sim.Cylinder
+::: dmipy_sim.Mesh
+
+### Waveforms & encoding
+
+::: dmipy_sim.pgse
+::: dmipy_sim.set_b
+
+## dmipy-fit — inverse
+
+### Modelling framework
+
+::: dmipy_fit.core.modeling_framework.MultiCompartmentModel
+
+### Acquisition scheme
+
+::: dmipy_fit.core.acquisition_scheme.acquisition_scheme_from_bvalues
+
+### White matter
+
+::: dmipy_fit.white_matter.mwf.t2_spectrum_mwf
