@@ -29,13 +29,3 @@ The paper behind the [original 2019 toolbox](migrating.md) — the modular multi
 model-design grammar that the analytical inverse ([dmipy-fit](fit.md)) carries forward. If you use
 the fitting framework, please cite this alongside the specific models you compose (dmipy-fit's
 [citation graph](fit.md) generates the full reference list automatically).
-
-## Citing the Monte-Carlo engine
-
-The forward engine's core Brownian-walk physics follows the same lineage as
-[disimpy](https://github.com/kerkelae/disimpy), MISST and Camino; for basic Monte-Carlo
-functionality cite those, and for the dmipy-sim extensions (permeability, surface relaxivity,
-b-tensor encoding, the shared free-waveform interface) cite the dmrai ecosystem.
-
-> Kerkelä L, Nery F, Hall M, Clark C (2020). *disimpy: A massively parallel Monte Carlo simulator
-> for generating diffusion MRI data in Python.* JOSS 5(52), 2527.
