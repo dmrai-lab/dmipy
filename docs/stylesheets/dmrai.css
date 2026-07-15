@@ -67,3 +67,22 @@ body::before {
 .md-typeset .admonition.quote, .md-typeset details.quote {
   border-left: 3px solid var(--dmrai-accent);
 }
+
+/* Planned physics effects (not yet released): greyed in the nav with a "soon" pill */
+.md-nav__link[href*="physics/susceptibility"],
+.md-nav__link[href*="physics/magnetization_transfer"] {
+  opacity: 0.5;
+  font-style: italic;
+}
+.md-nav__link[href*="physics/susceptibility"]::after,
+.md-nav__link[href*="physics/magnetization_transfer"]::after {
+  content: "soon";
+  margin-left: 0.5em;
+  padding: 0.05em 0.4em;
+  font-size: 0.65em;
+  font-style: normal;
+  border: 1px solid var(--dmrai-border);
+  border-radius: 4px;
+  color: var(--dmrai-muted);
+  vertical-align: middle;
+}
