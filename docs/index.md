@@ -1,6 +1,6 @@
 # dmipy
 
-## Reading brain tissue from a physics-complete MRI signal
+## Towards a physics-complete MRI representation of the brain
 
 **dmipy** — *Diffusion Microstructure Imaging in Python* — is the revived and expanded successor
 to the [2019 toolbox](https://doi.org/10.3389/fninf.2019.00064): now a **forward simulator and an
