@@ -1,20 +1,21 @@
 # dmipy
 
-## Reading brain tissue from a physics-complete MRI signal
+## Towards a physics-complete MRI representation of the brain
 
-MRI scanners don't measure brain tissue directly. They measure a **signal**, and a physics model
-translates that signal into the numbers researchers and clinicians actually read — *axon
-density*, *myelin content*, *tissue microstructure*.
+**dmipy** — *Diffusion Microstructure Imaging in Python* — is the revived and expanded successor
+to the [2019 toolbox](https://doi.org/10.3389/fninf.2019.00064): now a **forward simulator and an
+analytical fitter built on one shared physics**.
 
-The problem: today's translation models are **incomplete**. Each one accounts for some physical
-effects (diffusion, say) while ignoring others that are quietly present in the same signal
-(relaxation, magnetic susceptibility, surface interactions). So the numbers coming out of a scan
-are subtly biased — in specific, predictable ways — and most tools have no way to tell you when,
-or how much.
+MRI scanners don't measure tissue directly — they measure a **signal** that a physics model turns
+into the numbers people read (*axon density*, *myelin content*, *microstructure*). But today's
+models — **including dmipy 1.x** — are each *incomplete*: each captures some physical effects
+(diffusion) while ignoring others present in the same signal (relaxation, susceptibility, surface
+interactions), so the numbers come out subtly and predictably biased, and most tools can't tell
+you when, or by how much.
 
-**dmipy is a translation model built to leave nothing out:** one shared physical description of
-the tissue, used to explain *every* signal a scanner can produce — so the numbers mean what
-people already assume they mean.
+**dmipy is built to leave nothing out:** one shared physical description of the tissue, used to
+explain *every* signal a scanner can produce — so the numbers mean what people already assume
+they mean.
 
 ![A brain dissolving into the geometric compartments dmipy represents it with — cylinders for axons, spheres for cells — the substrate behind the signal.](media/brain_compartments.png){ width="100%" }
 

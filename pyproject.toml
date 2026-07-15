@@ -36,6 +36,7 @@ docs = [
     "mkdocs-material>=9.5",
     "mkdocstrings[python]>=0.24",
     "mkdocs-jupyter>=0.24",
+    "black>=24.0",            # pretty-format autodoc signatures (mkdocstrings)
 ]
 
 [project.urls]
