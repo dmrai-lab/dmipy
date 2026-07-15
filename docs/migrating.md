@@ -49,35 +49,28 @@ Watson/Bingham distributed models (`SD1WatsonDistributed`, …) live under
 ## What's genuinely new in 2.x
 
 2.x is **not just a rename** — the toolbox you knew (`dmipy_fit`) is now one half of a much larger
-tool. Beyond the analytical fitting that carried over:
+tool. The compartment-model grammar carries over unchanged; everything below it was rebuilt, and a
+whole forward-simulation half was added. Each row links to where it lives in the docs.
 
-- **A forward Monte-Carlo engine (`dmipy_sim`)** — spins random-walk through explicit geometries
-  under arbitrary `G(t)`, with **surface relaxivity, membrane permeability / exchange, and T2**
-  baked into the walk. 1.x had no forward model. See [Forward — dmipy-sim](sim.md).
-- **GPU fitting (JAX)** — whole-slice fits in seconds (`solver="jax"`), with **noise-aware Rician
-  maximum-likelihood** losses, not only least-squares. See [Inverse — dmipy-fit](fit.md).
-- **Water-exchange models** — a generalized Kärger model (`X0GeneralizedKarger`, wraps *any two*
-  compartments) — **NEXI** is the Stick + Zeppelin + tortuosity special case, built through the
-  same general model (`reference_models.nexi()`), analytical and on the GPU.
-- **Arbitrary-waveform / b-tensor encoding** — OGSE, LTE/PTE/STE and free `G(t)`; the
-  Gaussian-Phase cylinder now answers for rotating / tensor-valued waveforms, not just PGSE
-  (see the [GPA derivation](derivations/gpa_arbitrary_waveform.md)).
-- **Composite, sequence-agnostic schemes** — one scheme can *mix* encodings (e.g. **mixed
-  OGSE + PGSE multi-tissue CSD**) and every model, fit, and CSD reads it as a single signal.
-  See [Acquisition sequences](sequences.md).
-- **Relaxation on the diffusion signal** — T2 and surface relaxivity as composable,
-  occupancy-gated factors on any compartment; plus CPMG and NNLS myelin-water fraction. See
-  [Surface relaxivity & MWF](surface_relaxivity_bias.md).
-- **Exact analytical spherical harmonics** for Watson / Bingham / Gaussian ODFs — closed form,
-  no numerical projection.
-- **One shared substrate/sequence interface** — the simulator and the analytical models eat the
-  same `Waveform` and substrate, so a fit and a simulation describe the same tissue with no
-  conversion layer. The [canonical-WM parity example](examples/canonical_wm_parity.md) shows
-  analytic ↔ Monte-Carlo agreement.
-- **Pedagogy** — real Monte-Carlo-walk movies of the intra / myelin / extra water pools. See
-  [Pedagogy](pedagogy.md).
-- **Citation governance + automatic Methods generation** — every model, distribution, optimiser
-  and acquisition carries its literature attribution in a citation graph. `walk_citation_graph(model)`
-  collects who to cite for a fitted or constructed model, and `generate_methods_section(...)` emits
-  a ready-to-paste Markdown Methods paragraph + numbered references (and BibTeX) — so the people
-  who invented each approach get credited automatically, without you hunting down DOIs.
+| Capability | 1.x | 2.1 | Docs |
+|---|:---:|:---:|---|
+| Modular multi-compartment model design & fitting | ✓ | ✓ | [Inverse](fit.md) |
+| Orientation dispersion (Watson / Bingham), Gamma diameters | ✓ | ✓ | [Model catalog](catalog.md) |
+| CSD / fibre ODFs | ✓ | ✓ | [Inverse](fit.md) |
+| Named literature models (NODDI, SMT, VERDICT, SANDI, …) | ✓ | ✓ | [Model catalog](catalog.md) |
+| **GPU fitting** — whole-slice `vmap` fits in seconds (`solver="jax"`) | — | ✓ | [Inverse](fit.md) |
+| **Noise-aware Rician maximum-likelihood** fitting (not just least-squares) | — | ✓ | [Inverse](fit.md) |
+| **Forward Monte-Carlo simulator** (`dmipy_sim`) — no forward model in 1.x | — | ✓ | [Forward](sim.md) |
+| **Arbitrary / triangular-mesh substrates** (load a `.ply`) | — | ✓ | [Mesh substrates](mesh_substrates.md) |
+| **T2 & surface relaxivity** as composable occupancy-gated factors | — | ✓ | [Surface relaxivity & MWF](surface_relaxivity_bias.md) |
+| **Myelin-water fraction** (regularised NNLS T2 spectrum) | — | ✓ | [Surface relaxivity & MWF](surface_relaxivity_bias.md) |
+| **Water-exchange** — generalized Kärger / NEXI (analytical, on GPU) | — | ✓ | [Model catalog](catalog.md) |
+| **Arbitrary-waveform / b-tensor encoding** (OGSE, LTE/PTE/STE, free `G(t)`) | — | ✓ | [Acquisition sequences](sequences.md) |
+| **Composite, sequence-agnostic schemes** (mix encodings in one fit) | — | ✓ | [Acquisition sequences](sequences.md) |
+| **Exact analytical spherical harmonics** for Watson/Bingham/Gaussian ODFs | — | ✓ | [Model catalog](catalog.md) |
+| **Shared substrate for fit ↔ sim parity** (no conversion layer) | — | ✓ | [WM parity example](examples/canonical_wm_parity.md) |
+| **Spin-walk pedagogy movies** (intra / myelin / extra water pools) | — | ✓ | [Pedagogy](pedagogy.md) |
+| **Citation graph + auto-generated Methods** & BibTeX | — | ✓ | [Inverse](fit.md) |
+
+Everything in the diffusion-fitting grammar you already wrote still runs (after the `dmipy_fit`
+rename); the new rows are additive.
