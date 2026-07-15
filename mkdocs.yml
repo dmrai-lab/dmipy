@@ -33,6 +33,19 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 plugins:
   - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+            show_root_heading: true
+            show_root_full_path: false
+            heading_level: 3
+            separate_signature: true
+            show_signature_annotations: true
+            docstring_section_style: table
+            members_order: source
+            filters: ["!^_"]
 nav:
   - Home: index.md
   - Install: install.md

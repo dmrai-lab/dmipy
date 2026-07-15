@@ -29,7 +29,9 @@ jobs:
           ref: main
       - uses: actions/setup-python@v5
         with: { python-version: "3.11" }
-      - run: pip install mkdocs-material
+      # Install the docs toolchain + both engines (CPU JAX) so mkdocstrings can
+      # import dmipy_sim / dmipy_fit and autodoc the API reference from their docstrings.
+      - run: pip install ".[docs,cpu]"
       - name: Build production site
         run: mkdocs build --strict --site-dir "$GITHUB_WORKSPACE/site"
 
