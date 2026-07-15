@@ -1,7 +1,16 @@
 name: docs
+# Deploys the production site (main -> https://dmipy.org/) and a staging preview
+# (staging branch -> https://dmipy.org/dev/) into a single GitHub Pages artifact.
+#
+# Both branches carry this workflow; a push event runs the copy on the pushed ref.
+# Whatever the trigger, the root is always rebuilt from `main` and /dev/ from
+# `staging`, so the two stay consistent. The staging build is non-fatal: if it
+# fails or the branch is absent, /dev/ is simply skipped and the production site
+# still deploys.
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
+  workflow_dispatch:
 permissions:
   contents: read
   pages: write
@@ -13,11 +22,37 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # --- Production site (main) -> site/ ---
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-python@v5
         with: { python-version: "3.11" }
       - run: pip install mkdocs-material
-      - run: mkdocs build --strict
+      - name: Build production site
+        run: mkdocs build --strict --site-dir "$GITHUB_WORKSPACE/site"
+
+      # --- Staging preview (staging) -> site/dev/ ---
+      - name: Check out staging
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: staging
+          path: _staging
+      - name: Build staging preview into /dev/
+        continue-on-error: true
+        run: |
+          if [ -f _staging/mkdocs.yml ]; then
+            echo "Building staging preview -> /dev/"
+            mkdocs build -f _staging/mkdocs.yml --site-dir "$GITHUB_WORKSPACE/site/dev"
+            # A CNAME only belongs at the site root; drop any copied into /dev/.
+            rm -f "$GITHUB_WORKSPACE/site/dev/CNAME"
+          else
+            echo "No staging branch (or no mkdocs.yml) — skipping /dev/ preview."
+          fi
+
+      # --- Deploy the combined artifact ---
       - uses: actions/upload-pages-artifact@v3
         with: { path: site }
       - uses: actions/deploy-pages@v4
