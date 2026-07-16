@@ -46,7 +46,7 @@ The base effects fall into three classes by how they respond to the gate:
 | [Surface relaxivity](../surface_relaxivity_bias.md) ($T_2$-type) | acts | — paused | ✅ |
 | $T_1$ (longitudinal) | recovers $M_z$ | **acts** — stored $M_z$ decays by $T_1$ | ✅ |
 | [Susceptibility](susceptibility.md) ($T_2^\ast$ / off-resonance) | acts | — refocused | 🔬 |
-| [Magnetization transfer](magnetization_transfer.md) | acts | **acts** — population sink | 🔬 |
+| [Magnetization transfer](magnetization_transfer.md) | acts | **partly** — transverse pathway paused, longitudinal (saturation-transfer) pathway acts | 🔬 |
 
 - **Transverse-plane effects** — $T_2$, surface relaxivity, susceptibility-induced dephasing — act
   only while $\chi_\perp=1$. Storing the magnetization switches them off; these are the effects a
@@ -58,14 +58,18 @@ The base effects fall into three classes by how they respond to the gate:
 - **The longitudinal effect** — $T_1$ — governs the stored magnetization: during $T_m$ it is the
   *only* relaxation acting.
 
-!!! warning "Magnetization transfer is **not** gated off"
-    MT is an exchange of magnetization with a bound macromolecular pool — a **population** sink, not
-    a transverse-plane dephasing. It proceeds whether the free-water magnetization is transverse or
-    stored, so a stimulated echo does **not** pause it: during $T_m$, both $T_1$ and MT act. This is
-    the boundary of what coherence gating buys you. It cleanly separates the *transverse* surface
-    effects (surface relaxivity, susceptibility dephasing) from permeability, but a **longitudinal
-    or MT-type sink at the same membrane is not separated this way** — the stimulated-echo advantage
-    holds only to the extent the dominant membrane mechanism is transverse/dephasing.
+!!! warning "Magnetization transfer: only its *transverse* pathway is gated"
+    MT (exchange with a bound macromolecular pool) has **two** pathways, and the gate treats them
+    differently. Its **transverse** pathway — a short-$T_2$ bound pool draining the free pool's
+    transverse magnetization during the encoding — appears as an $S/V$-differential effective $T_2$,
+    the *same* functional form as surface relaxivity, and **is** paused by longitudinal storage. Its
+    **longitudinal** (saturation-transfer) pathway exchanges longitudinal magnetization in *both*
+    coherence states and is **not** paused: during $T_m$, $T_1$ and this saturation transfer act.
+    So a stimulated echo separates from permeability every *transverse* wall sink — surface
+    relaxivity **and** the transverse face of MT — while the longitudinal rates (a longitudinal
+    surface rate, and steady-state saturation transfer) survive as the residual, non-gated confound.
+    The stimulated-echo advantage holds to the extent the dominant membrane mechanism is
+    transverse/dephasing rather than a longitudinal population sink.
 
 ## Why it matters
 
