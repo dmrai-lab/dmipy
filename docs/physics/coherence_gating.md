@@ -2,19 +2,28 @@
 
 The other pages in this section each describe *one* loss or contrast mechanism. Coherence gating is
 different in kind: it is a **meta-effect** — it does not add a new physical term, it sets **when**
-each of the other effects is allowed to act. A stimulated echo can park the magnetization along the
-longitudinal axis for part of the sequence; while it is stored, the transverse-plane effects switch
-off while the coherence-independent ones keep running. That selective pause is what lets dmipy
-**separate** effects that a spin echo only ever sees in combination.
+each of the other effects is allowed to act.
+
+The rule is a property of the **coherence state itself**, not of any particular sequence: whenever a
+component of the magnetization lies along the **longitudinal** axis, it accrues only $T_1$ — no
+$T_2$, no surface relaxivity, no susceptibility dephasing — no matter how it came to be there. Any
+magnetization parked along $z$ is gated this way. Imperfect (non-ideal $90^\circ/180^\circ$) pulses
+leave such longitudinal components between pulses just as surely as a deliberate storage pulse does;
+a **stimulated echo (PGSTE)** is simply the sequence that exploits the effect *on purpose*, parking
+(nearly) all the magnetization along $z$ for a controlled mixing time $T_m$ so that exchange accrues
+while the transverse-plane effects are paused. That selective pause is what lets dmipy **separate**
+effects a spin echo only ever sees in combination.
 
 ## The coherence-state gate
 
-Write $\chi_\perp(t)\in\{0,1\}$ for whether the magnetization is **transverse** ($\chi_\perp=1$) or
-**stored longitudinally** ($\chi_\perp=0$) at time $t$. Under the idealized-pulse limit the released
-engines use (instantaneous, perfect $90^\circ/180^\circ$ pulses, no off-resonance) it is a plain
-binary mask. A [PGSE](../sequences.md) spin echo is transverse for the whole echo
-($\chi_\perp\equiv1$); a [PGSTE](../sequences.md) stores the magnetization over a mixing time $T_m$
-($\chi_\perp=0$ there) and is transverse only over the two encoding lobes.
+Write $\chi_\perp(t)\in[0,1]$ for the **fraction** of the magnetization that is transverse at time
+$t$; the remaining $1-\chi_\perp$ is stored longitudinally and gated. The released engines work in
+the idealized-pulse limit (instantaneous, perfect $90^\circ/180^\circ$ pulses, no off-resonance),
+where $\chi_\perp$ is a clean binary mask: a [PGSE](../sequences.md) spin echo is transverse for the
+whole echo ($\chi_\perp\equiv1$); a [PGSTE](../sequences.md) stores the magnetization over the mixing
+time ($\chi_\perp=0$ there) and is transverse only over the two encoding lobes. (With non-ideal
+pulses $\chi_\perp$ takes intermediate values — a full treatment is beyond the released
+idealized-pulse scope, but the gating rule is unchanged.)
 
 The per-compartment log-weight a walk accumulates makes the gating explicit — every transverse-plane
 term is multiplied by the *same* $\chi_\perp$:
