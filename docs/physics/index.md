@@ -25,3 +25,13 @@ inverse, so a number that comes out of a fit can be traced to the wall collision
 it. The [surface-relaxivity study](../surface_relaxivity_bias.md) is the worked example of *why
 this matters* — two effects (diffusion and relaxation) reading the same wall, and the bias that
 follows when a model accounts for only one.
+
+## The orthogonal axis: coherence gating
+
+The effects above are *what* the signal loses. **[Coherence gating](coherence_gating.md)** is a
+meta-effect that sets *when* each of them acts. A stimulated echo (PGSTE) stores the magnetization
+along the longitudinal axis for a mixing time; while it is stored, the transverse-plane effects
+($T_2$, surface relaxivity, susceptibility) switch off, while the coherence-independent ones
+(diffusion, permeability/exchange) and $T_1$ — and magnetization transfer — keep running. That
+selective pause is the lever dmipy uses to *separate* effects a spin echo sees only in
+combination — most directly, surface relaxivity from permeability.
