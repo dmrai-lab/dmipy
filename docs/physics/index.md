@@ -29,12 +29,11 @@ follows when a model accounts for only one.
 ## The orthogonal axis: coherence gating
 
 The effects above are *what* the signal loses. **[Coherence gating](coherence_gating.md)** is a
-meta-effect that sets *when* each of them acts. It is a property of the coherence state itself: any
-magnetization lying along the longitudinal axis feels only $T_1$ — no $T_2$, no surface relaxivity,
-no susceptibility dephasing — however it came to be there (a deliberate storage pulse, or the
-longitudinal component an imperfect flip angle leaves behind). A stimulated echo (PGSTE) is simply
-the sequence that *exploits* this on purpose, parking the magnetization along $z$ for a mixing time.
-While it is stored, the transverse-plane effects ($T_2$, surface relaxivity, susceptibility) switch
-off, while the coherence-independent ones (diffusion, permeability/exchange) and $T_1$ — and
-magnetization transfer — keep running. That selective pause is the lever dmipy uses to *separate*
-effects a spin echo sees only in combination — most directly, surface relaxivity from permeability.
+meta-effect that sets *when* each acts. The transverse wall/field channels collapse into one apparent
+rate $1/T_2^{\mathrm{app}} = 1/T_2 + \rho_2\,S/V + R_2' + k_f$, their longitudinal siblings into
+another $1/T_1^{\mathrm{app}} = 1/T_1 + \rho_1\,S/V + k_{\mathrm{MT}}^{\parallel}$, and the coherence
+state $\chi_\perp$ selects between them — the transverse bundle acts only while transverse, the
+longitudinal bundle only while stored, and diffusion and permeability/exchange act in both. A
+stimulated echo (PGSTE) parks the magnetization along $z$ for a mixing time to pause the whole
+$T_2^{\mathrm{app}}$ bundle while exchange keeps running — the lever dmipy uses to *separate* effects
+a spin echo sees only in combination, most directly surface relaxivity from permeability.
