@@ -69,6 +69,7 @@ nav:
       - Diffusion: physics/diffusion.md
       - Permeability & exchange: physics/permeability.md
       - Surface relaxivity & MWF: surface_relaxivity_bias.md
+      - Coherence gating (PGSTE): physics/coherence_gating.md
       - Susceptibility: physics/susceptibility.md
       - Magnetization transfer: physics/magnetization_transfer.md
   - Examples:
