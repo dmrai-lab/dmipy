@@ -36,19 +36,21 @@ ogse      = design_waveform_now(b_delta=1.0, TE=0.08, spectral_freq=80)  # f_rms
 print(ogse.spectral_rms)   # ~80 Hz (at the OGSE efficiency cost: less b than PGSE at equal TE)
 ```
 
-### Vanilla cosine vs optimized — the spectra are not the same
+### Vanilla vs optimized OGSE — asymmetric windows, cleaner spectrum
 
-The textbook OGSE is a fixed-frequency **cosine** gradient. NOW instead maximises b subject to the
-RMS-frequency constraint, and finds a **square/trapezoidal** oscillation that rides the amplitude
-limit — so at the same TE and matched `f_rms` it packs **more b**, but with a different spectrum
-(a sharp fundamental **plus odd harmonics**, versus the cosine's single lobe). The encoding power
-spectrum `|q̃(f)|²` is the honest description of what each actually probes:
+Exactly as for PGSE, a **symmetric** OGSE dead-times the long pre-180 window (amber below), while
+the **asymmetric-window** design fills it with more oscillation periods. At the *same* b and the
+*same* RMS encoding frequency, that buys two things at once: a **shorter TE** (more SNR — the
+optimized echoes ~19 ms sooner here) **and a cleaner, more monochromatic encoding spectrum**,
+because more periods concentrate the power at the target frequency:
 
-![Vanilla cosine-OGSE versus the NOW-optimized OGSE at the same TE on a Siemens Prisma, with their encoding power spectra side by side: the cosine is a single spectral lobe, the optimized a taller fundamental plus odd harmonics, and it reaches a higher b.](media/ogse_vanilla_vs_optimized.gif){ width="100%" }
+![Vanilla symmetric OGSE versus the asymmetric-window optimized OGSE, same b and same 40 Hz encoding on a Siemens Prisma, playing at the same speed with their encoding power spectra side by side: the optimized fills the pre-180 window with more oscillation periods, echoes ~19 ms sooner, and concentrates its spectral power at the target frequency.](media/ogse_vanilla_vs_optimized.gif){ width="100%" }
 
-This is why `spectral_rms` / `spectral_bandwidth` are *reported* quantities: two waveforms at the
-"same frequency" can carry visibly different spectral content, and the frequency-dependent
-diffusivity `D(ω)` they report is weighted by that whole spectrum, harmonics included.
+Both waveforms are only a few periods long, so their spectra also carry low-frequency
+(bulk-diffusion) content; the panel is normalised to the oscillatory band so the frequency
+selectivity is what you see. That is why `spectral_rms` / `spectral_bandwidth` are *reported*
+quantities — "the same frequency" can mean visibly different spectral content, and the
+frequency-dependent diffusivity `D(ω)` you recover is weighted by the whole spectrum.
 
 ## Interoperability with dmipy-sim and dmipy-fit
 
