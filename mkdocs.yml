@@ -64,6 +64,11 @@ nav:
       - Mesh substrates: mesh_substrates.md
       - Biophysical constants: constants.md
       - Pedagogy — watch the spins: pedagogy.md
+  - dmipy-design:
+      - Acquisition design — overview: design.md
+      - Deliverable waveforms & constraints: design/deliverable.md
+      - OGSE spectral design: design/spectral.md
+      - Max-b vs min-TE (SNR): design/snr.md
   - Physics effects:
       - Overview: physics/index.md
       - Diffusion: physics/diffusion.md
