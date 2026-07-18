@@ -10,8 +10,10 @@ tweak (different scanner, frequency, protocol) is a one-line edit + re-run, not 
       off-time; amber = the vanilla's extra symmetry dead-time).
 
   fig_ogse_vanilla_vs_optimized.py -> ogse_vanilla_vs_optimized.gif
-      Textbook cosine-OGSE vs NOW-optimized OGSE at the same TE / matched f_rms, with both
-      encoding power spectra |q~(f)|^2 (they are not the same).
+      OGSE version of the asymmetric-window story: vanilla symmetric OGSE vs asymmetric-window
+      optimized OGSE, same b and same RMS frequency. The optimized fills the long pre-180 window
+      with more oscillation periods -> shorter TE + a cleaner spectrum. Both encoding power
+      spectra |q~(f)|^2 shown (normalised to the oscillatory band).
 
 Regenerate (needs the dmipy-design package on the path):
 
