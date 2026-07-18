@@ -9,11 +9,11 @@ tweak (different scanner, frequency, protocol) is a one-line edit + re-run, not 
       Prisma limits, brain defaults (no motion nulling). Off-regions shaded (grey = scanner
       off-time; amber = the vanilla's extra symmetry dead-time).
 
-  fig_ogse_vanilla_vs_optimized.py -> ogse_vanilla_vs_optimized.gif
-      OGSE version of the asymmetric-window story: vanilla symmetric OGSE vs asymmetric-window
-      optimized OGSE, same b and same RMS frequency. The optimized fills the long pre-180 window
-      with more oscillation periods -> shorter TE + a cleaner spectrum. Both encoding power
-      spectra |q~(f)|^2 shown (normalised to the oscillatory band).
+  fig_ogse_frequency_sweep.py     -> ogse_frequency_sweep.gif
+      OGSE spectral-targeting sweep: deliverable OGSE designed at 30 / 60 / 90 Hz (short readout,
+      long TE -> many oscillation periods), with sharp, well-separated encoding-spectrum peaks at
+      the targets and the b-value (SNR) dropping steeply with frequency. Demonstrates that
+      spectral_freq controls the encoding band, and the spectral-resolution-vs-SNR trade.
 
 Regenerate (needs the dmipy-design package on the path):
 
