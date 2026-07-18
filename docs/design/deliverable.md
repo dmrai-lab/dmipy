@@ -40,9 +40,14 @@ speed**, so you can watch the optimized asymmetric design refocus first:
 
 ![Two diffusion sequences encoding the same b-value on a Siemens Prisma, playing at the same speed: the vanilla symmetric bang-bang PGSE on top and the optimized min-TE asymmetric design below. The optimized design reaches its echo 15 ms sooner.](media/mintte_vs_vanilla.gif){ width="100%" }
 
-The vanilla symmetric sequence dead-times its long pre-180 window down to the short post-180 one,
-so it needs **TE = 80 ms**; the asymmetric design fills the real budget and reaches the same b at
-**TE = 65 ms** — **15 ms sooner**, worth ≈ **1.20× SNR** at $T_2 = 80$ ms ($e^{\Delta\mathrm{TE}/T_2}$).
+The **grey** bands are scanner-fixed off-times (the 90°/prep lead-in, the 180° + crushers, the EPI
+readout) — the hard walls of the optimization space, identical on both panels. The **amber** band
+is the *extra* dead time the vanilla adds purely to stay symmetric: it throws away its long
+pre-180 window down to the short post-180 one — that's what makes it "vanilla." The optimized
+design fills that same window (white = usable encoding).
+
+So the vanilla needs **TE = 80 ms**; the asymmetric design reaches the same b at **TE = 65 ms** —
+**15 ms sooner**, worth ≈ **1.20× SNR** at $T_2 = 80$ ms ($e^{\Delta\mathrm{TE}/T_2}$).
 Same contrast, more signal, purely from respecting the timing the scanner actually has. This is
 the [min-TE mode](snr.md) at work.
 

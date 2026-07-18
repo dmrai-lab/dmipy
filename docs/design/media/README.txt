@@ -1,0 +1,25 @@
+Figure-generation scripts for the dmipy-design docs
+===================================================
+
+Each GIF on the dmipy-design pages is produced by a self-contained script in this folder, so a
+tweak (different scanner, frequency, protocol) is a one-line edit + re-run, not a rewrite.
+
+  fig_mintte_vs_vanilla.py        -> mintte_vs_vanilla.gif
+      Vanilla bang-bang PGSE (symmetric) vs optimized min-TE (asymmetric), same b, real
+      Prisma limits, brain defaults (no motion nulling). Off-regions shaded (grey = scanner
+      off-time; amber = the vanilla's extra symmetry dead-time).
+
+  fig_ogse_vanilla_vs_optimized.py -> ogse_vanilla_vs_optimized.gif
+      Textbook cosine-OGSE vs NOW-optimized OGSE at the same TE / matched f_rms, with both
+      encoding power spectra |q~(f)|^2 (they are not the same).
+
+Regenerate (needs the dmipy-design package on the path):
+
+    OMP_NUM_THREADS=1 PYTHONPATH=/path/to/dmipy-design \
+        python fig_mintte_vs_vanilla.py
+    OMP_NUM_THREADS=1 PYTHONPATH=/path/to/dmipy-design \
+        python fig_ogse_vanilla_vs_optimized.py
+
+Single-threaded BLAS matters: NOW is many tiny SciPy SLSQP solves, and on a high-core machine
+un-pinned OpenBLAS oversubscribes threads and is ~100x slower. The scripts set OMP_NUM_THREADS=1
+themselves; the env var above is belt-and-suspenders.
