@@ -36,6 +36,20 @@ ogse      = design_waveform_now(b_delta=1.0, TE=0.08, spectral_freq=80)  # f_rms
 print(ogse.spectral_rms)   # ~80 Hz (at the OGSE efficiency cost: less b than PGSE at equal TE)
 ```
 
+### Vanilla cosine vs optimized — the spectra are not the same
+
+The textbook OGSE is a fixed-frequency **cosine** gradient. NOW instead maximises b subject to the
+RMS-frequency constraint, and finds a **square/trapezoidal** oscillation that rides the amplitude
+limit — so at the same TE and matched `f_rms` it packs **more b**, but with a different spectrum
+(a sharp fundamental **plus odd harmonics**, versus the cosine's single lobe). The encoding power
+spectrum `|q̃(f)|²` is the honest description of what each actually probes:
+
+![Vanilla cosine-OGSE versus the NOW-optimized OGSE at the same TE on a Siemens Prisma, with their encoding power spectra side by side: the cosine is a single spectral lobe, the optimized a taller fundamental plus odd harmonics, and it reaches a higher b.](media/ogse_vanilla_vs_optimized.gif){ width="100%" }
+
+This is why `spectral_rms` / `spectral_bandwidth` are *reported* quantities: two waveforms at the
+"same frequency" can carry visibly different spectral content, and the frequency-dependent
+diffusivity `D(ω)` they report is weighted by that whole spectrum, harmonics included.
+
 ## Interoperability with dmipy-sim and dmipy-fit
 
 The designed OGSE waveform is an ordinary `G(t)` — the base representation the whole ecosystem
