@@ -3,8 +3,9 @@
 ## Towards a physics-complete MRI representation of the brain
 
 **dmipy** — *Diffusion Microstructure Imaging in Python* — is the revived and expanded successor
-to the [2019 toolbox](https://doi.org/10.3389/fninf.2019.00064): now a **forward simulator and an
-analytical fitter built on one shared physics**.
+to the [2019 toolbox](https://doi.org/10.3389/fninf.2019.00064): now a **pulse-sequence designer, a
+forward Monte-Carlo simulator, and an analytical fitter** — one shared physics running the whole
+loop from the scanner to the tissue and back.
 
 MRI scanners don't measure tissue directly — they measure a **signal** that a physics model turns
 into the numbers people read (*axon density*, *myelin content*, *microstructure*). But today's
@@ -19,22 +20,28 @@ they mean.
 
 ![A brain dissolving into the geometric compartments dmipy represents it with — cylinders for axons, spheres for cells — the substrate behind the signal.](media/brain_compartments.png){ width="100%" }
 
-## How it works: two engines, one physical tissue
+## How it works: design → run → simulate → fit, one shared physics
 
-dmipy describes tissue *once* — a substrate of geometric compartments with their physical
-properties — and then looks at it from both directions:
+dmipy describes the acquisition *once* — a gradient waveform `G(t)` — and the tissue *once* — a
+substrate of geometric compartments. Everything else is a different view of those same two objects,
+so the whole measurement loop stays consistent from the scanner to the tissue and back:
 
-- **[dmipy-fit](https://github.com/dmrai-lab/dmipy-fit)** — the **inverse**: given a measured
-  signal, recover the tissue parameters. Analytical multi-compartment models with T2 and surface
-  relaxivity as composable factors, CSD, and myelin-water estimation, fit on the GPU. The
-  successor to the original [dmipy](https://doi.org/10.3389/fninf.2019.00064) toolbox.
-- **[dmipy-sim](https://github.com/dmrai-lab/dmipy-sim)** — the **forward truth**: given a
-  tissue, simulate the signal from first principles by random-walking spins through the geometry
-  (a Monte-Carlo "ground truth", no analytical shortcuts).
+- **[dmipy-design](design.md)** — the **acquisition** front-end: design a diffusion pulse sequence
+  that is *deliverable* under a real scanner's limits (slew, PNS, timing), and export it to a
+  scanner-runnable [Pulseq](https://pulseq.github.io/) `.seq`. This is the bridge to the hardware —
+  the exact sequence you optimise here is the one the scanner plays.
+- **[dmipy-sim](https://github.com/dmrai-lab/dmipy-sim)** — the **forward truth**: given that
+  waveform and a substrate, simulate the signal from first principles by random-walking spins
+  through the geometry — a physics-complete Monte-Carlo ground truth, no analytical shortcuts.
+- **[dmipy-fit](https://github.com/dmrai-lab/dmipy-fit)** — the **analytical inverse**: from the
+  signal, recover the tissue — multi-compartment models with T2 and surface relaxivity as
+  composable factors, CSD and myelin-water estimation, fit on the GPU.
 
-They read the *same* tissue description, so a fit and a simulation built from the same parameters
-describe the same tissue — and every analytical model is checked, effect by effect, against the
-simulator. Agreement is how we earn trust in the numbers.
+Because all three read the *same* `G(t)` and the *same* substrate, the loop is **literal**: you
+design a deliverable sequence, run it on the scanner, simulate what it *should* produce on a known
+substrate, and fit the acquired data with a model that is validated — effect by effect — against
+that simulator. The sequence you scanned, the one you simulated, and the one you fit are one object.
+Agreement is how we earn trust in the numbers.
 
 ## Try it
 
@@ -59,8 +66,9 @@ print(fit.fitted_parameters.keys())
 ```
 
 **Start here:** [Install](install.md) → the [inverse](fit.md) or [forward](sim.md) quickstart →
-the worked [surface-relaxivity / myelin-water walkthrough](surface_relaxivity_bias.md). Coming
-from the 2019 toolbox? See [Migrating from dmipy 1.x](migrating.md).
+[designing a deliverable sequence](design.md) → the worked
+[surface-relaxivity / myelin-water walkthrough](surface_relaxivity_bias.md). Coming from the 2019
+toolbox? See [Migrating from dmipy 1.x](migrating.md).
 
 ## The longer game
 

@@ -29,6 +29,9 @@ sim/fit scope — and focuses on the *gradient* waveform: the thing that actuall
 - **[Max-b vs min-TE (SNR)](design/snr.md)** — two dual modes: maximise b at a fixed TE, or find
   the *shortest* TE that reaches a required b. The latter is SNR-optimal, because a shorter TE
   means less $T_2$ decay before the echo.
+- **[Run it on the scanner](design/pulseq.md)** — export a design to a scanner-runnable
+  [Pulseq](https://pulseq.github.io/) `.seq`, checked offline (timing, PNS, b-tensor round-trip),
+  so the *same* waveform you optimise and simulate is the one the scanner plays.
 
 ## One waveform, three tools
 
