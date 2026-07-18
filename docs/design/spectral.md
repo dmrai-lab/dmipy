@@ -56,19 +56,14 @@ reported, so you can see exactly what you bought.
 > eats the encoding time leaves only a period or two and smears the peak — which is why deliverable
 > OGSE wants a short readout and a long TE.
 
-## Interoperability with dmipy-sim and dmipy-fit
+## Simulate and fit the same OGSE waveform
 
-The designed OGSE waveform is an ordinary `G(t)` — the base representation the whole ecosystem
-speaks — so the loop closes with no conversion layer:
+The designed OGSE waveform is an ordinary `G(t)`, so it flows into the rest of the ecosystem with
+no conversion: `d.to_sim_waveform()` hands it to [dmipy-sim](../sim.md) for the Monte-Carlo
+ground-truth signal at that *exact* realized spectrum (spectral dispersion the b-tensor can't see
+included), and the same object drives the [dmipy-fit](../fit.md) analytical model — so an
+OGSE-aware fit is checked against the simulator on the identical acquisition, and the recovered
+$D(\omega)$ is validated before any scanner time.
 
-1. **Design** a deliverable OGSE waveform here (`design_waveform_now(..., spectral_freq=f)`).
-2. **Simulate** it in [dmipy-sim](../sim.md): `d.to_sim_waveform()` → `simulate(...)` gives the
-   Monte-Carlo ground-truth signal for that *exact* realized spectrum on a restricted substrate —
-   including the spectral dispersion the b-tensor can't see.
-3. **Fit** it in [dmipy-fit](../fit.md): the same waveform drives the analytical forward model, so
-   an OGSE-aware fit is checked against the simulator on the identical acquisition.
-
-Because all three read one waveform object, "design → simulate → fit" is a single pipeline: you can
-optimise a frequency sweep for a tissue model, verify the recovered $D(\omega)$ against Monte
-Carlo, and only then take the deliverable `.seq` to the scanner. See
-[Acquisition sequences](../sequences.md) for the shared free-waveform interface.
+The full **design → simulate → fit → scanner** loop, and the shared free-waveform interface, are on
+the [Run it on the scanner](pulseq.md) page.

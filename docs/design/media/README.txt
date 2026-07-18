@@ -9,6 +9,11 @@ tweak (different scanner, frequency, protocol) is a one-line edit + re-run, not 
       Prisma limits, brain defaults (no motion nulling). Off-regions shaded (grey = scanner
       off-time; amber = the vanilla's extra symmetry dead-time).
 
+  fig_ogse_pns_deliverability.py  -> ogse_pns_deliverability.gif
+      Deliverability, not spectrum: the same 60 Hz OGSE designed with the PNS (SAFE-model)
+      constraint off vs on. Max-b rides the slew limit and peaks at 123% PNS (scanner rejects
+      it); the constrained design holds 80% for ~4% less b. Shows why PNS is a hard constraint.
+
   fig_ogse_frequency_sweep.py     -> ogse_frequency_sweep.gif
       OGSE spectral-targeting sweep: deliverable OGSE designed at 30 / 60 / 90 Hz (short readout,
       long TE -> many oscillation periods), with sharp, well-separated encoding-spectrum peaks at

@@ -101,6 +101,12 @@ holds PNS ≤ a target (e.g. 80 % of the stimulation limit) *inside* the design,
 deliverable — and `pulseq_pns_report` re-checks the assembled `.seq` with the same model the
 scanner uses.
 
+The same 60 Hz OGSE, designed with the PNS constraint off and on, makes it concrete: the max-b
+version rides the slew limit at every edge and peaks **over** the stimulation limit (the scanner
+would refuse it), while the constrained design stays under it for only ~4 % less b.
+
+![The same 60 Hz OGSE on a Siemens Prisma designed two ways: a max-b version whose SAFE-model PNS spikes above the 100% stimulation limit (rejected), and a PNS-constrained version that stays at 80% and is deliverable, for only ~4% less b.](media/ogse_pns_deliverability.gif){ width="100%" }
+
 ## The payoff: it exports and passes acceptance
 
 Because deliverability is designed in rather than checked after the fact, a design exports to a
