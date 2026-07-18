@@ -36,21 +36,25 @@ ogse      = design_waveform_now(b_delta=1.0, TE=0.08, spectral_freq=80)  # f_rms
 print(ogse.spectral_rms)   # ~80 Hz (at the OGSE efficiency cost: less b than PGSE at equal TE)
 ```
 
-### Vanilla vs optimized OGSE — asymmetric windows, cleaner spectrum
+### Placing sensitivity at a chosen frequency band
 
-Exactly as for PGSE, a **symmetric** OGSE dead-times the long pre-180 window (amber below), while
-the **asymmetric-window** design fills it with more oscillation periods. At the *same* b and the
-*same* RMS encoding frequency, that buys two things at once: a **shorter TE** (more SNR — the
-optimized echoes ~19 ms sooner here) **and a cleaner, more monochromatic encoding spectrum**,
-because more periods concentrate the power at the target frequency:
+The clearest demonstration is a frequency sweep: design deliverable OGSE at several target
+frequencies and look at where each puts its encoding power. With a short readout and a long TE
+(so each waveform holds *many* oscillation periods), the encoding spectra are sharp, well-separated
+peaks exactly at the targets:
 
-![Vanilla symmetric OGSE versus the asymmetric-window optimized OGSE, same b and same 40 Hz encoding on a Siemens Prisma, playing at the same speed with their encoding power spectra side by side: the optimized fills the pre-180 window with more oscillation periods, echoes ~19 ms sooner, and concentrates its spectral power at the target frequency.](media/ogse_vanilla_vs_optimized.gif){ width="100%" }
+![Three OGSE waveforms designed at 30, 60 and 90 Hz on a Siemens Prisma, oscillating progressively faster, with their encoding power spectra as three sharp, separated peaks at the target frequencies; the b-value drops steeply (1983 → 484 → 208 s/mm²) as frequency rises.](media/ogse_frequency_sweep.gif){ width="100%" }
 
-Both waveforms are only a few periods long, so their spectra also carry low-frequency
-(bulk-diffusion) content; the panel is normalised to the oscillatory band so the frequency
-selectivity is what you see. That is why `spectral_rms` / `spectral_bandwidth` are *reported*
-quantities — "the same frequency" can mean visibly different spectral content, and the
-frequency-dependent diffusivity `D(ω)` you recover is weighted by the whole spectrum.
+Two things to read off it. First, `spectral_freq` genuinely **controls the encoding band** — the
+peak sits where you ask, sharp and separated, not smeared across DC. Second, the **b-value falls
+steeply with frequency** (here 1983 → 484 → 208 s/mm² from 30 → 90 Hz): a higher encoding frequency
+means a shorter effective diffusion time, paid for in SNR. That trade — spectral resolution vs SNR
+— is the design decision OGSE forces, and the reason `spectral_rms` / `spectral_bandwidth` are
+reported, so you can see exactly what you bought.
+
+> Peak sharpness is set by the number of oscillation periods, `N = f · T_enc`. A long readout that
+> eats the encoding time leaves only a period or two and smears the peak — which is why deliverable
+> OGSE wants a short readout and a long TE.
 
 ## Interoperability with dmipy-sim and dmipy-fit
 
