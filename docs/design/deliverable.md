@@ -29,6 +29,21 @@ a `.seq`), and the asymmetry falls out. Forcing symmetry (the conventional choic
 the surplus of the longer window — spins sit transverse doing nothing but losing $T_2$ — so it
 encodes less b for the same TE.
 
+### See it: same b, shorter TE
+
+Both sequences below encode the **same** b-value (1000 s/mm²) on the **same** hardware — real
+Siemens Prisma limits (80 mT/m, 200 T/m/s, 10 µs raster) with a realistic single-shot
+diffusion-EPI budget (short excitation lead-in, long EPI readout-to-echo). They play at the
+**same wall-clock speed**, so you can watch the optimized asymmetric design refocus first:
+
+![Two diffusion sequences encoding the same b-value on a Siemens Prisma, playing at the same speed: the vanilla symmetric (dead-timed) PGSE on top and the optimized min-TE asymmetric design below. The optimized design reaches its echo 13 ms sooner.](media/mintte_vs_vanilla.gif){ width="100%" }
+
+The vanilla symmetric sequence dead-times its long pre-180 window down to the short post-180 one,
+so it needs **TE = 112 ms**; the asymmetric design fills the real budget and reaches the same b at
+**TE = 99 ms** — **13 ms sooner**, worth ≈ **1.17× SNR** at $T_2 = 80$ ms ($e^{\Delta\mathrm{TE}/T_2}$).
+Same contrast, more signal, purely from respecting the timing the scanner actually has. This is
+the [min-TE mode](snr.md) at work.
+
 ## The NOW constraint set — and why each exists
 
 The **NOW** oracle maximises $b = \mathbf{g}^\top \mathbf{Q}\, \mathbf{g}$ subject to the full

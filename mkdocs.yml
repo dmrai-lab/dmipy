@@ -69,6 +69,7 @@ nav:
       - Deliverable waveforms & constraints: design/deliverable.md
       - OGSE spectral design: design/spectral.md
       - Max-b vs min-TE (SNR): design/snr.md
+      - Run it on the scanner (Pulseq): design/pulseq.md
   - Physics effects:
       - Overview: physics/index.md
       - Diffusion: physics/diffusion.md
