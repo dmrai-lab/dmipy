@@ -12,10 +12,13 @@ Optimization of gradient Waveforms; Sjölund et al. 2015), re-cast in NumPy/SciP
 established prior work (see [References](#references)) — **not ours**; what dmipy-design adds is that
 ecosystem integration, the min-TE mode, and the Pulseq round-trip.
 
-!!! note "Newest engine — rolling out"
-    dmipy-design is the acquisition-design layer; the physics and API below are current. It shares
-    the **same free-waveform interface** as dmipy-sim and dmipy-fit, so a designed waveform is a
-    first-class citizen everywhere in the ecosystem.
+!!! note "The newest dmipy engine"
+    ```bash
+    pip install dmipy-design
+    ```
+    Source: [github.com/dmrai-lab/dmipy-design](https://github.com/dmrai-lab/dmipy-design). It
+    shares the **same free-waveform interface** as dmipy-sim and dmipy-fit, so a designed waveform
+    is a first-class citizen everywhere in the ecosystem.
 
 It works in the **instant-pulse** approximation (ideal hard RF) — the same regime as the released
 sim/fit scope — and focuses on the *gradient* waveform: the thing that actually encodes diffusion.
