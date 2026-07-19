@@ -1,0 +1,25 @@
+name: integration
+# Assemble all three engines from PyPI (via the umbrella's own deps) and check they
+# interoperate — the ecosystem's authoritative cross-package guarantee.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"   # weekly, to catch drift from independent engine releases
+  workflow_dispatch:
+env:
+  OMP_NUM_THREADS: "1"      # dmipy-design's NOW is tiny SciPy solves; single-thread BLAS
+  OPENBLAS_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  JAX_PLATFORMS: cpu        # dmipy-sim/fit pull JAX; CI is CPU-only
+jobs:
+  interop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ".[test]"   # pulls dmipy-design + dmipy-sim + dmipy-fit
+      - run: pytest -q tests/

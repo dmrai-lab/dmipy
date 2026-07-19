@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dmipy"
-version = "2.1.0"
-description = "Diffusion Microstructure Imaging in Python — umbrella install for the dmipy-sim (forward Monte Carlo) and dmipy-fit (analytical inverse) engines"
+version = "2.2.0"
+description = "Diffusion Microstructure Imaging in Python — umbrella install for the dmipy-design (sequence design), dmipy-sim (forward Monte Carlo) and dmipy-fit (analytical inverse) engines"
 readme = "README.md"
 license = { text = "AGPL-3.0-only OR LicenseRef-Commercial" }  # dual-licensed; see LICENSING.md
 authors = [
@@ -21,10 +21,11 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 # Published deps (NOT git+ — PyPI rejects direct references). dmipy-fit already pulls
-# dmipy-sim; dmipy-sim is listed too so `pip install dmipy` states both engines explicitly.
+# dmipy-sim; all three are listed so `pip install dmipy` states the whole ecosystem explicitly.
 dependencies = [
-    "dmipy-sim>=2.0,<3",
-    "dmipy-fit>=2.0,<3",
+    "dmipy-design>=2.0,<3",   # sequence design (deliverable waveforms, Pulseq)
+    "dmipy-sim>=2.0,<3",      # forward Monte-Carlo
+    "dmipy-fit>=2.0,<3",      # analytical inverse
 ]
 
 [project.optional-dependencies]
@@ -38,6 +39,9 @@ docs = [
     "mkdocs-jupyter>=0.24",
     "black>=24.0",            # pretty-format autodoc signatures (mkdocstrings)
 ]
+# Ecosystem integration tests: assemble all three engines (pulled by the deps above) and
+# check design -> sim -> fit interoperate at these resolved versions.
+test = ["pytest>=7", "jax[cpu]>=0.6.2"]
 
 [project.urls]
 Homepage = "https://dmipy.org"
@@ -47,6 +51,6 @@ Source = "https://github.com/dmrai-lab"
 [tool.setuptools]
 py-modules = []
 
-# dmipy is a thin umbrella: `pip install dmipy` pulls the two engines
-# (dmipy-sim + dmipy-fit). There is no `dmipy` importable package — import
-# `dmipy_sim` and `dmipy_fit` directly. This repo also hosts the dmipy.org docs.
+# dmipy is a thin umbrella: `pip install dmipy` pulls the three engines
+# (dmipy-design + dmipy-sim + dmipy-fit). There is no `dmipy` importable package — import
+# `dmipy_design` / `dmipy_sim` / `dmipy_fit` directly. This repo also hosts the dmipy.org docs.
