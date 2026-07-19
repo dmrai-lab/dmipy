@@ -3,11 +3,12 @@
 **Diffusion Microstructure Imaging in Python** — the revived project's **umbrella install and
 documentation home**.
 
-> One shared tissue-and-sequence description, read from both directions by two engines:
-> **[dmipy-fit](https://github.com/dmrai-lab/dmipy-fit)** · the analytical **inverse** (*fit*
-> signals → tissue) &nbsp;·&nbsp; **[dmipy-sim](https://github.com/dmrai-lab/dmipy-sim)** · the
-> Monte-Carlo **forward** engine (*simulate* tissue → signals) &nbsp;·&nbsp; **dmipy** · umbrella
-> + docs *(you are here)*.
+> One shared `G(t)` + substrate across the whole loop — **design** the sequence, **simulate** the
+> signal, **fit** the tissue:
+> **[dmipy-design](https://github.com/dmrai-lab/dmipy-design)** · deliverable sequence **design**
+> &nbsp;·&nbsp; **[dmipy-sim](https://github.com/dmrai-lab/dmipy-sim)** · Monte-Carlo **forward**
+> &nbsp;·&nbsp; **[dmipy-fit](https://github.com/dmrai-lab/dmipy-fit)** · analytical **inverse**
+> &nbsp;·&nbsp; **dmipy** · umbrella + docs *(you are here)*.
 >
 > Docs: **[dmipy.org](https://dmipy.org)** &nbsp;·&nbsp; coming from the 2019 toolbox?
 > [What's changed in 2.x](https://dmipy.org/migrating/)
