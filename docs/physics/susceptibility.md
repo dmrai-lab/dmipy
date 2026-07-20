@@ -25,3 +25,9 @@ relaxivity, with **no** longitudinal counterpart in $1/T_1^{\mathrm{app}}$.
 
 When released it will appear here with its forward (dmipy-sim) and inverse (dmipy-fit)
 counterparts and a validation ladder, exactly like the released effects.
+
+!!! tip "Validation against the literature"
+    The forward susceptibility engine is checked against exact analytics (isotropic sphere and
+    cylinder; the anisotropic hollow-cylinder intra field `½ χ_A B₀ sin²θ ln(1/g)`) and against
+    published Monte-Carlo findings on real segmented axons — see
+    [Validation &amp; benchmarks → Winther 2024](../validation/winther2024.md).
