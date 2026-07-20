@@ -78,7 +78,9 @@ nav:
       - Coherence gating (PGSTE): physics/coherence_gating.md
       - Susceptibility: physics/susceptibility.md
       - Magnetization transfer: physics/magnetization_transfer.md
-  - Examples:
+  - Validation &amp; benchmarks:
+      - Overview — reproduction matrix: validation/index.md
+      - Winther 2024 — susceptibility anisotropy (real axons): validation/winther2024.md
       - Canonical WM parity (fit ↔ sim): examples/canonical_wm_parity.md
   - Publications: publications.md
   - API reference: api.md
