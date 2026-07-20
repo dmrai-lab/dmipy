@@ -4,9 +4,13 @@
 > susceptibility-induced internal gradients make the intra-axonal **axial diffusivity**
 > orientation-dependent — **up to ~17 %** in ex-vivo monkey corpus callosum.
 >
-> **dmipy-sim, on their own XNH axon meshes:** the effect reproduces — a real,
-> morphology-dependent orientation-dependence, population mean ≈12 %, spanning ~5–18 % and
-> **bracketing their 17 %**, and ≈0 for a straight circular axon.
+> **dmipy-sim, on their own XNH axon meshes — status: under investigation, NOT yet reproduced.**
+> Converging to the Monte-Carlo noise floor showed the ~17 % we first saw at low walker counts
+> was **MC noise** (heavy-tail cross-term). Converged, in the measurable b-range (≤4000 s/mm²),
+> the per-axon effect is **single-digit %** (axon04 ≈ 1–3 %). Winther's 17 % is a **high-b**
+> (up to 20 000 s/mm²) full-tensor quantity; there the intra axial signal has decayed below the
+> MC signal floor in a pure intra-axonal walk, so matching it needs their exact tensor-fit
+> protocol (and likely extra-axonal + far more walkers). Open item, not a claim.
 
 ![Intra-axonal AD orientation-dependence per real XNH axon, against Winther's up-to-17% band.](media/winther_ad.png){ width="72%" }
 

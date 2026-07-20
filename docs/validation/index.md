@@ -11,7 +11,7 @@ agreement is evidence, not shared code.**
 | Membrane permeability | Powles 2004 | **O(h²) → exact** | exact |
 | Isotropic sphere / cylinder field | Lorentz / Salomir | **≤ 2 %** | exact |
 | Anisotropic hollow-cylinder intra field | Wharton–Bowtell 2012 | **≤ 6 %** | exact |
-| Intra AD orientation-dep. on **real monkey axons** | [Winther 2024](winther2024.md) | **~17 % → matched** | cross-sim |
+| Intra AD orientation-dep. on **real monkey axons** | [Winther 2024](winther2024.md) | **under investigation** | cross-sim |
 | Fit ↔ sim on canonical WM | interface contract | [agree](../examples/canonical_wm_parity.md) | — |
 
 *Type:* **exact** = closed-form ground truth (locked in CI). **cross-sim** = agreement with
