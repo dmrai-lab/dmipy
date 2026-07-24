@@ -29,7 +29,7 @@ $$
    = \underbrace{\frac{1}{T_2}}_{\text{bulk}}
    + \underbrace{\rho_2\,\frac{S}{V}}_{\text{surface relaxivity}}
    + \underbrace{R_2'}_{\text{susceptibility}\;🔬}
-   + \underbrace{k_f}_{\text{MT, transverse}\;🔬} ,
+   + \underbrace{k_f}_{\text{MT, transverse}} ,
 $$
 
 while stored, only the apparent **longitudinal** rate acts:
@@ -50,10 +50,11 @@ $$
 $$
 
 The two rates are **exact siblings** — transverse and longitudinal faces of the same walls — each a
-bulk term plus one $S/V$-weighted (or field) term per mechanism. (🔬 marks terms that arrive with
-their own effect page — [susceptibility](susceptibility.md) and
-[magnetization transfer](magnetization_transfer.md); the released engines carry the $T_2$, $\rho_2$,
-$T_1$ and $\rho_1$ terms.)
+bulk term plus one $S/V$-weighted (or field) term per mechanism. (🔬 marks terms not yet in the
+released public scope — susceptibility's $R_2'$ and MT's longitudinal saturation transfer
+$k_{\mathrm{MT}}^{\parallel}$; the released engines carry $T_2$, $\rho_2$, $T_1$, $\rho_1$ and MT's
+transverse $k_f$ — see [susceptibility](susceptibility.md) and
+[magnetization transfer](magnetization_transfer.md).)
 
 **Diffusion and [permeability/exchange](permeability.md) are outside the gate.** They depend on
 molecular motion, not on where the magnetization points, so they act in **both** states: the
@@ -87,7 +88,8 @@ consistent across PGSE, PGSTE and mixed protocols (the [inverse side](../fit.md)
 longitudinal interval as the exact sibling of the transverse factor).
 
 !!! note "Released vs planned"
-    Gating of the released transverse terms ($T_2$, surface relaxivity) with $T_1$ storage is the
-    newest public capability (idealized-pulse PGSTE), previewed here on the development site. The
-    susceptibility ($R_2'$) and MT ($k_f$, $k_{\mathrm{MT}}^{\parallel}$) terms arrive with their
-    effect pages; the equations above already fix how the gate treats each.
+    Gating of the released transverse terms ($T_2$, surface relaxivity, MT's transverse $k_f$) with
+    $T_1$ storage is the newest public capability (idealized-pulse PGSTE), previewed here on the
+    development site. Susceptibility ($R_2'$) and MT's longitudinal saturation transfer
+    ($k_{\mathrm{MT}}^{\parallel}$) are not yet in the released scope; the equations above already fix
+    how the gate treats each.

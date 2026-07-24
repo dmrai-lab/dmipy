@@ -69,13 +69,11 @@ body::before {
 }
 
 /* Planned physics effects (not yet released): greyed in the nav with a "soon" pill */
-.md-nav__link[href*="physics/susceptibility"],
-.md-nav__link[href*="physics/magnetization_transfer"] {
+.md-nav__link[href*="physics/susceptibility"] {
   opacity: 0.5;
   font-style: italic;
 }
-.md-nav__link[href*="physics/susceptibility"]::after,
-.md-nav__link[href*="physics/magnetization_transfer"]::after {
+.md-nav__link[href*="physics/susceptibility"]::after {
   content: "soon";
   margin-left: 0.5em;
   padding: 0.05em 0.4em;
