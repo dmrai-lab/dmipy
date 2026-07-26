@@ -18,7 +18,7 @@ sees — the same surface-to-volume ratio $S/V$ that drives surface relaxivity.
 ## Watch the burn-in
 
 <video autoplay loop muted playsinline controls style="width:100%;max-width:960px;border-radius:8px">
-  <source src="/media/mt_burnin.mp4" type="video/mp4">
+  <source src="../../media/mt_burnin.mp4" type="video/mp4">
 </video>
 
 A real dmipy-sim walk — the same binding law the engine runs (`dmipy_sim.mt`), rendered by
