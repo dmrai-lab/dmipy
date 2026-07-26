@@ -66,7 +66,8 @@ eigenvalues (the repo's `examples/validation/`).
 The **mission** is a physics-complete, sequence- and substrate-agnostic forward model — the free
 waveform `G(t)` and an arbitrary substrate as the base representation, every physical effect on
 the same footing — paired with its analytical inverse. *This release* is the
-transverse-magnetisation slice: diffusion + T2 + surface relaxivity + permeable exchange, with
+transverse-magnetisation slice: diffusion + T2 + surface relaxivity + permeable exchange +
+magnetization transfer, with
 ideal instantaneous pulses. Susceptibility, gradient-/stimulated-echo and T1 are part of the
 model but not in the released public scope yet — the boundary above is a *release* boundary, not
 the ceiling.

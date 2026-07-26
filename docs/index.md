@@ -75,7 +75,8 @@ toolbox? See [Migrating from dmipy 1.x](migrating.md).
 Diffusion, relaxation, surface relaxivity, exchange — and eventually susceptibility and finite RF
 — all read out of the *same* substrate, on the same footing, each paired with its analytical
 inverse. What's released **today** is a well-tested slice of that: the transverse-magnetisation
-regime (diffusion + T2 + surface relaxivity + permeable exchange, ideal instantaneous pulses).
+regime (diffusion + T2 + surface relaxivity + permeable exchange + magnetization transfer, ideal
+instantaneous pulses).
 The *Scope* notes throughout mark the current boundary, not the ceiling.
 
 !!! quote "Physics is the specification"
