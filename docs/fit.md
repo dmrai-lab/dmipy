@@ -120,6 +120,6 @@ The **mission** is a physics-complete, sequence- and substrate-agnostic MRI comp
 forward model — the free waveform `G(t)` and an arbitrary substrate as the base representation,
 every physical effect on the same footing — paired with its analytical inverse. *This release*
 is the transverse-magnetisation slice of it: diffusion + T2 + surface relaxivity + permeable
-exchange, with ideal instantaneous pulses. Susceptibility, gradient-/stimulated-echo and T1 are
+exchange + magnetization transfer, with ideal instantaneous pulses. Susceptibility, gradient-/stimulated-echo and T1 are
 part of the model but not in the released public scope yet — so the boundary above is a
 *release* boundary, not the ceiling.

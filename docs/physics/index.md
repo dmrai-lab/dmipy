@@ -12,7 +12,7 @@ next.
 | **[Permeability & exchange](permeability.md)** | ✅ Released | Powles membrane crossing | Kärger / NEXI |
 | **[Surface relaxivity & relaxation](../surface_relaxivity_bias.md)** | ✅ Released | Brownstein–Tarr wall loss + T2 | occupancy-gated `T2` / `ρ` factors |
 | **[Susceptibility](susceptibility.md)** | 🔬 Planned | — | — |
-| **[Magnetization transfer](magnetization_transfer.md)** | 🔬 Planned | — | — |
+| **[Magnetization transfer](magnetization_transfer.md)** | ✅ Released | emergent wall sticking + short-$T_2$ bound pool | Z-spectrum (two-pool) |
 
 !!! note "Released vs planned"
     ✅ **Released** effects are in the public engines today and validated effect-by-effect
