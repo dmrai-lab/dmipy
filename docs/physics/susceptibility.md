@@ -13,6 +13,15 @@ off-resonance field $\Delta B_z(\mathbf r)$; a diffusing spin accrues an extra p
 $\gamma\int \Delta B_z(\mathbf r(t))\,dt$ on top of the gradient phase, read through the
 *same* substrate as diffusion, relaxation and exchange.
 
+![Same susceptibility, same B0, same spins — only the axon shape differs. A circular lumen's internal field is uniform so the spins stay coherent; a real XNH monkey axon's field varies point-to-point and the net magnetization collapses.](media/susceptibility_morphology.gif){ width="100%" }
+
+**This is the whole story in one loop.** Two lumens — a perfect circle and a real axon
+segmented from Winther's XNH data — with *identical* susceptibility, main field and spins.
+Inside the circle the internal field is uniform, so every spin precesses together and the net
+magnetization only rotates (|S| stays 1). Inside the real, non-circular lumen the field varies
+from point to point, the spins fan out, and the signal collapses. The susceptibility-induced
+dephasing **reads out the morphology** — the Winther 2024 finding, live.
+
 ![Off-resonance field ΔBz(r) for the three susceptibility source types, all from one engine.](media/susceptibility_fields.png){ width="100%" }
 
 ## One engine, three sources
@@ -42,13 +51,11 @@ susceptibility together, and the sequence's own 180° pulse refocuses the *stati
 the field exactly as in a real spin echo — so a stimulated echo parks it alongside surface
 relaxivity, and the diffusion-driven residual is what survives.
 
-![A coherent spin cloud diffusing through the field fans out in phase; the net signal decays.](media/susceptibility_dephasing.gif){ width="88%" }
+![Spin-echo phase trajectories: a static field refocuses to full signal at the echo; diffusion through the field leaves a residual.](media/susceptibility_refocusing.png){ width="80%" }
 
-![Spin-echo phase trajectories: a static field refocuses to full signal at the echo; diffusion through the field leaves a residual.](media/susceptibility_refocusing.png){ width="88%" }
-
-*Left/top:* spins sample the spatially-varying field and lose phase coherence — the dephasing.
-*Right/bottom:* the 180° pulse refocuses the **static** part exactly (full echo), so only the
-**diffusion-driven** part survives — the piece that actually carries microstructure.
+The 180° pulse refocuses the **static** part of the field exactly (the echo returns to full
+signal), so only the **diffusion-driven** part survives — the piece that actually carries
+microstructure.
 
 ```python
 from dmipy_sim import (run_bloch_sequence, spin_echo, Cylinder, MyelinSusceptibility)
