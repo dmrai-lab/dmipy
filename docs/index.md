@@ -72,12 +72,13 @@ toolbox? See [Migrating from dmipy 1.x](migrating.md).
 
 ## The longer game
 
-Diffusion, relaxation, surface relaxivity, exchange — and eventually susceptibility and finite RF
-— all read out of the *same* substrate, on the same footing, each paired with its analytical
-inverse. What's released **today** is a well-tested slice of that: the transverse-magnetisation
-regime (diffusion + T2 + surface relaxivity + permeable exchange + magnetization transfer, ideal
-instantaneous pulses).
-The *Scope* notes throughout mark the current boundary, not the ceiling.
+Diffusion, relaxation, surface relaxivity, exchange, magnetization transfer, susceptibility — and
+eventually finite RF — all read out of the *same* substrate, on the same footing, each paired with
+its analytical inverse. The forward simulator already carries them (susceptibility via the
+vector-Bloch engine); what's fully released **today**, forward *and* inverse, is the
+transverse-magnetisation regime (diffusion + T2 + surface relaxivity + permeable exchange +
+magnetization transfer, ideal instantaneous pulses). The *Scope* notes throughout mark the current
+boundary, not the ceiling.
 
 !!! quote "Physics is the specification"
     Physical laws, invariants, and known analytical results are the correctness criteria — not
