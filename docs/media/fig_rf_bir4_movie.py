@@ -67,7 +67,10 @@ def _sphere(ax, title, c):
     ax.text(0, 0, 1.3, "+z", color="0.4", ha="center", fontsize=9)
     ax.text(0, 0, -1.45, "−z", color="0.4", ha="center", fontsize=9)
     ax.set_xlim(-1, 1); ax.set_ylim(-1, 1); ax.set_zlim(-1, 1)
-    ax.set_box_aspect((1, 1, 1)); ax.set_axis_off(); ax.view_init(elev=14, azim=-65)
+    ax.set_box_aspect((1, 1, 1)); ax.set_axis_off(); ax.view_init(elev=28, azim=-48)
+    # label x and y so the diagonal view is readable
+    ax.text(1.35, 0, 0, "x", color="0.5", ha="center", fontsize=8)
+    ax.text(0, 1.35, 0, "y", color="0.5", ha="center", fontsize=8)
     ax.set_title(title, color=c, fontsize=11)
 
 
