@@ -15,12 +15,14 @@ $\gamma\int \Delta B_z(\mathbf r(t))\,dt$ on top of the gradient phase, read thr
 
 ![Same susceptibility, same B0, same spins — only the axon shape differs. A circular lumen's internal field is uniform so the spins stay coherent; a real XNH monkey axon's field varies point-to-point and the net magnetization collapses.](media/susceptibility_morphology.gif){ width="100%" }
 
-**This is the whole story in one loop.** Two lumens — a perfect circle and a real axon
-segmented from Winther's XNH data — with *identical* susceptibility, main field and spins.
-Inside the circle the internal field is uniform, so every spin precesses together and the net
+**This is the whole story in one loop.** The top row is each axon in 3-D — a generated
+myelinated cylinder and the real XNH monkey axon mesh (Winther's G6 segmentation), same
+orientation — with a cutting plane marking where the cross-section below is taken. In the
+cross-section the two lumens carry *identical* susceptibility, main field and spins. Inside
+the circle the internal field is uniform, so every spin precesses together and the net
 magnetization only rotates (|S| stays 1). Inside the real, non-circular lumen the field varies
-from point to point, the spins fan out, and the signal collapses. The susceptibility-induced
-dephasing **reads out the morphology** — the Winther 2024 finding, live.
+from point to point, the spins fan out on the phasor clock, and the signal collapses. The
+susceptibility-induced dephasing **reads out the morphology** — the Winther 2024 finding, live.
 
 ![Off-resonance field ΔBz(r) for the three susceptibility source types, all from one engine.](media/susceptibility_fields.png){ width="100%" }
 
