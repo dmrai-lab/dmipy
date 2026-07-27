@@ -86,12 +86,27 @@ A stimulated echo therefore pauses MT's transverse face during the mixing time b
 longitudinal one — so MT gains less from gating than the purely transverse channels (surface
 relaxivity, susceptibility), and the longitudinal term is left as a residual, non-gated confound.
 
+## The third observable — the Z-spectrum
+
+Diffusion and relaxation can't tell an MT wall from a plain surface-relaxivity wall — both simply
+attenuate. The **Z-spectrum** can. Sweep a saturation pulse across a range of frequency **offsets**
+from the water line and record how much longitudinal signal survives: the narrow free-water line is
+only touched near resonance, but the bound pool's ultra-short $T_2^{b}$ lets it keep absorbing across
+a **broad** offset range — so the free signal stays depressed far off-resonance. That off-resonance
+dip is something **only a bound pool can make**; it is MT's fingerprint, and the observable that
+separates the transfer share of a wall's reactivity from surface relaxivity.
+
+![Emergent MT Z-spectrum: on resonance the free water is directly saturated; far off-resonance the short-T2 bound pool keeps the free signal depressed. The emergent Monte-Carlo points sit on the analytic two-pool oracle.](../media/mt_zspectrum.png)
+
+One call runs it — `dmipy_sim.emergent_z_spectrum(offsets, geometry, …)` does a real forward walk at
+each offset — and the emergent points land on the analytic two-pool oracle (line) to the Monte-Carlo
+noise floor, the same agreement the burn-in buys, now across the whole spectrum.
+
 ## The two-pool system we validate against
 
-The emergent Z-spectrum matches a **full** two-pool Bloch–McConnell oracle to the Monte-Carlo noise
-floor once the pool is burned in. *Full* is the point: the oracle carries **both** pools' complete
-magnetization — free $a$ and bound $b$, transverse **and** longitudinal — and lets the bound pool's
-real short $T_2^{b}$ do the dephasing. It uses **no** super-Lorentzian lineshape and **no**
+That oracle is a **full** two-pool Bloch–McConnell model — and *full* is the point: it carries
+**both** pools' complete magnetization — free $a$ and bound $b$, transverse **and** longitudinal —
+and lets the bound pool's real short $T_2^{b}$ do the dephasing. It uses **no** super-Lorentzian lineshape and **no**
 phenomenological RF-absorption rate $R_{\mathrm{rfb}}$; the broad off-resonance saturation *emerges*
 from the short-$T_2^{b}$ spin. For RF of nutation rate $w_1=\gamma B_1$ about axis $\phi$,
 off-resonance $\Delta\omega_p$, and exchange $k_f$ (free→bound) / $k_r$ (bound→free):
