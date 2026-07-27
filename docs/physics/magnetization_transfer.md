@@ -86,8 +86,28 @@ A stimulated echo therefore pauses MT's transverse face during the mixing time b
 longitudinal one — so MT gains less from gating than the purely transverse channels (surface
 relaxivity, susceptibility), and the longitudinal term is left as a residual, non-gated confound.
 
-## Validation
+## The two-pool system we validate against
 
-The emergent Z-spectrum this walk produces matches a two-pool Bloch–McConnell oracle to the
-Monte-Carlo noise floor once the pool is burned in. The analytical inverse (dmipy-fit) counterpart
-follows.
+The emergent Z-spectrum matches a **full** two-pool Bloch–McConnell oracle to the Monte-Carlo noise
+floor once the pool is burned in. *Full* is the point: the oracle carries **both** pools' complete
+magnetization — free $a$ and bound $b$, transverse **and** longitudinal — and lets the bound pool's
+real short $T_2^{b}$ do the dephasing. It uses **no** super-Lorentzian lineshape and **no**
+phenomenological RF-absorption rate $R_{\mathrm{rfb}}$; the broad off-resonance saturation *emerges*
+from the short-$T_2^{b}$ spin. For RF of nutation rate $w_1=\gamma B_1$ about axis $\phi$,
+off-resonance $\Delta\omega_p$, and exchange $k_f$ (free→bound) / $k_r$ (bound→free):
+
+$$
+\begin{aligned}
+\dot M_x^{p} &= -R_2^{p}M_x^{p} - \Delta\omega_p\,M_y^{p} + w_1\sin\phi\,M_z^{p} - k^{p}_{\text{out}}M_x^{p} + k^{p}_{\text{in}}M_x^{q}\\
+\dot M_y^{p} &= +\Delta\omega_p\,M_x^{p} - R_2^{p}M_y^{p} - w_1\cos\phi\,M_z^{p} - k^{p}_{\text{out}}M_y^{p} + k^{p}_{\text{in}}M_y^{q}\\
+\dot M_z^{p} &= -w_1\sin\phi\,M_x^{p} + w_1\cos\phi\,M_y^{p} - R_1^{p}\big(M_z^{p}-M_0^{p}\big) - k^{p}_{\text{out}}M_z^{p} + k^{p}_{\text{in}}M_z^{q}
+\end{aligned}
+$$
+
+for $(p,q)=(a,b)$ with $(k^{p}_{\text{out}},k^{p}_{\text{in}})=(k_f,k_r)$ and $(p,q)=(b,a)$ with
+$(k_r,k_f)$; $M_0^{b}=M_0^{a}\,k_f/k_r$ by detailed balance. Exchange couples **all three**
+components of each pool — including the bound transverse ones $M_x^{b},M_y^{b}$. The reduced
+4-equation qMT model (drop $M_x^{b},M_y^{b}$ and replace their RF response with a lineshape-based
+$R_{\mathrm{rfb}}$ on $M_z^{b}$) is deliberately **not** used; and neither this ODE nor any lineshape
+enters the forward walk, where the two-pool behaviour is emergent. The analytical inverse
+(dmipy-fit) counterpart follows.
