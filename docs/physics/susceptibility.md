@@ -1,8 +1,8 @@
 # Susceptibility
 
-!!! success "✅ Operational in the forward simulator"
-    Magnetic susceptibility is carried by the public [dmipy-sim](../sim.md) forward Bloch
-    engine and validated against exact analytics and published Monte-Carlo findings. The
+!!! success "✅ Released in dmipy-sim"
+    Magnetic susceptibility is a **released** effect in the public [dmipy-sim](../sim.md) forward
+    Bloch engine, validated against exact analytics and published Monte-Carlo findings. The
     matched analytical inverse (the $R_2'$ term in the [coherence-gating](coherence_gating.md)
     law) follows the same release path as the other effects.
 

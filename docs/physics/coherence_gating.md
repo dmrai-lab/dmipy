@@ -89,7 +89,7 @@ longitudinal interval as the exact sibling of the transverse factor).
 !!! note "Released vs planned"
     Gating of the released transverse terms ($T_2$, surface relaxivity, MT's transverse $k_f$) with
     $T_1$ storage is the newest public capability (idealized-pulse PGSTE), previewed here on the
-    development site. Susceptibility ($R_2'$) is now operational in the forward simulator (see its
+    development site. Susceptibility ($R_2'$) is now released in dmipy-sim (see its
     [effect page](susceptibility.md)); MT's longitudinal saturation transfer
     ($k_{\mathrm{MT}}^{\parallel}$) is the remaining planned term. The equations above already fix
     how the gate treats each.
