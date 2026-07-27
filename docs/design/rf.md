@@ -100,6 +100,20 @@ Peak-limited on a 19 µT body coil, the hard 180° refocuses only **η = 0.25** 
 **18.9 µT** peak, a **≈1.3 kHz** inversion band, for **≈17×** the RF energy of a hard 180°. Same
 echo time, far more signal; the SAR is the honest cost of adiabaticity.
 
+## Pushing it: the optimiser at the edge
+
+On an easy spec the adiabatic warm start is already near-perfect and the GRAPE pass barely
+matters. Push to a **hard** spec — invert across **±50 % B1⁺** *and* ±500 Hz on a 19 µT / 5 ms
+budget — and the layers separate: a hard 180° is hopeless (η = 0.14), the HS warm start does the
+heavy lifting (η = 0.91), and the GRAPE refinement squeezes out the last bit of efficiency while
+*trimming* peak-B1 (18.9 → 16.3 µT of headroom):
+
+![Left: inversion Mz vs B1⁺ across ±50% for a hard 180° (fails at the edges), the HS warm start, and HS+GRAPE (both flat near −1). Right: ensemble refocusing efficiency η — hard 0.14, HS 0.91, HS+GRAPE 0.92 — with GRAPE trimming peak-B1 from 18.9 to 16.3 µT.](media/rf_pushit.png){ width="100%" }
+
+This is dmipy-design's own optimiser working at the edge of what a 5 ms / 19 µT pulse can do —
+and a taxonomy of *fixed* robust pulses (adiabatic HS, BIR-4, composites; see
+[RF pulses — watch the spins](../rf_pulses.md)) is exactly the space of warm starts it refines from.
+
 !!! note "Refocusing vs inversion"
     An adiabatic *full passage* imparts a $B_0/B_1$-dependent phase, so as a **refocusing** pulse
     it is used as a matched **pair** (double adiabatic refocusing, e.g. LASER) to cancel that

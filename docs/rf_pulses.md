@@ -59,6 +59,61 @@ near-**rectangular** slice.
 z, Mxy, Mz = slice_profile(sinc, slice_gradient=20e-3, positions_m=z)   # T/m, metres
 ```
 
+## Refocusing trains: Carr-Purcell vs Meiboom-Gill
+
+The *phase* of a pulse is its rotation axis — and that choice can make or break an echo train.
+In a CPMG train the 180° pulses are never exactly π (here B1⁺ = 0.8 makes them ~144°), and the
+axis decides what happens to that error:
+
+- **Carr-Purcell** — 180ₓ, axis *perpendicular* to the transverse magnetisation. The flip error
+  tips spins out of plane a little each echo and the errors **accumulate** — the train collapses.
+- **Meiboom-Gill** — 180_y, axis *parallel* to the magnetisation (the 90ₓ left M along ∓y). The
+  error on an odd echo is **undone on the next even echo** — the train is self-correcting.
+
+Same imperfect pulse, opposite outcome, from one 90° phase shift. This is just `B1Pulse` phases
+through the forward:
+
+![Echo-train amplitude vs echo number for a CPMG train with an imperfect (~144°) 180°: the Carr-Purcell train (180ₓ) collapses and oscillates, while the Meiboom-Gill train (180_y) stays flat near 0.9.](media/rf_cpmg.png){ width="80%" }
+
+```python
+refoc_cp = B1Pulse.hard(180, 4e-3, 1e-5, phase_deg=0)    # axis ⟂ M  → errors accumulate
+refoc_mg = B1Pulse.hard(180, 4e-3, 1e-5, phase_deg=90)   # axis ∥ M  → self-correcting
+```
+
+## Robust refocusing: a small taxonomy
+
+A hard 180° only inverts properly at the nominal transmit strength. There are three classic
+ways to make it **B1-robust**, and dmipy plays all of them through the same forward:
+
+![Inversion Mz vs B1⁺ transmit scale for four pulses: a hard 180° (perfect only at B1⁺=1), a composite 90ₓ-180_y-90ₓ (flatter), an adiabatic HS (flat across ±30%), and BIR-4 (flat across the whole range).](media/rf_robustness.png){ width="80%" }
+
+- **Composite** (`90ₓ-180_y-90ₓ`) — robustness from a designed *sequence* of simple rotations;
+  build it by concatenating hard segments with different phases.
+- **Adiabatic HS** — robustness from a continuous frequency *sweep*: the magnetisation follows
+  the effective field. This is what [`design_refocusing_rf`](design/rf.md) produces.
+- **BIR-4** — an adiabatic pulse that rotates by *any* angle B1-insensitively (below).
+
+```python
+# composite: robustness from discrete rotations
+seg = lambda f, ph: B1Pulse.hard(f, abs(f)/180*0.6e-3, 1e-5, phase_deg=ph).b1
+composite = B1Pulse.from_samples(np.concatenate([seg(90,0), seg(180,90), seg(90,0)]), 1e-5)
+```
+
+## The exotic: BIR-4, a B1-insensitive rotation by any angle
+
+**BIR-4** (B1-Independent Rotation, 4 segments; Garwood & Ke 1991) is built from four adiabatic
+half-passages with an alternating frequency sweep and two phase jumps. Where an adiabatic full
+passage can only *invert*, BIR-4 rotates by an **arbitrary angle set by the phase jump** ($\theta
+\approx 2\varphi$) — and does so B1-insensitively. It's the most robust refocusing element here,
+flat across the entire ±60% B1⁺ range:
+
+![BIR-4: (left) the double-hump sech amplitude and alternating tanh frequency sweep; (centre) the achieved flip angle tracks 2φ and stays flat across ±30% B1⁺; (right) at θ=180° it inverts across the whole B1⁺ range where a hard 180° collapses.](media/rf_bir4.png){ width="100%" }
+
+Every pulse on this page — excitation, refocusing, slice-selective, CPMG, composite, adiabatic,
+BIR-4 — is the *same* `B1Pulse` object through the *same* Bloch forward. dmipy-sim provides the
+`hard` / `windowed_sinc` constructors and the representation; the richer pulses are recipes on
+top, and the optimised ones come from [dmipy-design](design/rf.md).
+
 ## The forward in full
 
 `bloch_simulate` integrates over an **ensemble** — off-resonance `df_hz` × transmit scale
@@ -71,3 +126,13 @@ designs a $B_1$-robust 180°.
 - **Small-tip-angle theorem.** Pauly J, Nishimura D, Macovski A. *A k-space analysis of small-tip-
   angle excitation.* Journal of Magnetic Resonance **81** (1989) 43–56.
   [doi:10.1016/0022-2364(89)90265-5](https://doi.org/10.1016/0022-2364(89)90265-5).
+- **Meiboom-Gill.** Meiboom S, Gill D. *Modified spin-echo method for measuring nuclear
+  relaxation times.* Review of Scientific Instruments **29** (1958) 688–691.
+  [doi:10.1063/1.1716296](https://doi.org/10.1063/1.1716296).
+- **Composite pulses.** Levitt MH. *Composite pulses.* Progress in NMR Spectroscopy **18** (1986)
+  61–122. [doi:10.1016/0079-6565(86)80005-X](https://doi.org/10.1016/0079-6565(86)80005-X).
+- **BIR-4.** Garwood M, Ke Y. *Symmetric pulses to induce arbitrary flip angles with compensation
+  for RF inhomogeneity and resonance offsets.* Journal of Magnetic Resonance **94** (1991)
+  511–525. [doi:10.1016/0022-2364(91)90137-I](https://doi.org/10.1016/0022-2364(91)90137-I).
+- **Adiabatic pulses — review.** Tannús A, Garwood M. *Adiabatic pulses.* NMR in Biomedicine
+  **10** (1997) 423–434.
