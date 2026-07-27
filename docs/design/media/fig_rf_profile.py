@@ -2,16 +2,14 @@
 """Regenerates ``rf_profile.png`` — why the robust 180 wins, in one static figure.
 
 Three panels:
-  (left, centre)  the refocusing map — each isochromat's echo projected onto the ensemble
-                  refocus axis (+y), over the (off-resonance × B1+ transmit scale) plane, for
-                  the hard and the designed 180.  Red = refocuses (adds to the echo), blue =
-                  anti-phase (subtracts).  The hard pulse concentrates its refocusing at the
-                  nominal point (B1+=1, on-resonance) and loses it off there; the designed pulse
-                  spreads red across the ±30% / ±250 Hz design box (dashed), which is what lifts
-                  the ensemble refocused fraction.  (The vertical banding is the real
-                  finite-bandwidth phase structure of a 6 ms pulse.)
-  (right)         the B1 envelopes: flat hard 180 vs the band-limited designed envelope, with
-                  peak-B1 and SAR annotated — both inside the deliverability box.
+  (left)   refocusing efficiency η = (1−M_z)/2 vs B1+ transmit scale (on resonance). The hard
+           180 is a sharp peak at B1+=1 and collapses either side; the designed pulse holds
+           η≈1 flat across the ±30% transmit spread — every spin genuinely inverts.
+  (centre) η vs off-resonance (at B1+=1) — the designed pulse also holds its passband across
+           the ±250 Hz design band.
+  (right)  the designed waveform: |B1(t)| (amplitude modulation) and its phase (phase
+           modulation) — the composite/adiabatic-like structure that buys the robustness,
+           against the flat hard 180. Peak-B1 and the SAR cost are annotated.
 
 Needs the working-tree dmipy-design + dmipy-sim on the path:
     OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu PYTHONPATH=/path/design:/path/sim python fig_rf_profile.py
@@ -27,62 +25,65 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from dmipy_design import design_refocusing_rf
-from dmipy_sim.rf import B1Pulse, bloch_simulate
+from dmipy_design.optimizers.rf_pulse import _inversion_mz, GAMMA
 
 DT, RF_DUR, B1_MAX = 1e-4, 6e-3, 19e-6
 HARD, DES = "#c1440e", "#1b6ca8"
 
-d = design_refocusing_rf(rf_duration=RF_DUR, dt=DT, B1_max=B1_MAX, sar_headroom=1.30,
+d = design_refocusing_rf(rf_duration=RF_DUR, dt=DT, B1_max=B1_MAX,
                          b1_range=(0.7, 1.3), n_b1=7, off_resonance_hz=250.0,
-                         n_off_resonance=7, n_basis=8, n_restarts=6, seed=0)
+                         n_off_resonance=7, n_basis=10, n_restarts=8, seed=0)
 n_rf = d.B1.shape[0]
-guard = np.zeros(n_rf)
-des_env = d.to_b1pulse().b1.real
-hard_env = B1Pulse.hard(180, RF_DUR, DT).b1.real
+A0 = np.pi / (GAMMA * n_rf * DT)
+hard = np.full(n_rf, A0, dtype=np.complex128)
 
 
-def _refoc_map(env, b1_ax, df_ax):
-    """Echo projected onto the +y refocus axis (M_y) over the (df × b1) grid.
-    A 90ₓ tips +z→−y and a perfect spin echo returns every isochromat to +y, so M_y is the
-    signed contribution to the coherent echo; its mean over the box is the refocused fraction."""
-    B1, DF = np.meshgrid(b1_ax, df_ax, indexing="ij")
-    B1f, DFf = B1.ravel(), DF.ravel()
-    ang = (np.pi / 2) * B1f
-    M0 = np.stack([np.zeros(B1f.size), -np.sin(ang), np.cos(ang)])
-    pulse = B1Pulse.from_samples(np.concatenate([guard, env, guard]), DT)
-    Mxy, _ = bloch_simulate(pulse, df_hz=DFf, b1_scale=B1f, M0=M0)
-    return Mxy.imag.reshape(B1.shape)
+def eta(b1c, b1_scale, df_hz):
+    b1 = np.broadcast_to(b1_scale, np.broadcast(b1_scale, df_hz).shape).ravel().astype(float)
+    dw = np.broadcast_to(df_hz, np.broadcast(b1_scale, df_hz).shape).ravel().astype(float) * 2 * np.pi
+    return (1.0 - _inversion_mz(b1c, b1, dw, DT)) / 2.0
 
-
-b1_ax = np.linspace(0.6, 1.4, 81)
-df_ax = np.linspace(-300, 300, 81)
-map_hard = _refoc_map(hard_env, b1_ax, df_ax)
-map_des = _refoc_map(des_env, b1_ax, df_ax)
 
 plt.rcParams.update({"font.size": 10})
-fig, axes = plt.subplots(1, 3, figsize=(10.8, 3.4), dpi=100)   # 1080×340 (width %4==0)
-ext = [df_ax[0], df_ax[-1], b1_ax[0], b1_ax[-1]]
-for ax, M, title, frac in ((axes[0], map_hard, "Hard 180°", d.refocused_fraction_hard),
-                           (axes[1], map_des, "B1-robust 180° (designed)", d.refocused_fraction)):
-    im = ax.imshow(M, origin="lower", extent=ext, aspect="auto", vmin=-1, vmax=1, cmap="RdBu_r")
-    ax.add_patch(plt.Rectangle((-250, 0.7), 500, 0.6, fill=False, ec="k", lw=1.1, ls="--"))
-    ax.set_xlabel("off-resonance (Hz)")
-    ax.set_title("%s  —  refocused %.2f" % (title, frac))
-axes[0].set_ylabel("B1$^+$ transmit scale")
-cb = fig.colorbar(im, ax=axes[1], fraction=0.046, pad=0.04)
-cb.set_label("echo on refocus axis (M$_y$)")
+fig, axes = plt.subplots(1, 3, figsize=(11.2, 3.4), dpi=100)   # 1120×340 (width %4==0)
 
+# (A) efficiency vs B1+ transmit scale, on resonance
+b1_ax = np.linspace(0.5, 1.5, 121)
+axes[0].axvspan(0.7, 1.3, color="0.92", label="design range")
+axes[0].plot(b1_ax, eta(hard, b1_ax, 0.0), color=HARD, lw=2, label="hard 180°")
+axes[0].plot(b1_ax, eta(d.B1, b1_ax, 0.0), color=DES, lw=2, label="designed")
+axes[0].set_xlabel("B1$^+$ transmit scale"); axes[0].set_ylabel("refocusing efficiency  η")
+axes[0].set_title("Transmit-field robustness"); axes[0].set_ylim(0, 1.05)
+axes[0].legend(fontsize=8, loc="lower center")
+
+# (B) efficiency vs off-resonance, at B1+ = 1
+df_ax = np.linspace(-600, 600, 241)
+axes[1].axvspan(-250, 250, color="0.92", label="design band")
+axes[1].plot(df_ax, eta(hard, 1.0, df_ax), color=HARD, lw=2, label="hard 180°")
+axes[1].plot(df_ax, eta(d.B1, 1.0, df_ax), color=DES, lw=2, label="designed")
+axes[1].set_xlabel("off-resonance (Hz)"); axes[1].set_title("Off-resonance robustness")
+axes[1].set_ylim(0, 1.05); axes[1].legend(fontsize=8, loc="lower center")
+
+# (C) the designed waveform: amplitude + phase modulation
 t = d.times() * 1e3
-axes[2].plot(t, hard_env * 1e6, color=HARD, lw=1.8, label="hard 180°")
-axes[2].plot(t, des_env * 1e6, color=DES, lw=1.8, label="designed")
-axes[2].axhline(B1_MAX * 1e6, color="0.4", ls="--", lw=1)
-axes[2].text(t[0], B1_MAX * 1e6 * 1.02, "peak-B1 limit", fontsize=8, color="0.4")
-axes[2].set_xlabel("time (ms)"); axes[2].set_ylabel("B1 (µT)"); axes[2].set_title("Envelope")
-axes[2].set_ylim(-1, 21); axes[2].legend(fontsize=8, loc="upper right")
-axes[2].text(0.03, 0.06, "peak %.1f µT   SAR %.2f× hard" % (d.peak_B1 * 1e6, d.sar_ratio),
-             transform=axes[2].transAxes, fontsize=8, color=DES)
+axC = axes[2]; axP = axC.twinx()
+axC.plot(t, np.abs(hard) * 1e6, color=HARD, lw=1.6, label="hard |B1|")
+axC.plot(t, np.abs(d.B1) * 1e6, color=DES, lw=1.8, label="designed |B1|")
+axC.axhline(B1_MAX * 1e6, color="0.5", ls="--", lw=1)
+axP.plot(t, np.unwrap(np.angle(d.B1)) * 180 / np.pi, color=DES, lw=1.0, ls=":", alpha=0.8)
+axC.set_xlabel("time (ms)"); axC.set_ylabel("|B1| (µT)")
+axP.set_ylabel("designed phase (°)", color=DES, fontsize=9)
+axP.tick_params(axis="y", labelcolor=DES)
+axC.set_title("Designed waveform (amp + phase)")
+axC.set_ylim(0, B1_MAX * 1e6 * 1.15)
+axC.legend(fontsize=8, loc="upper right")
+axC.text(0.03, 0.06, "peak %.1f µT   SAR %.0f× hard" % (d.peak_B1 * 1e6, d.sar_ratio),
+         transform=axC.transAxes, fontsize=8, color=DES)
 
-fig.tight_layout()
+fig.suptitle("Refocusing efficiency across the ensemble:  hard %.2f  →  designed %.2f   "
+             "(η = 1 means every spin is genuinely inverted)"
+             % (d.refocusing_efficiency_hard, d.refocusing_efficiency), fontsize=10.5)
+fig.tight_layout(rect=(0, 0, 1, 0.93))
 out = os.path.join(os.path.dirname(__file__), "rf_profile.png")
 fig.savefig(out, dpi=100)
 print("figure ->", out)
