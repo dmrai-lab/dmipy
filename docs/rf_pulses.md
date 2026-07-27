@@ -93,10 +93,11 @@ ways to make it **B1-robust**, and dmipy plays all of them through the same forw
   the effective field. This is what [`design_refocusing_rf`](design/rf.md) produces.
 - **BIR-4** — an adiabatic pulse that rotates by *any* angle B1-insensitively (below).
 
+Each is a first-class `B1Pulse` constructor:
+
 ```python
-# composite: robustness from discrete rotations
-seg = lambda f, ph: B1Pulse.hard(f, abs(f)/180*0.6e-3, 1e-5, phase_deg=ph).b1
-composite = B1Pulse.from_samples(np.concatenate([seg(90,0), seg(180,90), seg(90,0)]), 1e-5)
+composite = B1Pulse.composite([(90, 0), (180, 90), (90, 0)], dt=1e-5, peak_b1=15e-6)
+adiab     = B1Pulse.adiabatic_hs(6e-3, 1e-5, peak_b1=19e-6, mu=2.0)   # HS full passage
 ```
 
 ## The exotic: BIR-4, a B1-insensitive rotation by any angle
@@ -116,10 +117,16 @@ four-segment structure straight off the trajectory (and the double-hump $B_1(t)$
 
 ![Side-by-side Bloch-sphere trajectories: the adiabatic HS magnetisation follows one smooth spiral from +z to −z, while the BIR-4 magnetisation traces a longer path that sweeps toward the equator and reorients at each phase jump before reaching −z; the HS and BIR-4 B1 waveforms play below.](media/rf_bir4_movie.gif){ width="100%" }
 
+```python
+bir4 = B1Pulse.bir4(flip_deg=180, duration=4e-3, dt=1e-5, peak_b1=19e-6)   # tunable rotation
+```
+
 Every pulse on this page — excitation, refocusing, slice-selective, CPMG, composite, adiabatic,
-BIR-4 — is the *same* `B1Pulse` object through the *same* Bloch forward. dmipy-sim provides the
-`hard` / `windowed_sinc` constructors and the representation; the richer pulses are recipes on
-top, and the optimised ones come from [dmipy-design](design/rf.md).
+BIR-4 — is the *same* `B1Pulse` object through the *same* Bloch forward. dmipy-sim provides them
+all as constructors (`hard`, `windowed_sinc`, `adiabatic_hs`, `adiabatic_half_passage`, `bir4`,
+`composite`); the optimised pulses come from [dmipy-design](design/rf.md), which can **warm-start
+its optimiser from any of these** — e.g. `design_refocusing_rf(warm_start=B1Pulse.bir4(...))`
+refines a BIR-4 against your exact B1⁺/off-resonance ensemble.
 
 ## The forward in full
 
