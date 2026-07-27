@@ -28,7 +28,7 @@ $$
 \frac{1}{T_2^{\mathrm{app}}}
    = \underbrace{\frac{1}{T_2}}_{\text{bulk}}
    + \underbrace{\rho_2\,\frac{S}{V}}_{\text{surface relaxivity}}
-   + \underbrace{R_2'}_{\text{susceptibility}\;🔬}
+   + \underbrace{R_2'}_{\text{susceptibility}}
    + \underbrace{k_f}_{\text{MT, transverse}} ,
 $$
 
@@ -50,11 +50,10 @@ $$
 $$
 
 The two rates are **exact siblings** — transverse and longitudinal faces of the same walls — each a
-bulk term plus one $S/V$-weighted (or field) term per mechanism. (🔬 marks terms not yet in the
-released public scope — susceptibility's $R_2'$ and MT's longitudinal saturation transfer
-$k_{\mathrm{MT}}^{\parallel}$; the released engines carry $T_2$, $\rho_2$, $T_1$, $\rho_1$ and MT's
-transverse $k_f$ — see [susceptibility](susceptibility.md) and
-[magnetization transfer](magnetization_transfer.md).)
+bulk term plus one $S/V$-weighted (or field) term per mechanism. (🔬 marks the one term not yet in
+the released public scope — MT's longitudinal saturation transfer $k_{\mathrm{MT}}^{\parallel}$; the
+engines carry $T_2$, $\rho_2$, $T_1$, $\rho_1$, susceptibility's $R_2'$ and MT's transverse $k_f$
+— see [susceptibility](susceptibility.md) and [magnetization transfer](magnetization_transfer.md).)
 
 **Diffusion and [permeability/exchange](permeability.md) are outside the gate.** They depend on
 molecular motion, not on where the magnetization points, so they act in **both** states: the
@@ -90,6 +89,7 @@ longitudinal interval as the exact sibling of the transverse factor).
 !!! note "Released vs planned"
     Gating of the released transverse terms ($T_2$, surface relaxivity, MT's transverse $k_f$) with
     $T_1$ storage is the newest public capability (idealized-pulse PGSTE), previewed here on the
-    development site. Susceptibility ($R_2'$) and MT's longitudinal saturation transfer
-    ($k_{\mathrm{MT}}^{\parallel}$) are not yet in the released scope; the equations above already fix
+    development site. Susceptibility ($R_2'$) is now operational in the forward simulator (see its
+    [effect page](susceptibility.md)); MT's longitudinal saturation transfer
+    ($k_{\mathrm{MT}}^{\parallel}$) is the remaining planned term. The equations above already fix
     how the gate treats each.

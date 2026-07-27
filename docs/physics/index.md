@@ -11,14 +11,15 @@ next.
 | **[Diffusion](diffusion.md)** | ✅ Released | restricted / hindered / free random walk | `E_diff(b)` per compartment |
 | **[Permeability & exchange](permeability.md)** | ✅ Released | Powles membrane crossing | Kärger / NEXI |
 | **[Surface relaxivity & relaxation](../surface_relaxivity_bias.md)** | ✅ Released | Brownstein–Tarr wall loss + T2 | occupancy-gated `T2` / `ρ` factors |
-| **[Susceptibility](susceptibility.md)** | 🔬 Planned | — | — |
+| **[Susceptibility](susceptibility.md)** | ✅ Operational (sim) | off-resonance field on the walk — iron spheres / myelin hollow-cylinder / voxel grid | $R_2'$ transverse term |
 | **[Magnetization transfer](magnetization_transfer.md)** | ✅ Released | emergent wall sticking + short-$T_2$ bound pool | Z-spectrum (two-pool) |
 
 !!! note "Released vs planned"
     ✅ **Released** effects are in the public engines today and validated effect-by-effect
-    (analytics ↔ Monte Carlo). 🔬 **Planned** effects are part of the physics-complete model and
-    the internal roadmap, but not yet in the released public scope — their pages describe what is
-    coming. The boundary is a *release* boundary, not the ceiling.
+    (analytics ↔ Monte Carlo). ✅ **Operational (sim)** means the forward simulator carries the
+    effect and is validated against analytics + the literature; the matched analytical inverse
+    follows. 🔬 **Planned** effects are part of the physics-complete model and the internal
+    roadmap. The boundary is a *release* boundary, not the ceiling.
 
 Every released effect ships with a first-principles validation ladder and a matched analytical
 inverse, so a number that comes out of a fit can be traced to the wall collisions that produced
