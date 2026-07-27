@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
-"""Regenerates ``rf_refocus.gif`` — the hard-180 vs B1-robust-180 spin echo, with context.
+"""Regenerates ``rf_refocus.gif`` — hard vs B1-robust 180°, watched spin by spin.
 
-The pedagogy hero for the design/rf page. The figure is built to be self-explanatory:
+A 180° refocusing pulse must flip magnetisation by 180° — i.e. drive it from +z to −z — for
+EVERY spin, whatever transmit strength B1⁺ that spin happens to feel. This animation follows
+three spins on the Bloch sphere (rotating frame), one weak-transmit (B1⁺ = 0.7×), one nominal
+(1.0×), one strong (1.3×), under the plain hard pulse (left) and the designed pulse (right),
+with the B1(t) waveform playing below.
 
-  * header states the scenario (a 180 refocusing pulse across a real head) and the objective;
-  * each spin is a DOT in the transverse (Mx,My) plane, COLOURED by the transmit strength B1+
-    it feels — so the viewer sees the ensemble is "the same tissue seen under many B1+/off-res
-    conditions", and which spins misbehave;
-  * the bold black arrow is the VECTOR SUM = the echo the scanner actually measures;
-  * an inset shows the B1(t) waveform being played, with a time cursor;
-  * a bottom trace plots the measured signal over time for both pulses, so "better" is explicit.
+Hard 180°: exactly π only at B1⁺ = 1, so the 0.7× and 1.3× spins under/over-rotate and stall
+far from the south pole — they are NOT inverted, and a spin echo built on them loses signal.
+Designed 180°: a phase-modulated (composite/adiabatic-like) pulse whose net rotation is ≈180°
+across the whole B1⁺ range, so all three spins arrive at −z. That per-spin robustness is what
+``design_refocusing_rf`` maximises (crushed-echo refocusing efficiency η = (1−M_z)/2).
 
-A hard 180 is exactly π only at B1+=1; off-nominal spins under/over-flip, fail to refocus, and
-fan out — their vector sum (signal) stays small. The designed pulse refocuses across the whole
-ensemble, so the sum is large. Same echo time, more signal.
+The designed pulse is bridged into dmipy-sim as a ``B1Pulse`` (``to_b1pulse``) and run through
+the SAME ``dmipy_sim.rf.bloch_simulate`` forward as the hard pulse — design proposes, sim scores.
 
 Needs the working-tree dmipy-design + dmipy-sim on the path:
     OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu PYTHONPATH=/path/design:/path/sim python fig_rf_refocus.py
@@ -28,8 +29,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
-from matplotlib.cm import ScalarMappable
-from matplotlib.colors import Normalize
 from matplotlib.animation import FuncAnimation, PillowWriter
 
 from dmipy_design import design_refocusing_rf
@@ -37,126 +36,89 @@ from dmipy_sim.rf import B1Pulse, bloch_simulate
 
 DT, RF_DUR, B1_MAX = 1e-4, 6e-3, 19e-6
 
-# ── design the robust 180; the flat hard 180 is the baseline ───────────────────
-d = design_refocusing_rf(rf_duration=RF_DUR, dt=DT, B1_max=B1_MAX, sar_headroom=1.30,
+d = design_refocusing_rf(rf_duration=RF_DUR, dt=DT, B1_max=B1_MAX,      # peak-limited (robust)
                          b1_range=(0.7, 1.3), n_b1=7, off_resonance_hz=250.0,
-                         n_off_resonance=7, n_basis=8, n_restarts=6, seed=0)
-n_rf = d.B1.shape[0]
-guard = np.zeros(n_rf)
-des_env = d.to_b1pulse().b1.real
-hard_env = B1Pulse.hard(180, RF_DUR, DT).b1.real
-_composite = lambda env: B1Pulse.from_samples(np.concatenate([guard, env, guard]), DT)
+                         n_off_resonance=7, n_basis=10, n_restarts=8, seed=0)
+p_des = d.to_b1pulse()
+p_hard = B1Pulse.hard(180, RF_DUR, DT)
 
-# ── ensemble (B1+ scale × off-resonance) and the post-90 transverse state ──────
-b1s = np.linspace(0.7, 1.3, 7)
-dfs = np.linspace(-250.0, 250.0, 7)
-B1 = np.repeat(b1s, dfs.size)
-DF = np.tile(dfs, b1s.size)
-E = B1.size
-ang = (np.pi / 2) * B1                       # instantaneous B1-scaled 90ₓ: +z -> (0,-sin,cos)
-M0 = np.stack([np.zeros(E), -np.sin(ang), np.cos(ang)])
+B1S = np.array([0.7, 1.0, 1.3])                       # three representative transmit scales
+SPIN_C = ["#6a3d9a", "#111111", "#e6ab02"]            # weak / nominal / strong
+SPIN_L = ["B1⁺ = 0.7×  (weak)", "B1⁺ = 1.0×  (nominal)", "B1⁺ = 1.3×  (strong)"]
+_, _, HH = bloch_simulate(p_hard, df_hz=0.0, b1_scale=B1S, return_history=True)   # (n+1,3,3)
+_, _, HD = bloch_simulate(p_des, df_hz=0.0, b1_scale=B1S, return_history=True)
+n_frames = HH.shape[0]
+mag_h = np.abs(p_hard.b1) * 1e6
+mag_d = np.abs(p_des.b1) * 1e6
+t_env = np.arange(mag_h.size) * DT * 1e3
+t_ms = np.arange(n_frames) * DT * 1e3
+env_ymax = max(mag_h.max(), mag_d.max()) * 1.15
 
-_, _, hh = bloch_simulate(_composite(hard_env), df_hz=DF, b1_scale=B1, M0=M0, return_history=True)
-_, _, hd = bloch_simulate(_composite(des_env), df_hz=DF, b1_scale=B1, M0=M0, return_history=True)
-n_t = hh.shape[0]
-t_ms = np.arange(n_t) * DT * 1e3
 
-def coherence(h):     # measured signal over time = |vector sum of the ensemble| (the echo)
-    return np.abs(np.mean(h[:, 0, :] + 1j * h[:, 1, :], axis=1))
-coh_h, coh_d = coherence(hh), coherence(hd)
-print("hard echo=%.3f   design echo=%.3f" % (coh_h[-1], coh_d[-1]))
+def _sphere(ax, title, color):
+    u, v = np.mgrid[0:2 * np.pi:24j, 0:np.pi:14j]
+    ax.plot_wireframe(np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), np.cos(v),
+                      color="0.9", lw=0.35)
+    ax.plot([0, 0], [0, 0], [-1, 1], color="0.55", lw=0.8)
+    ax.text(0, 0, 1.28, "+z", color="0.4", fontsize=9, ha="center")
+    ax.text(0, 0, -1.42, "−z", color="0.4", fontsize=9, ha="center")
+    ax.set_xlim(-1, 1); ax.set_ylim(-1, 1); ax.set_zlim(-1, 1)
+    ax.set_box_aspect((1, 1, 1)); ax.set_axis_off(); ax.view_init(elev=12, azim=-70)
+    ax.set_title(title, color=color, fontsize=12, pad=-2)
 
-# full-timeline B1 magnitude (µT) for the inset: zeros in the guards, shape in the middle
-env_full_h = np.concatenate([guard, hard_env, guard]) * 1e6
-env_full_d = np.concatenate([guard, des_env, guard]) * 1e6
-env_max = max(env_full_h.max(), env_full_d.max()) * 1.15
-t_env = np.arange(env_full_h.size) * DT * 1e3      # pulse has n_t-1 samples (history has n_t)
 
-# ── figure ─────────────────────────────────────────────────────────────────────
 plt.rcParams.update({"font.size": 10})
-cmap = plt.cm.viridis
-norm = Normalize(0.7, 1.3)
-colors = cmap(norm(B1))
+fig = plt.figure(figsize=(9.0, 6.0), dpi=100)          # 900×600 (both %4==0)
+gs = gridspec.GridSpec(2, 2, height_ratios=[3.3, 1.0], hspace=0.05, wspace=0.05,
+                       left=0.04, right=0.97, top=0.80, bottom=0.13)
+axH = fig.add_subplot(gs[0, 0], projection="3d")
+axD = fig.add_subplot(gs[0, 1], projection="3d")
+axE = fig.add_subplot(gs[1, :])
+_sphere(axH, "Hard 180°", "#c1440e")
+_sphere(axD, "B1-robust 180° (designed)", "#1b6ca8")
 
-fig = plt.figure(figsize=(9.0, 6.0), dpi=100)                 # 900×600 (both %4==0)
-gs = gridspec.GridSpec(2, 2, height_ratios=[3.1, 1.0], hspace=0.5, wspace=0.16,
-                       left=0.08, right=0.86, top=0.76, bottom=0.10)
-axH = fig.add_subplot(gs[0, 0]); axD = fig.add_subplot(gs[0, 1])
-axS = fig.add_subplot(gs[1, :])
+fig.suptitle("A 180° pulse should invert EVERY spin (+z → −z) whatever transmit strength B1⁺ it feels.\n"
+             "Three spins are followed on the Bloch sphere (rotating frame); the RF waveform plays below.",
+             fontsize=10, y=0.98)
 
-fig.suptitle("A 180° refocusing pulse must flip EVERY spin by 180°. Across a head each spin (a dot)\n"
-             "feels a different transmit strength B1⁺ (its colour) and off-resonance — the scanner\n"
-             "measures their vector SUM (black arrow).",
-             fontsize=9.5, y=0.995)
-fig.text(0.5, 0.80,
-         "The designed pulse maximises that summed echo over the whole ensemble.",
-         ha="center", fontsize=9.5, style="italic", color="#1b6ca8")
+paths, tips = {}, {}
+for ax, H in ((axH, HH), (axD, HD)):
+    for j, c in enumerate(SPIN_C):
+        paths[(id(ax), j)] = ax.plot([], [], [], color=c, lw=0.8, alpha=0.35)[0]
+        tips[(id(ax), j)] = ax.plot([], [], [], color=c, lw=3.0)[0]
+# legend (shared) via proxy handles
+handles = [plt.Line2D([0], [0], color=c, lw=2.6) for c in SPIN_C]
+fig.legend(handles, SPIN_L, loc="lower center", ncol=3, fontsize=9, frameon=False,
+           bbox_to_anchor=(0.5, 0.005))
 
-specs = [(axH, hh, coh_h, env_full_h, "Hard 180°", "#c1440e"),
-         (axD, hd, coh_d, env_full_d, "B1-robust 180° (designed)", "#1b6ca8")]
-scatts, arrows, insets, cursors, sigtxt = [], [], [], [], []
-for ax, hist, coh, envf, title, c in specs:
-    ax.set_xlim(-1.15, 1.15); ax.set_ylim(-1.15, 1.15); ax.set_aspect("equal")
-    ax.add_patch(plt.Circle((0, 0), 1.0, fill=False, color="0.8", lw=1))
-    ax.set_xticks([]); ax.set_yticks([]); ax.set_xlabel("$M_x$"); ax.set_ylabel("$M_y$")
-    ax.set_title(title, color=c, fontsize=11)
-    scatts.append(ax.scatter(hist[0, 0], hist[0, 1], s=26, c=colors, edgecolors="none",
-                             alpha=0.9, zorder=3))
-    arrows.append(ax.annotate("", xy=(0, 0), xytext=(0, 0),
-                  arrowprops=dict(arrowstyle="-|>", color="k", lw=3), zorder=4))
-    sigtxt.append(ax.text(0.0, -1.07, "", ha="center", fontsize=10, color="k",
-                          fontweight="bold"))
-    # inset: the B1(t) waveform this panel plays, with a time cursor
-    ins = ax.inset_axes([0.02, 0.79, 0.34, 0.19])
-    ins.plot(t_env, envf, color=c, lw=1.3)
-    ins.set_ylim(0, env_max); ins.set_xlim(t_ms[0], t_ms[-1])
-    ins.set_xticks([]); ins.set_yticks([]); ins.set_facecolor("none")
-    ins.set_title("B1(t) played", fontsize=7.5, color="0.35", pad=1)
-    for sp in ins.spines.values():
-        sp.set_color("0.8")
-    cursors.append(ins.axvline(t_ms[0], color="0.35", lw=1))
-    insets.append(ins)
+axE.plot(t_env, mag_h, color="#c1440e", lw=1.6, label="hard |B1|")
+axE.plot(t_env, mag_d, color="#1b6ca8", lw=1.6, label="designed |B1|")
+axE.axhline(B1_MAX * 1e6, color="0.5", ls="--", lw=1)
+axE.text(t_env[-1], B1_MAX * 1e6 + 0.4, "peak-B1 limit", ha="right", fontsize=8, color="0.5")
+axE.set_xlim(t_ms[0], t_ms[-1]); axE.set_ylim(0, env_ymax)
+axE.set_xlabel("time (ms)  —  the RF waveform being played"); axE.set_ylabel("|B1| (µT)", fontsize=9)
+axE.legend(loc="upper right", fontsize=8, ncol=2)
+vcur = axE.axvline(t_ms[0], color="0.4", lw=1)
+mz_txt = fig.text(0.5, 0.325, "", ha="center", fontsize=9.5, color="0.2")
 
-# signal METER: two horizontal bars (current measured signal), the payoff made explicit and
-# unambiguous — longer bar = more signal. Both collapse as spins dephase; at the echo the
-# designed bar recovers far more. Tied to the same dots shown above.
-axS.set_xlim(0, 1.0); axS.set_ylim(-0.6, 1.6)
-axS.set_yticks([0, 1]); axS.set_yticklabels(["hard 180°", "designed"])
-axS.set_xlabel("measured signal  =  |vector sum of all spins|  (0 = fully dephased, 1 = perfect echo)")
-axS.tick_params(axis="y", length=0)
-for x in (0.2, 0.4, 0.6, 0.8):
-    axS.axvline(x, color="0.9", lw=0.8, zorder=0)
-barH = axS.barh(0, 0, height=0.55, color="#c1440e")[0]
-barD = axS.barh(1, 0, height=0.55, color="#1b6ca8")[0]
-barval = [axS.text(0, 0, "", va="center", fontsize=10, fontweight="bold", color="#c1440e"),
-          axS.text(0, 1, "", va="center", fontsize=10, fontweight="bold", color="#1b6ca8")]
-phase_txt = axS.text(0.5, 1.45, "", ha="center", fontsize=10, color="0.25")
-
-cbar = fig.colorbar(ScalarMappable(norm=norm, cmap=cmap), ax=[axH, axD],
-                    fraction=0.03, pad=0.02)
-cbar.set_label("local B1⁺ scale", fontsize=8.5)
-cbar.set_ticks([0.7, 1.0, 1.3]); cbar.ax.set_yticklabels(["0.7×", "1.0×", "1.3×"])
 
 def frame(i):
-    for (ax, hist, coh, envf, title, c), sct, arr, cur, stx in zip(
-            specs, scatts, arrows, cursors, sigtxt):
-        sct.set_offsets(np.column_stack([hist[i, 0, :], hist[i, 1, :]]))
-        mx, my = hist[i, 0, :].mean(), hist[i, 1, :].mean()
-        arr.xy = (mx, my)
-        stx.set_text("measured signal = %.2f" % np.hypot(mx, my))   # matches the arrow (dots' sum)
-        cur.set_xdata([t_ms[i], t_ms[i]])
-    sh, sd = np.hypot(*hh[i, :2, :].mean(axis=1)), np.hypot(*hd[i, :2, :].mean(axis=1))
-    barH.set_width(sh); barD.set_width(sd)
-    barval[0].set_text("  %.2f" % sh); barval[0].set_x(sh)
-    barval[1].set_text("  %.2f" % sd); barval[1].set_x(sd)
-    phase = ("just excited — all spins aligned" if i == 0 else
-             "① dephasing (spins fan out by off-resonance)" if i < n_rf else
-             "② the 180° pulse plays (flips every spin)" if i < 2 * n_rf else
-             "③ rephasing → echo (aligned spins add up = signal)")
-    phase_txt.set_text(phase)
+    for ax, H in ((axH, HH), (axD, HD)):
+        for j in range(3):
+            P = H[:i + 1, :, j]
+            pl = paths[(id(ax), j)]; pl.set_data(P[:, 0], P[:, 1]); pl.set_3d_properties(P[:, 2])
+            tp = tips[(id(ax), j)]
+            tp.set_data([0, H[i, 0, j]], [0, H[i, 1, j]]); tp.set_3d_properties([0, H[i, 2, j]])
+    vcur.set_xdata([t_ms[i], t_ms[i]])
+    mz_txt.set_text("inversion M$_z$ (−1 = fully flipped)   "
+                    "hard: % .2f / % .2f / % .2f    designed: % .2f / % .2f / % .2f"
+                    % (HH[i, 2, 0], HH[i, 2, 1], HH[i, 2, 2],
+                       HD[i, 2, 0], HD[i, 2, 1], HD[i, 2, 2]))
     return ()
 
-anim = FuncAnimation(fig, frame, frames=range(0, n_t, 2), interval=90, blit=False)
+
+anim = FuncAnimation(fig, frame, frames=range(0, n_frames, 2), interval=90, blit=False)
 out = os.path.join(os.path.dirname(__file__), "rf_refocus.gif")
 anim.save(out, writer=PillowWriter(fps=16))
+print("hard eff=%.3f  designed eff=%.3f" % (d.refocusing_efficiency_hard, d.refocusing_efficiency))
 print("figure ->", out)
