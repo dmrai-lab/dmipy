@@ -9,8 +9,10 @@ properly flipped, the spin echo built on them is incomplete, and that is signal 
 The standard, scanner-deliverable fix is an **adiabatic pulse**: sweep the RF frequency slowly
 through resonance while the amplitude rises and falls, and — provided the sweep is slow enough
 (the *adiabatic condition*) — the magnetisation **follows the effective field** from +z to −z
-*regardless* of the exact $B_1^+$. `design_refocusing_rf` designs the classic **hyperbolic-secant
-(HS) adiabatic full passage** (Silver, Joseph & Hoult 1985) and tunes it to your hardware.
+*regardless* of the exact $B_1^+$. `design_refocusing_rf` builds the classic **hyperbolic-secant
+(HS) adiabatic full passage** (Silver, Joseph & Hoult 1985) tuned to your hardware, then **refines
+it with a short optimal-control (GRAPE) pass** — the HS pulse is the good initial guess that keeps
+the refinement physical.
 
 It is the **RF analogue of the [NOW gradient box](deliverable.md)**: design a *deliverable*
 waveform that meets a physical spec under the real hardware limits — here $B_1(t)$ instead of
@@ -44,9 +46,16 @@ $$\eta = \tfrac12\,(1 - M_z) \in [0,1],\qquad M_z = \text{the pulse acting on } 
 
 ($\eta = 1$ for a perfect inversion, $|\beta|^2$ in Shinnar–Le-Roux terms). It is a **per-spin**
 scalar, averaged over the $(B_1^+ \times \text{off-resonance})$ ensemble — so every spin must
-genuinely invert; it cannot be gamed by cross-spin phase cancellation. The design picks the
-sweep parameter $\mu$ (and, under a SAR cap, the amplitude) to maximise $\langle\eta\rangle$
-through the Bloch equation.
+genuinely invert; it cannot be gamed by cross-spin phase cancellation.
+
+The design maximises $\langle\eta\rangle$ through the Bloch equation in two stages: first it
+picks the HS sweep parameter $\mu$ (and, under a SAR cap, the amplitude) — a robust, physical
+starting pulse; then a **GRAPE-style refinement** optimises a few *smooth* correction modes of the
+full waveform, warm-started from that pulse. Because it starts in the adiabatic basin and the
+corrections are band-limited, the result stays a smooth deliverable spiral — it does **not** wander
+into a non-physical optimum the way a free-form search from a cold start does. (A generic optimiser
+with no good initial guess is exactly what fails here; the adiabatic pulse *is* the initial guess.)
+The refinement typically buys a little efficiency and peak-$B_1$ headroom at equal SAR.
 
 ![Left: refocusing efficiency η vs B1⁺ transmit scale — the hard 180° is a sharp peak at B1⁺=1 and collapses either side, while the adiabatic pulse holds η≈1 flat across (and beyond) the ±30% design range. Centre: η vs off-resonance — the sweep bandwidth covers a flat passband where the hard pulse is a narrow spike. Right: the HS waveform — a sech amplitude |B1(t)| and a tanh frequency sweep (green), the defining adiabatic signature — versus the flat hard 180°.](media/rf_profile.png){ width="100%" }
 
@@ -75,12 +84,14 @@ d = design_refocusing_rf(
     sar_headroom=None,              # peak-limited (most adiabatic); or e.g. 8.0 to cap SAR
     b1_range=(0.7, 1.3), n_b1=7,    # ±30 % transmit inhomogeneity to invert across
     off_resonance_hz=250.0, n_off_resonance=7,   # ±250 Hz band the sweep must cover
+    refine=True,                    # GRAPE refinement from the HS warm start (default)
 )
 
 d.refocusing_efficiency        # ensemble-mean η (0–1); 1 = every spin inverted
 d.refocusing_efficiency_hard   # same metric for a plain hard 180° — the baseline
-d.B1                           # HS complex B1 envelope, Tesla
-d.mu, d.beta, d.bandwidth_hz   # the adiabatic sweep parameters
+d.B1                           # complex B1 envelope, Tesla
+d.mu, d.beta, d.bandwidth_hz   # the adiabatic (HS) backbone parameters
+d.refined                      # True if the GRAPE pass improved on the HS template
 d.peak_B1, d.sar_ratio         # delivered peak and SAR (× hard-180°)
 ```
 
