@@ -109,6 +109,13 @@ flat across the entire ±60% B1⁺ range:
 
 ![BIR-4: (left) the double-hump sech amplitude and alternating tanh frequency sweep; (centre) the achieved flip angle tracks 2φ and stays flat across ±30% B1⁺; (right) at θ=180° it inverts across the whole B1⁺ range where a hard 180° collapses.](media/rf_bir4.png){ width="100%" }
 
+Both the adiabatic HS and BIR-4 invert $+z \to -z$, but by very different routes on the Bloch
+sphere — the HS is one smooth spiral, while BIR-4 sweeps out toward the transverse plane, is
+reoriented at each of its two phase jumps, and only then lands at $-z$. You can read the
+four-segment structure straight off the trajectory (and the double-hump $B_1(t)$ below):
+
+![Side-by-side Bloch-sphere trajectories: the adiabatic HS magnetisation follows one smooth spiral from +z to −z, while the BIR-4 magnetisation traces a longer path that sweeps toward the equator and reorients at each phase jump before reaching −z; the HS and BIR-4 B1 waveforms play below.](media/rf_bir4_movie.gif){ width="100%" }
+
 Every pulse on this page — excitation, refocusing, slice-selective, CPMG, composite, adiabatic,
 BIR-4 — is the *same* `B1Pulse` object through the *same* Bloch forward. dmipy-sim provides the
 `hard` / `windowed_sinc` constructors and the representation; the richer pulses are recipes on
