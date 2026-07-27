@@ -12,6 +12,12 @@ It is the **RF analogue of the [NOW gradient box](deliverable.md)**: same idea �
 physical objective subject to the real hardware/safety limits — applied to $B_1(t)$ instead of
 $G(t)$.
 
+![Spin echo across a ±30% B1⁺ transmit × ±250 Hz off-resonance ensemble, hard 180° (left) vs the designed B1-robust 180° (right). After the 90° the transverse spins dephase, the 180° conjugates their phase, and symmetric free precession refocuses them into an echo — the ensemble-mean vector. The hard pulse leaves the off-nominal spins scattered (echo 0.22); the designed pulse pulls them back together (echo 0.61).](media/rf_refocus.gif){ width="100%" }
+
+New to RF pulses? The [RF pulses — watch the spins](../rf_pulses.md) page (dmipy-sim) shows what
+a $B_1(t)$ envelope *is* and how the Bloch forward plays any pulse — this page is what happens
+when you put an optimiser in front of that forward.
+
 ## Idealized vs real refocusing
 
 | Idealized theory | Real hardware |
@@ -29,6 +35,8 @@ off-resonance})$. The score is the **ensemble-mean transverse magnitude at the e
 fraction of signal that actually refocuses. A hard 180° peaks sharply at the nominal operating
 point and falls away from it; a robust pulse trades a little peak performance for a flat response
 across the ensemble, and keeps coherence the hard pulse loses.
+
+![Left and centre: each isochromat's echo projected onto the refocus axis over the (off-resonance × B1⁺ scale) plane — red refocuses, blue is anti-phase. The hard 180° concentrates refocusing at the nominal point and loses it toward the corners of the design box (dashed); the designed pulse spreads red across the box, lifting the ensemble refocused fraction from 0.22 to 0.61. Right: the two B1 envelopes — a flat hard 180° vs the band-limited designed shape, both well under the peak-B1 limit and at the 1.30× SAR budget.](media/rf_profile.png){ width="100%" }
 
 ## The deliverability box
 

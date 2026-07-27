@@ -63,6 +63,7 @@ nav:
       - Substrate & geometry: substrate.md
       - Mesh substrates: mesh_substrates.md
       - Biophysical constants: constants.md
+      - RF pulses — watch the spins: rf_pulses.md
       - Pedagogy — watch the spins: pedagogy.md
   - dmipy-design:
       - Acquisition design — overview: design.md
