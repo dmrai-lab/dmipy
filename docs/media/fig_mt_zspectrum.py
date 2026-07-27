@@ -52,6 +52,14 @@ def _oracle_total(offsets):
     return (za + m0b * zb) / (1.0 + m0b)
 
 
+def _free_only(offsets):
+    """Reference: free water with NO bound pool (k_f=0).  The narrow water line is directly
+    saturated only near resonance and recovers to ~1 off-resonance -- there is no broad
+    off-resonance absorber, so all the wide depression in the MT curve is the bound pool."""
+    return np.atleast_1d(mt.mt_z_spectrum(offsets, w1_hz=W1_HZ, t_sat=T_SAT, T1a=T1A, T2a=T2A,
+                                          T1b=T1B, T2b=T2B, k_f=0.0, k_r=K_R, read_pool="a"))
+
+
 def main():
     print("running emergent Z-spectrum sweep (GPU-recommended)...")
     mc = emergent_z_spectrum(MC_OFFSETS, Sphere(radius=R), n_walkers=6000, diffusivity=D,
@@ -59,27 +67,36 @@ def main():
                              kappa_MT=KAPPA_MT, dwell_time=DWELL, T2_bound=T2B, T1_bound=T1B,
                              equilibrate_binding="auto", seed=3)
     an_dense = _oracle_total(DENSE)
+    ref_dense = _free_only(DENSE)                  # no-bound-pool reference (analytic)
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.6))
+    fig, ax = plt.subplots(figsize=(7.4, 4.7))
     fig.subplots_adjust(left=0.11, right=0.96, top=0.87, bottom=0.14)
+    # the MT effect = the gap between the two curves
+    ax.fill_between(DENSE / 1e3, an_dense, ref_dense, color=TEAL, alpha=0.11, lw=0)
+    ax.plot(DENSE / 1e3, ref_dense, "--", color=BLUE, lw=1.8,
+            label="no bound pool (reference)")
     ax.plot(DENSE / 1e3, an_dense, "-", color=MUTED, lw=2.2,
-            label="analytic two-pool oracle")
+            label="with MT — analytic oracle")
     ax.plot(MC_OFFSETS / 1e3, mc, "o", color=TEAL, ms=8, zorder=5,
-            markeredgecolor=BG, markeredgewidth=0.8, label="emergent Monte-Carlo")
+            markeredgecolor=BG, markeredgewidth=0.8, label="with MT — emergent Monte-Carlo")
     ax.set_xlim(-0.4, 16.4)
-    ax.set_ylim(min(mc.min(), an_dense.min()) - 0.04, 1.02)
+    ax.set_ylim(min(mc.min(), an_dense.min()) - 0.05, 1.03)
     ax.set_xlabel("saturation offset from water  (kHz)")
     ax.set_ylabel(r"free-pool  $M_z / M_0$")
-    ax.set_title("The MT Z-spectrum: a broad dip only the bound pool makes",
+    ax.set_title("The MT Z-spectrum: the off-resonance gap is the bound pool",
                  color=TEXT, fontsize=13, pad=10)
-    # annotate the two regimes
-    ax.annotate("narrow free-water line\n(direct saturation, on-resonance)",
-                xy=(0.0, mc[0]), xytext=(2.2, mc[0] - 0.02), color=BLUE, fontsize=9,
-                va="center", arrowprops=dict(arrowstyle="->", color=BLUE, lw=1.1))
-    ax.annotate("broad bound-pool saturation\n(the MT effect — short $T_2^{b}$)",
-                xy=(8.0, mc[6]), xytext=(6.0, 0.72), color=TEAL, fontsize=9,
+    # reference recovers to full signal off-resonance (the anchor)
+    ax.annotate("no bound pool → the narrow water line\nrecovers to full signal off-resonance",
+                xy=(5.0, ref_dense[np.argmin(np.abs(DENSE - 5000))]),
+                xytext=(4.6, 0.60), color=BLUE, fontsize=9, va="center",
+                arrowprops=dict(arrowstyle="->", color=BLUE, lw=1.1))
+    # the shaded gap = magnetization transfer (only the bound pool absorbs off-resonance)
+    i10 = np.argmin(np.abs(DENSE - 10000))
+    ax.annotate("this gap is magnetization transfer:\nonly the broad bound pool absorbs\nfar off-resonance",
+                xy=(10.0, 0.5 * (an_dense[i10] + ref_dense[i10])),
+                xytext=(5.0, 0.40), color=TEAL, fontsize=9,
                 arrowprops=dict(arrowstyle="->", color=TEAL, lw=1.1))
-    ax.legend(loc="lower right", frameon=False, labelcolor=TEXT, fontsize=10)
+    ax.legend(loc="lower right", frameon=False, labelcolor=TEXT, fontsize=9.5)
     for s in ax.spines.values():
         s.set_color("#2a3550")
     ax.grid(True, color="#1c2338", lw=0.8)
