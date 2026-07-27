@@ -32,7 +32,7 @@ HARD, DES = "#c1440e", "#1b6ca8"
 
 d = design_refocusing_rf(rf_duration=RF_DUR, dt=DT, B1_max=B1_MAX,
                          b1_range=(0.7, 1.3), n_b1=7, off_resonance_hz=250.0,
-                         n_off_resonance=7, n_basis=10, n_restarts=8, seed=0)
+                         n_off_resonance=7)
 n_rf = d.B1.shape[0]
 A0 = np.pi / (GAMMA * n_rf * DT)
 hard = np.full(n_rf, A0, dtype=np.complex128)
@@ -64,23 +64,25 @@ axes[1].plot(df_ax, eta(d.B1, 1.0, df_ax), color=DES, lw=2, label="designed")
 axes[1].set_xlabel("off-resonance (Hz)"); axes[1].set_title("Off-resonance robustness")
 axes[1].set_ylim(0, 1.05); axes[1].legend(fontsize=8, loc="lower center")
 
-# (C) the designed waveform: amplitude + phase modulation
+# (C) the adiabatic waveform: sech amplitude + tanh frequency sweep (its defining feature)
 t = d.times() * 1e3
+freq = np.gradient(np.unwrap(np.angle(d.B1)), d.dt) / (2 * np.pi) * 1e-3   # kHz, instantaneous
 axC = axes[2]; axP = axC.twinx()
 axC.plot(t, np.abs(hard) * 1e6, color=HARD, lw=1.6, label="hard |B1|")
-axC.plot(t, np.abs(d.B1) * 1e6, color=DES, lw=1.8, label="designed |B1|")
+axC.plot(t, np.abs(d.B1) * 1e6, color=DES, lw=1.8, label="HS |B1| (sech)")
 axC.axhline(B1_MAX * 1e6, color="0.5", ls="--", lw=1)
-axP.plot(t, np.unwrap(np.angle(d.B1)) * 180 / np.pi, color=DES, lw=1.0, ls=":", alpha=0.8)
+axP.plot(t, freq, color="#2c7", lw=1.4, ls="--", label="sweep (tanh)")
 axC.set_xlabel("time (ms)"); axC.set_ylabel("|B1| (µT)")
-axP.set_ylabel("designed phase (°)", color=DES, fontsize=9)
-axP.tick_params(axis="y", labelcolor=DES)
-axC.set_title("Designed waveform (amp + phase)")
+axP.set_ylabel("frequency sweep (kHz)", color="#2a9", fontsize=9)
+axP.tick_params(axis="y", labelcolor="#2a9")
+axC.set_title("Adiabatic HS waveform")
 axC.set_ylim(0, B1_MAX * 1e6 * 1.15)
-axC.legend(fontsize=8, loc="upper right")
-axC.text(0.03, 0.06, "peak %.1f µT   SAR %.0f× hard" % (d.peak_B1 * 1e6, d.sar_ratio),
-         transform=axC.transAxes, fontsize=8, color=DES)
+axC.legend(fontsize=8, loc="upper left")
+axC.text(0.03, 0.06, "peak %.1f µT   BW %.0f Hz   SAR %.0f× hard"
+         % (d.peak_B1 * 1e6, d.bandwidth_hz, d.sar_ratio),
+         transform=axC.transAxes, fontsize=7.5, color=DES)
 
-fig.suptitle("Refocusing efficiency across the ensemble:  hard %.2f  →  designed %.2f   "
+fig.suptitle("Refocusing efficiency across the ensemble:  hard %.2f  →  adiabatic %.2f   "
              "(η = 1 means every spin is genuinely inverted)"
              % (d.refocusing_efficiency_hard, d.refocusing_efficiency), fontsize=10.5)
 fig.tight_layout(rect=(0, 0, 1, 0.93))

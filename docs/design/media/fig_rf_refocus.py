@@ -36,9 +36,9 @@ from dmipy_sim.rf import B1Pulse, bloch_simulate
 
 DT, RF_DUR, B1_MAX = 1e-4, 6e-3, 19e-6
 
-d = design_refocusing_rf(rf_duration=RF_DUR, dt=DT, B1_max=B1_MAX,      # peak-limited (robust)
+d = design_refocusing_rf(rf_duration=RF_DUR, dt=DT, B1_max=B1_MAX,      # peak-limited (adiabatic)
                          b1_range=(0.7, 1.3), n_b1=7, off_resonance_hz=250.0,
-                         n_off_resonance=7, n_basis=10, n_restarts=8, seed=0)
+                         n_off_resonance=7)
 p_des = d.to_b1pulse()
 p_hard = B1Pulse.hard(180, RF_DUR, DT)
 
@@ -75,11 +75,12 @@ axH = fig.add_subplot(gs[0, 0], projection="3d")
 axD = fig.add_subplot(gs[0, 1], projection="3d")
 axE = fig.add_subplot(gs[1, :])
 _sphere(axH, "Hard 180°", "#c1440e")
-_sphere(axD, "B1-robust 180° (designed)", "#1b6ca8")
+_sphere(axD, "Adiabatic 180° (HS, designed)", "#1b6ca8")
 
 fig.suptitle("A 180° pulse should invert EVERY spin (+z → −z) whatever transmit strength B1⁺ it feels.\n"
-             "Three spins are followed on the Bloch sphere (rotating frame); the RF waveform plays below.",
-             fontsize=10, y=0.98)
+             "Left: a hard pulse. Right: an adiabatic (HS) pulse — the spin FOLLOWS the swept field, "
+             "spiralling smoothly to −z.",
+             fontsize=9.5, y=0.98)
 
 paths, tips = {}, {}
 for ax, H in ((axH, HH), (axD, HD)):
