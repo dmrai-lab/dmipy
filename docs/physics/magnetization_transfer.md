@@ -96,7 +96,7 @@ a **broad** offset range — so the free signal stays depressed far off-resonanc
 dip is something **only a bound pool can make**; it is MT's fingerprint, and the observable that
 separates the transfer share of a wall's reactivity from surface relaxivity.
 
-![Emergent MT Z-spectrum: on resonance the free water is directly saturated; far off-resonance the short-T2 bound pool keeps the free signal depressed. The emergent Monte-Carlo points sit on the analytic two-pool oracle.](../media/mt_zspectrum.png)
+![MT Z-spectrum. The dashed reference (no bound pool) recovers to full signal off-resonance; with MT the broad short-T2 bound pool keeps the free signal depressed — the shaded gap is the transfer. The emergent Monte-Carlo points sit on the analytic two-pool oracle.](../media/mt_zspectrum.png)
 
 One call runs it — `dmipy_sim.emergent_z_spectrum(offsets, geometry, …)` does a real forward walk at
 each offset — and the emergent points land on the analytic two-pool oracle (line) to the Monte-Carlo
