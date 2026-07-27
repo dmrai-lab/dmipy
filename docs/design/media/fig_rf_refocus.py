@@ -62,8 +62,10 @@ def _sphere(ax, title, color):
     ax.plot([0, 0], [0, 0], [-1, 1], color="0.55", lw=0.8)
     ax.text(0, 0, 1.28, "+z", color="0.4", fontsize=9, ha="center")
     ax.text(0, 0, -1.42, "−z", color="0.4", fontsize=9, ha="center")
+    ax.text(1.35, 0, 0, "x", color="0.5", fontsize=8, ha="center")
+    ax.text(0, 1.35, 0, "y", color="0.5", fontsize=8, ha="center")
     ax.set_xlim(-1, 1); ax.set_ylim(-1, 1); ax.set_zlim(-1, 1)
-    ax.set_box_aspect((1, 1, 1)); ax.set_axis_off(); ax.view_init(elev=12, azim=-70)
+    ax.set_box_aspect((1, 1, 1)); ax.set_axis_off(); ax.view_init(elev=26, azim=-50)
     ax.set_title(title, color=color, fontsize=12, pad=-2)
 
 
