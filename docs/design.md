@@ -22,6 +22,8 @@ ecosystem integration, the min-TE mode, and the Pulseq round-trip.
 
 It works in the **instant-pulse** approximation (ideal hard RF) — the same regime as the released
 sim/fit scope — and focuses on the *gradient* waveform: the thing that actually encodes diffusion.
+The [refocusing-RF designer](design/rf.md) is a first step beyond that approximation, shaping the
+180° pulse itself to stay robust across a real transmit field.
 
 ## What it does
 
@@ -38,6 +40,9 @@ sim/fit scope — and focuses on the *gradient* waveform: the thing that actuall
 - **[Max-b vs min-TE (SNR)](design/snr.md)** — two dual modes: maximise b at a fixed TE, or find
   the *shortest* TE that reaches a required b. The latter is SNR-optimal, because a shorter TE
   means less $T_2$ decay before the echo.
+- **[B1-robust refocusing RF](design/rf.md)** — one step beyond the instant-pulse approximation:
+  design the *180° RF envelope* to refocus well across real transmit-field inhomogeneity and
+  off-resonance, under peak-B1 and SAR limits — the RF analogue of the NOW gradient box.
 - **[Run it on the scanner](design/pulseq.md)** — export a design to a scanner-runnable
   [Pulseq](https://pulseq.github.io/) `.seq`, checked offline (timing, PNS, b-tensor round-trip),
   so the *same* waveform you optimise and simulate is the one the scanner plays.
