@@ -23,24 +23,22 @@
   <select id="field"><option value="hcp" selected>In-vivo brain slice (3-substrate)</option><option value="circ">Circular WM (30×30 test field)</option></select>
  </div>
 
- <div class="grp"><h2>RF pulse studio</h2>
-  <label>preset</label>
-  <select id="rf"><option value="SE">Spin echo (90–180)</option><option value="GRE">Gradient echo (90)</option><option value="STE">Stimulated echo (90–90–90)</option><option value="CPMG">CPMG (90–180×4)</option></select>
+ <div class="grp"><h2>Sequence &amp; RF</h2>
+  <label>type</label>
+  <select id="seq"><option value="pgse">PGSE (spin echo)</option><option value="pgste">PGSTE (stimulated echo)</option><option value="ogse">OGSE (trapezoid)</option><option value="gre">GRE (no refocus)</option></select>
   <label>pulse shape</label>
   <select id="shape"><option value="hard">hard (rect, 1 ms — area-exact)</option><option value="sinc" selected>sinc TBW4 (3 ms — slice-selective)</option></select>
   <label>excite flip <span class="val" id="exV"></span></label><input type="range" id="ex" min="0" max="180" value="90" step="1">
   <label>refocus flip <span class="val" id="reV"></span></label><input type="range" id="re" min="0" max="180" value="180" step="1">
-  <label>refocus time (TE·) <span class="val" id="rtV"></span></label><input type="range" id="rt" min="0.2" max="0.8" value="0.5" step="0.02">
   <div class="rd" id="pulseRd"></div>
   <canvas id="prof" width="330" height="70"></canvas>
  </div>
 
- <div class="grp"><h2>Gradient studio</h2>
-  <label>type</label><select id="gt"><option value="pgse">PGSE</option><option value="ogse">OGSE (cosine)</option><option value="none">none</option></select>
+ <div class="grp"><h2>Gradient</h2>
   <label>G amplitude (mT/m) <span class="val" id="gaV"></span></label><input type="range" id="ga" min="0" max="80" value="40" step="1">
   <label>δ (ms) <span class="val" id="deV"></span></label><input type="range" id="de" min="2" max="25" value="12" step="1">
-  <label>Δ (TE·) <span class="val" id="DdV"></span></label><input type="range" id="Dd" min="0.3" max="0.8" value="0.5" step="0.02">
-  <label>OGSE periods <span class="val" id="opV"></span></label><input type="range" id="op" min="1" max="6" value="2" step="1">
+  <label>Δ / T<sub>M</sub> (TE·) <span class="val" id="DdV"></span></label><input type="range" id="Dd" min="0.2" max="0.8" value="0.5" step="0.02">
+  <label>OGSE cycles/lobe <span class="val" id="opV"></span></label><input type="range" id="op" min="1" max="6" value="2" step="1">
   <label>gradient direction <span class="val" id="gdV"></span></label><input type="range" id="gd" min="0" max="180" value="0" step="2">
   <div>b ≈ <span class="val" id="bshow" style="float:none;color:var(--acc)"></span> s/mm²</div>
  </div>
@@ -427,21 +425,24 @@ function applyPulse(M,Rm,ax){                                            // R_ax
  const ca=Math.cos(ax),sa=Math.sin(ax); let m=zrot(M,ca,-sa);           // Rz(-ax)
  m=[Rm[0]*m[0]+Rm[1]*m[1]+Rm[2]*m[2], Rm[3]*m[0]+Rm[4]*m[1]+Rm[5]*m[2], Rm[6]*m[0]+Rm[7]*m[1]+Rm[8]*m[2]];
  return zrot(m,ca,sa);}                                                  // Rz(+ax)
+// ONE coherent sequence family drives matched RF + PHYSICAL gradient with correct timing.
+// (Was: independent RF-preset × gradient-type dropdowns → lobes could slide through the 180°.)
 function buildSeq(){
- const gt=el('gt').value,de=+el('de').value/1000,Dd=+el('Dd').value,ga=+el('ga').value*1e-3,op=+el('op').value;
- const shape=new Float64Array(NT);
- for(let t=0;t<NT;t++){const tt=t*DT;
-   if(gt==='pgse'){ if(tt<de)shape[t]=1; else if(tt>=Dd*TE&&tt<Dd*TE+de)shape[t]=1; }  // PHYSICAL (+,+); 180 refocuses
-   else if(gt==='ogse'){ if(tt<TE) shape[t]=Math.cos(2*Math.PI*op*tt/TE); } }
- const rfp=el('rf').value, sh=el('shape').value, ex=+el('ex').value, re=+el('re').value, rt=+el('rt').value;
- const rf=[{t:0,flip:ex,ax:0}];
- if(rfp==='SE')  rf.push({t:Math.round(rt*NT),flip:re,ax:Math.PI/2});
- if(rfp==='STE'){rf.push({t:Math.round(0.33*NT),flip:90,ax:Math.PI/2});rf.push({t:Math.round(0.66*NT),flip:90,ax:Math.PI/2});}
- if(rfp==='CPMG'){for(let k=1;k<=4;k++)rf.push({t:Math.round((k-0.5)/4*NT),flip:180,ax:Math.PI/2});}
- // b-value: effective encoding sign flips after the (first) refocus (SE/CPMG)
- const hasRef=(rfp==='SE'||rfp==='CPMG'); const flipT=hasRef?Math.round(rt*NT):NT;
- let q=0,b=0; for(let t=0;t<NT;t++){const sg=(hasRef&&t>=flipT)?-1:1; q+=GAMMA*ga*shape[t]*sg*DT; b+=q*q*DT;}
- return {shape,rf,ga,b:Math.abs(b)/1e6,sh};
+ const seq=el('seq').value, de=+el('de').value/1000, Dd=+el('Dd').value, ga=+el('ga').value*1e-3, op=+el('op').value;
+ const sh=el('shape').value, ex=+el('ex').value, re=+el('re').value;
+ const shape=new Float64Array(NT); const rf=[{t:0,flip:ex,ax:0}]; let store=-1,recall=-1;
+ const iT=t=>Math.max(0,Math.min(NT-1,Math.round(t/DT))), SL=2;
+ // slew-limited trapezoid lobe of signed amplitude A over [t0,t0+dur]
+ const trap=(t0,dur,A)=>{const i0=iT(t0),i1=iT(t0+dur),kk=i1-i0;for(let i=i0;i<i1;i++){const k=i-i0;let f=1;if(k<SL)f=k/SL;else if(k>kk-SL)f=Math.max(0,(kk-k)/SL);shape[i]+=A*f;}};
+ if(seq==='pgse'){ const c1=TE/2-Dd*TE/2,c2=TE/2+Dd*TE/2; trap(c1-de/2,de,1); trap(c2-de/2,de,1); rf.push({t:iT(TE/2),flip:re,ax:Math.PI/2}); }
+ else if(seq==='pgste'){ const TM=Dd*TE; trap(0.003,de,1); const ts=0.003+de+0.002; store=iT(ts); rf.push({t:store,flip:90,ax:Math.PI/2});
+   const tr=ts+TM; recall=iT(tr); rf.push({t:recall,flip:90,ax:Math.PI/2}); trap(tr+0.002,de,1); }
+ else if(seq==='ogse'){ const enc=TE/2-0.006,P=enc/op,half=P/2; const train=t0=>{for(let k=0;k<op;k++){trap(t0+k*P,half,1);trap(t0+k*P+half,half,-1);}};
+   train(0.003); train(TE/2+0.003); rf.push({t:iT(TE/2),flip:re,ax:Math.PI/2}); }
+ else if(seq==='gre'){ trap(0.004,de,1); trap(0.004+de,de,-1); }         // self-refocusing bipolar; no 180
+ const hasRef=(seq==='pgse'||seq==='ogse'); const flipT=hasRef?iT(TE/2):(seq==='pgste'?recall:NT);
+ let q=0,b=0; for(let t=0;t<NT;t++){const sg=(flipT>=0&&t>=flipT)?-1:1; q+=GAMMA*ga*shape[t]*sg*DT; b+=q*q*DT;}
+ return {shape,rf,ga,b:Math.abs(b)/1e6,sh,store,recall,seq};
 }
 // evolve M on ANY master walk with the real baked pulses; returns complex [meanMx,meanMy].
 // This IS the full vector-Bloch replay — no factorisation. (gpar,gperp)=gradient dir vs fibre.
@@ -452,7 +453,9 @@ function vsWalk(WK,gpar,gperp,seq,b1,df){
  for(let w=0;w<nwl;w++){let M=[0,0,1]; const rz=RZ[w],rx=RX[w];
   for(let t=0;t<NT;t++){
     if(rfAt[t]) for(const e of rfAt[t]) M=applyPulse(M,e.R,e.ax);
-    const dphi=GAMMA*DT*seq.ga*seq.shape[t]*(gpar*rz[t]+gperp*rx[t]);
+    const stored = seq.store>=0 && t>seq.store && t<seq.recall;   // PGSTE T_M: crush transverse
+    let dphi=GAMMA*DT*seq.ga*seq.shape[t]*(gpar*rz[t]+gperp*rx[t]);
+    if(stored) dphi+=GAMMA*DT*0.12*rz[t];                          // z-spoiler dephases the residual
     let nx=M[0]*Math.cos(dphi)-M[1]*Math.sin(dphi), ny=M[0]*Math.sin(dphi)+M[1]*Math.cos(dphi);
     let ox=nx*cf-ny*sf, oy=nx*sf+ny*cf;
     M[0]=ox*e2; M[1]=oy*e2; M[2]=1+(M[2]-1)*(1-reg);
@@ -565,7 +568,7 @@ function drawAux(seq){
  for(let q=0;q<m.prof_df.length;q++){const X=(m.prof_df[q]-df0)/(df1-df0)*330,Y=66-m.prof_mxy[q]*60;q?pfx.lineTo(X,Y):pfx.moveTo(X,Y);}pfx.stroke();
  const Xm=(dfoff-df0)/(df1-df0)*330; pfx.strokeStyle='#e6b45a';pfx.beginPath();pfx.moveTo(Xm,0);pfx.lineTo(Xm,70);pfx.stroke();
  pfx.fillStyle='#8b93a3';pfx.font='10px system-ui';pfx.fillText('|Mxy|(Δf) of nominal-90 '+sh+' pulse — real slice/off-res profile',5,11);
- el('exV').textContent=el('ex').value+'°';el('reV').textContent=el('re').value+'°';el('rtV').textContent=(+el('rt').value).toFixed(2);
+ el('exV').textContent=el('ex').value+'°';el('reV').textContent=el('re').value+'°';
  el('gaV').textContent=el('ga').value;el('deV').textContent=el('de').value;el('DdV').textContent=(+el('Dd').value).toFixed(2);
  el('opV').textContent=el('op').value;el('gdV').textContent=el('gd').value+'°';el('b1V').textContent=(+el('b1').value).toFixed(2);
  el('dfV').textContent=el('df').value+' Hz';el('b0aV').textContent=Math.round(+el('b0a').value)+'°';el('b0sV').textContent=(+el('b0s').value).toFixed(1)+' T';
@@ -573,8 +576,8 @@ function drawAux(seq){
    ? 'In-vivo brain slice: FULL vector-Bloch replay, live. Real kernel run on the 3 master walks over an (angle×B1⁺×Δf) grid each frame, then per-voxel fraction lookup. 2009 voxels.'
    : 'Real B1Pulse rotations evolved live on the dmipy-sim walk over an (angle×B1⁺×Δf) grid, then per-voxel lookup; off-resonance feeds the pulse; susceptibility ×B0 from the MC table. '+GRIDNW+' walkers × '+NT+' steps.';
 }
-['field','rf','shape','ex','re','rt','gt','ga','de','Dd','op','gd','b1p','b1','df','b0a','b0s','susc','map'].forEach(id=>el(id).addEventListener('input',render));
-el('reset').onclick=()=>{el('field').value='hcp';el('rf').value='SE';el('shape').value='sinc';el('ex').value=90;el('re').value=180;el('rt').value=0.5;el('gt').value='pgse';el('ga').value=40;el('de').value=12;el('Dd').value=0.5;el('op').value=2;el('gd').value=0;el('b1p').value='uniform';el('b1').value=0;el('df').value=0;el('b0a').value=0;el('b0s').value=3;el('susc').checked=true;el('map').value='mag';render();};
+['field','seq','shape','ex','re','ga','de','Dd','op','gd','b1p','b1','df','b0a','b0s','susc','map'].forEach(id=>el(id).addEventListener('input',render));
+el('reset').onclick=()=>{el('field').value='hcp';el('seq').value='pgse';el('shape').value='sinc';el('ex').value=90;el('re').value=180;el('ga').value=40;el('de').value=12;el('Dd').value=0.5;el('op').value=2;el('gd').value=0;el('b1p').value='uniform';el('b1').value=0;el('df').value=0;el('b0a').value=0;el('b0s').value=3;el('susc').checked=true;el('map').value='mag';render();};
 let sp=false,raf=null;el('spin').addEventListener('change',e=>{sp=e.target.checked;if(sp)tick();else cancelAnimationFrame(raf);});
 function tick(){el('b0a').value=(+el('b0a').value+3)%360;render();if(sp)raf=requestAnimationFrame(tick);}
 render();
