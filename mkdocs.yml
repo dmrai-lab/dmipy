@@ -80,6 +80,8 @@ nav:
       - Coherence gating (PGSTE): physics/coherence_gating.md
       - Susceptibility: physics/susceptibility.md
       - Magnetization transfer: physics/magnetization_transfer.md
+  - Studio:
+      - Bloch studio (real pulses): studio/index.md
   - Examples:
       - Canonical WM parity (fit ↔ sim): examples/canonical_wm_parity.md
   - Publications: publications.md
