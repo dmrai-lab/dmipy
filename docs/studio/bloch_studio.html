@@ -29,7 +29,7 @@
   <label>pulse shape</label>
   <select id="shape"><option value="hard">hard (rect, 1 ms — area-exact)</option><option value="sinc" selected>sinc TBW4 (3 ms — slice-selective)</option></select>
   <label>excite flip <span class="val" id="exV"></span></label><input type="range" id="ex" min="0" max="180" value="90" step="1">
-  <label>refocus flip <span class="val" id="reV"></span></label><input type="range" id="re" min="0" max="180" value="180" step="1">
+  <div id="reWrap"><label>refocus flip <span class="val" id="reV"></span></label><input type="range" id="re" min="0" max="180" value="180" step="1"></div>
   <div class="rd" id="pulseRd"></div>
   <canvas id="prof" width="330" height="70"></canvas>
  </div>
@@ -38,7 +38,7 @@
   <label>G amplitude (mT/m) <span class="val" id="gaV"></span></label><input type="range" id="ga" min="0" max="80" value="40" step="1">
   <label>δ (ms) <span class="val" id="deV"></span></label><input type="range" id="de" min="2" max="25" value="12" step="1">
   <label>Δ / T<sub>M</sub> (TE·) <span class="val" id="DdV"></span></label><input type="range" id="Dd" min="0.2" max="0.8" value="0.5" step="0.02">
-  <label>OGSE cycles/lobe <span class="val" id="opV"></span></label><input type="range" id="op" min="1" max="6" value="2" step="1">
+  <div id="opWrap"><label>OGSE cycles/lobe <span class="val" id="opV"></span></label><input type="range" id="op" min="1" max="6" value="2" step="1"></div>
   <label>gradient direction <span class="val" id="gdV"></span></label><input type="range" id="gd" min="0" max="180" value="0" step="2">
   <div>b ≈ <span class="val" id="bshow" style="float:none;color:var(--acc)"></span> s/mm²</div>
  </div>
@@ -514,7 +514,9 @@ function renderHCP(seq){
  ctx.putImageData(img,0,0);
 }
 const SUSC_DF_PER_T=13.0;   // first-order anisotropic-susceptibility off-res (Hz/T), ~Δχ 0.1ppm
-function render(){
+function seqVis(){const s=el('seq').value,r=el('reWrap'),o=el('opWrap');
+ if(r)r.style.display=(s==='pgse'||s==='ogse')?'':'none'; if(o)o.style.display=(s==='ogse')?'':'none';}
+function render(){ seqVis();
  const seq=buildSeq(); el('bshow').textContent=Math.round(seq.b);
  if(el('field').value==='hcp') renderHCP(seq); else renderCirc(seq);
  drawAux(seq);
@@ -555,13 +557,16 @@ function renderCirc(seq){
 function drawAux(seq){
  const dfoff=+el('df').value;
  // gradient + rf waveform
- wx.clearRect(0,0,480,90);wx.strokeStyle='#5aa9ff';wx.beginPath();
+ wx.clearRect(0,0,480,90);
+ if(seq.store>=0){const x0=seq.store/NT*480,x1=seq.recall/NT*480;wx.fillStyle='#1a2230';wx.fillRect(x0,0,x1-x0,90);wx.fillStyle='#5a6b8b';wx.font='10px system-ui';wx.fillText('T_M store+crush',x0+3,82);}
+ wx.strokeStyle='#5aa9ff';wx.beginPath();
  for(let t=0;t<NT;t++){const X=t/NT*480,Y=45-seq.shape[t]*30;t?wx.lineTo(X,Y):wx.moveTo(X,Y);}wx.stroke();
  wx.fillStyle='#e6b45a';seq.rf.forEach(e=>{const X=e.t/NT*480;wx.fillRect(X-1,45-e.flip/180*30,3,e.flip/180*30);});
  wx.fillStyle='#8b93a3';wx.font='10px system-ui';wx.fillText('G(t) blue · RF amber',6,12);
  // real pulse readout + frequency/slice profile
  const sh=seq.sh, m=RFB.meta[sh], exFlip=+el('ex').value;
- const sarRel=(m.sar*(exFlip/90)*(exFlip/90))/RFB.meta.hard.sar;   // ∫|B1|² ∝ flip², vs hard-90
+ const _s=x=>(typeof x==='number'&&x>0)?x:null, sarS=_s(m.sar)||m.peak_b1_uT*m.peak_b1_uT*m.dur_ms, sarH=_s(RFB.meta.hard.sar)||RFB.meta.hard.peak_b1_uT*RFB.meta.hard.peak_b1_uT*RFB.meta.hard.dur_ms;
+ const sarRel=sarS*(exFlip/90)*(exFlip/90)/sarH;   // ∫|B1|² ∝ flip², vs hard-90 (fallback proxy: peak²·dur)
  el('pulseRd').innerHTML=`peak B1⁺ <b>${(m.peak_b1_uT*exFlip/90).toFixed(1)}</b> µT · dur <b>${m.dur_ms}</b> ms · SAR∝∫|B1|² <b>${sarRel.toFixed(2)}×</b> hard-90 · steps <b>${m.n}</b>`;
  pfx.clearRect(0,0,330,70); pfx.strokeStyle='#7fd18a';pfx.beginPath();
  const df0=m.prof_df[0],df1=m.prof_df[m.prof_df.length-1];
