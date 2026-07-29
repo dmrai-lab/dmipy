@@ -14,6 +14,7 @@
  .ok{color:#7fd18a;font-size:11px;background:#111c13;border:1px solid #234a2a;border-radius:6px;padding:7px;margin-top:8px}
  .rd{font-variant-numeric:tabular-nums;color:#c7cdd8;font-size:11px;margin-top:6px;line-height:1.6}
  .rd b{color:var(--acc)}
+.seqtabs{display:flex;gap:4px;margin:2px 0 8px}.seqtabs button{flex:1;background:#1a1e26;color:#aeb6c2;border:1px solid #2a2f3a;border-radius:5px;padding:6px 4px;font-size:12px;cursor:pointer}.seqtabs button.on{background:#1f6feb;color:#fff;border-color:#1f6feb}
 </style></head><body>
 <div id="left">
  <h1>Bloch studio — circular white matter <span style="color:#7fd18a">v1 · real pulses</span></h1>
@@ -24,8 +25,8 @@
  </div>
 
  <div class="grp"><h2>Sequence &amp; RF</h2>
-  <label>type</label>
-  <select id="seq"><option value="pgse">PGSE (spin echo)</option><option value="pgste">PGSTE (stimulated echo)</option><option value="ogse">OGSE (trapezoid)</option><option value="gre">GRE (no refocus)</option></select>
+  <div class="seqtabs"><button data-s="pgse">PGSE</button><button data-s="pgste">PGSTE</button><button data-s="ogse">OGSE</button><button data-s="gre">GRE</button></div>
+  <select id="seq" style="display:none"><option value="pgse">PGSE (spin echo)</option><option value="pgste">PGSTE (stimulated echo)</option><option value="ogse">OGSE (trapezoid)</option><option value="gre">GRE (no refocus)</option></select>
   <label>pulse shape</label>
   <select id="shape"><option value="hard">hard (rect, 1 ms — area-exact)</option><option value="sinc" selected>sinc TBW4 (3 ms — slice-selective)</option></select>
   <label>excite flip <span class="val" id="exV"></span></label><input type="range" id="ex" min="0" max="180" value="90" step="1">
@@ -515,7 +516,8 @@ function renderHCP(seq){
 }
 const SUSC_DF_PER_T=13.0;   // first-order anisotropic-susceptibility off-res (Hz/T), ~Δχ 0.1ppm
 function seqVis(){const s=el('seq').value,r=el('reWrap'),o=el('opWrap');
- if(r)r.style.display=(s==='pgse'||s==='ogse')?'':'none'; if(o)o.style.display=(s==='ogse')?'':'none';}
+ if(r)r.style.display=(s==='pgse'||s==='ogse')?'':'none'; if(o)o.style.display=(s==='ogse')?'':'none';
+ document.querySelectorAll('.seqtabs button').forEach(x=>x.classList.toggle('on',x.dataset.s===s));}
 function render(){ seqVis();
  const seq=buildSeq(); el('bshow').textContent=Math.round(seq.b);
  if(el('field').value==='hcp') renderHCP(seq); else renderCirc(seq);
@@ -582,6 +584,7 @@ function drawAux(seq){
    : 'Real B1Pulse rotations evolved live on the dmipy-sim walk over an (angle×B1⁺×Δf) grid, then per-voxel lookup; off-resonance feeds the pulse; susceptibility ×B0 from the MC table. '+GRIDNW+' walkers × '+NT+' steps.';
 }
 ['field','seq','shape','ex','re','ga','de','Dd','op','gd','b1p','b1','df','b0a','b0s','susc','map'].forEach(id=>el(id).addEventListener('input',render));
+document.querySelectorAll('.seqtabs button').forEach(bt=>bt.onclick=()=>{el('seq').value=bt.dataset.s;render();});
 el('reset').onclick=()=>{el('field').value='hcp';el('seq').value='pgse';el('shape').value='sinc';el('ex').value=90;el('re').value=180;el('ga').value=40;el('de').value=12;el('Dd').value=0.5;el('op').value=2;el('gd').value=0;el('b1p').value='uniform';el('b1').value=0;el('df').value=0;el('b0a').value=0;el('b0s').value=3;el('susc').checked=true;el('map').value='mag';render();};
 let sp=false,raf=null;el('spin').addEventListener('change',e=>{sp=e.target.checked;if(sp)tick();else cancelAnimationFrame(raf);});
 function tick(){el('b0a').value=(+el('b0a').value+3)%360;render();if(sp)raf=requestAnimationFrame(tick);}
