@@ -82,6 +82,7 @@ nav:
       - Magnetization transfer: physics/magnetization_transfer.md
   - Studio:
       - Bloch studio (real pulses): studio/index.md
+      - Spin studio (watch the compartments): studio/spins.md
   - Examples:
       - Canonical WM parity (fit ↔ sim): examples/canonical_wm_parity.md
   - Publications: publications.md
