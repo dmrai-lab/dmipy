@@ -20,8 +20,8 @@ import dmipy_sim as ds
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "docs", "studio", "explorer_data")
-N_DRAW = 120                        # samples per curve on the page (the object has n_t = 400)
-N_T = 400
+N_T = 240                           # the grid the sequences are built on; the page draws EVERY sample
+N_DRAW = N_T
 INF = "inf"
 
 
@@ -58,11 +58,10 @@ FAMILIES = {
         call=lambda k: f'ogse([[1, 0, 0]], {k["f_hz"]}.0, {k["sigma_ms"]}e-3, shape="{k["shape"]}", bvalues=[{k["b"]:.1e}], slew_rate={k["slew"]})',
     ),
     "cpmg": dict(
-        label="CPMG — refocusing train",
-        knobs=dict(n_echoes=[4, 8, 16], TE_ms=[10, 20, 40], b=[0, 1e8, 3e8], polarity=["constant", "alternate"]),
-        build=lambda k: ds.cpmg(k["n_echoes"], k["TE_ms"] * 1e-3, gradient_directions=[[1, 0, 0]], bvalues=[k["b"]],
-                                polarity=k["polarity"], n_t_per_echo=max(20, N_T // k["n_echoes"])),
-        call=lambda k: f'cpmg({k["n_echoes"]}, {k["TE_ms"]}e-3, gradient_directions=[[1, 0, 0]], bvalues=[{k["b"]:.1e}], polarity="{k["polarity"]}")',
+        label="CPMG — refocusing train (no gradient)",
+        knobs=dict(n_echoes=[4, 8, 16, 32], TE_ms=[5, 10, 20, 40]),
+        build=lambda k: ds.cpmg(k["n_echoes"], k["TE_ms"] * 1e-3, n_t_per_echo=max(15, N_T // k["n_echoes"])),
+        call=lambda k: f'cpmg({k["n_echoes"]}, {k["TE_ms"]}e-3)',
     ),
     "gre": dict(
         label="GRE — gradient echo",
@@ -111,7 +110,7 @@ def encode(seq):
     axes = [i for i in range(3) if np.any(G[:, i] != 0)] or [0]  # the axes that play (drawn; the rest is zero)
     return dict(
         T_ms=round(seq.T * 1e3, 3), n_t=int(n), dt_us=round(seq.dt * 1e6, 3),
-        axes=axes,                                                  # t for sample k is k * (n_t - 1) / (n_draw - 1) * dt
+        axes=axes,                                                  # t for sample k is k * dt
         G_mT=[_r(_draw(G[:, i], N_DRAW) * 1e3, 3) for i in axes],
         sign=_r(_draw(sign, N_DRAW), 1),
         q=[_r(_draw(q[:, i], N_DRAW) / 1e3, 3) for i in axes],       # rad/mm

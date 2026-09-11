@@ -29,7 +29,10 @@ N_FIBRES, N_WALKERS, T_MAX, DT_SAVE, PER_COMP, SEED = 12, 600, 0.10, 3.5e-4, 24,
 
 
 def main():
-    sub = Substrate.canonical(field_T=3.0)
+    # the canonical substrate has permeable membranes (kappa = 1e-5 m/s) and immobile myelin water, so an
+    # intra-axonal walker that crosses into the sheath stops until it crosses back; for a page that shows
+    # each compartment's own spins, the walls are closed (kappa = 0) and every spin stays in its pool
+    sub = Substrate.canonical(field_T=3.0, kappa=0.0)
     spec = sub.request(n_fibres=N_FIBRES, seed=SEED)
     cache = os.environ.get("SPIN_STUDIO_WALK", "")                  # the walk is the expensive part: keep it raw
     if cache and os.path.exists(cache):
@@ -52,13 +55,6 @@ def main():
     order = [names.index(n) for n in ("extra", "intra", "myelin")]
     T2 = [float(getattr(spec.pools[i], "T2")) for i in order]
     T1 = [float(getattr(spec.pools[i], "T1")) for i in order]
-    rng = np.random.default_rng(SEED)
-    spins = []
-    for c_out, c_in in enumerate(order):
-        idx = np.flatnonzero(comp0 == c_in)
-        pick = rng.choice(idx, size=min(PER_COMP, idx.size), replace=False)
-        for i in pick:
-            spins.append(dict(comp=c_out, r=np.round(r[i] * 1e6, 4).tolist()))
     from dmipy_sim.spec import geometry_from_spec
     geom = geometry_from_spec(spec)
     def field(*names):
@@ -67,11 +63,21 @@ def main():
                 return np.asarray(getattr(geom, n))
         raise AttributeError(names)
     cell = float(field("cell_size", "_cell_size", "L").ravel()[0])
+    # the packed substrate stores in-plane positions folded into its periodic cell; the phase gamma * int G.r dt
+    # needs the continuous path, so unwrap them (the engine's replay does the same)
+    r = np.asarray(ds.unwrap_periodic(r, cell, periodic_axes=(0, 1)), np.float64)
     centers = field("centers", "_centers_np", "_centers")
     r_in = field("inner_radii", "_inner_radii_np", "_inner_radii")
     r_out = field("outer_radii", "_outer_radii_np", "_outer_radii")
     cyl = [[float(c[0]) * 1e6, float(c[1]) * 1e6, float(ri) * 1e6, float(ro) * 1e6]
            for c, ri, ro in zip(centers, r_in, r_out)]
+    rng = np.random.default_rng(SEED)
+    spins = []
+    for c_out, c_in in enumerate(order):
+        idx = np.flatnonzero(comp0 == c_in)
+        pick = rng.choice(idx, size=min(PER_COMP, idx.size), replace=False)
+        for i in pick:
+            spins.append(dict(comp=c_out, r=np.round(r[i] * 1e6, 4).tolist()))
     try:
         rev = subprocess.check_output(["git", "-C", os.path.dirname(ds.__file__), "rev-parse", "--short", "HEAD"],
                                       text=True, stderr=subprocess.DEVNULL).strip()
@@ -79,7 +85,7 @@ def main():
         rev = "installed"
     GEOM = dict(dt=float(dt_save), n_t=int(n_t), TE=T_MAX, fibre=[0, 0, 1], comps=["extra", "intra", "myelin"],
                 T2=T2, T1=T1, spins=spins, substrate=dict(cell=cell * 1e6, cyl=cyl),
-                provenance=dict(dmipy_sim=rev, walk="walk_spec on Substrate.canonical(3 T).request(n_fibres=%d)" % N_FIBRES,
+                provenance=dict(dmipy_sim=rev, walk="walk_spec on Substrate.canonical(3 T, kappa=0).request(n_fibres=%d)" % N_FIBRES,
                                 n_walkers=N_WALKERS, seed=SEED, dt_save=dt_save))
     html = open(PAGE, encoding="utf-8").read()
     i = html.index("const GEOM =")

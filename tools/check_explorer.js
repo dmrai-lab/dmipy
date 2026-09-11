@@ -31,7 +31,7 @@ class El {
     this.tag = tag; this.children = []; this.dataset = {}; this.attrs = {}; this.style = {};
     this._inner = ''; this.textContent = ''; this.value = ''; this.selected = false;
     this._cls = new Set(); this.classList = { toggle: (c, on) => on ? this._cls.add(c) : this._cls.delete(c) };
-    this.ctx = new Ctx();
+    this.ctx = new Ctx(); this.clientWidth = 900;
   }
   get innerHTML() { return this._inner; }
   set innerHTML(v) { this._inner = v; if (v === '') this.children = []; }
