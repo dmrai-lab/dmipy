@@ -124,8 +124,8 @@ def encode(seq):
     )
 
 
-def main():
-    os.makedirs(OUT, exist_ok=True)
+def main(out=OUT):
+    os.makedirs(out, exist_ok=True)
     try:
         sim_rev = subprocess.check_output(["git", "-C", os.path.dirname(ds.__file__), "rev-parse", "--short", "HEAD"],
                                           text=True, stderr=subprocess.DEVNULL).strip()
@@ -145,14 +145,15 @@ def main():
                 n_ref += 1
             points.append(entry)
         data = dict(family=name, label=fam["label"], knobs=fam["knobs"], points=points, dmipy_sim=sim_rev)
-        path = os.path.join(OUT, f"{name}.json")
+        path = os.path.join(out, f"{name}.json")
         with open(path, "w") as f:
             json.dump(data, f, separators=(",", ":"))
         index["families"][name] = dict(label=fam["label"], knobs=fam["knobs"], n_points=len(points), n_refused=n_ref)
         print(f"{name:6s} {n_ok:3d} built, {n_ref:3d} refused -> {os.path.getsize(path) / 1e3:.0f} kB")
-    with open(os.path.join(OUT, "index.json"), "w") as f:
+    with open(os.path.join(out, "index.json"), "w") as f:
         json.dump(index, f, separators=(",", ":"))
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(sys.argv[1] if len(sys.argv) > 1 else OUT)

@@ -35,9 +35,6 @@ jobs:
       - name: The spin studio's in-browser Bloch integration agrees with dmipy-sim's replay
         run: python tools/check_spin_studio.py
       - name: The explorer data is what the installed dmipy-sim builds
-        run: |
-          python tools/gen_explorer_data.py
-          git diff --stat --exit-code docs/studio/explorer_data || {
-            echo "explorer_data is stale: run tools/gen_explorer_data.py and commit"; exit 1; }
+        run: python tools/check_explorer_data.py
       - name: The site builds strictly
         run: mkdocs build --strict --site-dir site
