@@ -25,7 +25,7 @@ from dmipy_sim.substrate import Substrate
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.path.join(HERE, "..", "docs", "studio", "bloch_pedagogy.html")
-N_FIBRES, N_WALKERS, T_MAX, DT_SAVE, PER_COMP, SEED = 12, 360, 0.10, 3.5e-4, 24, 0
+N_FIBRES, N_WALKERS, T_MAX, DT_SAVE, PER_COMP, SEED = 12, 600, 0.10, 3.5e-4, 24, 0
 
 
 def main():
