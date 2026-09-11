@@ -64,8 +64,9 @@ E = ds.simulate_bloch(4_000, 2e-9, fin, ds.FreeDiffusion(), seed=0, require_gpu=
 
 - **Slice selectivity**: a windowed sinc under a slice-select gradient excites a sharp slab, a
   hard pulse of the same duration does not — `slice_profile(sinc, slice_gradient=20e-3, positions_m=z)`.
-- **Refocusing trains**: with an imperfect 180 the Carr–Purcell train (all 180ₓ) collapses and
-  the Meiboom–Gill train (180ᵧ) self-corrects; `cpmg(..., beta_deg=144)` plays either.
+- **Refocusing trains**: with an imperfect 180 the Carr–Purcell train (every pulse about x) collapses
+  and the Meiboom–Gill train (refocusing about y, a quarter turn from the excitation) self-corrects.
+  `cpmg(n, TE, beta_deg=144)` is Meiboom–Gill; `refocus_axis_deg=0` makes it Carr–Purcell.
 - **Robustness to B1⁺**: a hard 180 is exact only at B1⁺ = 1; a composite is flat over ±20 %; an
   adiabatic HS or BIR-4 pulse inverts over ±50 % once above threshold, at a SAR price.
 

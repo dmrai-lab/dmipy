@@ -43,7 +43,7 @@ number of periods, a cosine above the slew limit, a TE below the encoding's floo
 | `pgse(dirs, delta, Delta)` | spin echo, two lobes, the 180 midway | δ, Δ |
 | `pgste(dirs, delta, TM)` | the 3×90 stimulated echo: dephase, store along z over TM, recall, rephase | δ, TM (TE = 2δ + TM by default) |
 | `ogse(dirs, f, sigma, shape=)` | one oscillating block per side of the 180, `"trapezoid"` (Drobnjak trains) or `"cosine"` | f, σ (whole periods), optional Δ |
-| `cpmg(n_echoes, TE, polarity=)` | a refocusing train, an echo read at every k·TE | n, TE, `"constant"` or `"alternate"` diffusion lobes |
+| `cpmg(n_echoes, TE)` | a Meiboom–Gill train: refocusing about y, an echo read at every k·TE; no gradient unless asked | n, TE, `beta_deg`, `refocus_axis_deg=0` for Carr–Purcell; opt-in `bvalues=` with `polarity=` |
 | `gre(TE)` | gradient echo, optionally with a self-refocusing diffusion pair | TE, optional δ, Δ |
 | `ste(sigma)` / `pte(normal, sigma)` | spherical / planar b-tensor encoding | σ |
 | `sequences.from_waveform(G, dt, dirs)` | any effective gradient you already have; b integrated numerically | refused if it does not refocus |
@@ -54,7 +54,7 @@ from dmipy_sim import pgste, ogse, cpmg, ste
 
 stim  = pgste([[0, 0, 1]], delta=0.006, TM=0.040, bvalues=[1e9])         # TM stored along z
 osc   = ogse([[1, 0, 0]], 50.0, 0.040, shape="cosine", bvalues=[1e9])   # 2 whole periods per block
-train = cpmg(8, 0.020, gradient_directions=[[1, 0, 0]], bvalues=[2e8])    # an echo every 20 ms
+train = cpmg(8, 0.020)                                                    # a T2 train, an echo every 20 ms
 iso   = ste(0.060, bvalues=[1e9])                                         # b_delta = 0, 60 ms of encoding
 stim.TM, stim.stimulated_echo, osc.encoding.n_oscillation_cycles, len(train.echoes)
 ```
