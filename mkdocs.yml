@@ -1,5 +1,5 @@
-site_name: "dmipy 2.x"
-site_description: Diffusion Microstructure Imaging in Python — forward Monte Carlo + analytical inverse
+site_name: "dmipy"
+site_description: Diffusion Microstructure Imaging in Python — design the sequence, simulate the signal, fit the tissue
 site_url: https://dmipy.org
 repo_url: https://github.com/dmrai-lab/dmipy
 repo_name: dmrai-lab/dmipy
@@ -49,30 +49,33 @@ plugins:
             filters: ["!^_"]
 nav:
   - Home: index.md
-  - Install: install.md
-  - Migrating: migrating.md
-  - dmipy-fit:
-      - Inverse — overview: fit.md
-      - Model catalog: catalog.md
-      - Derivations:
-          - GPA for arbitrary waveforms: derivations/gpa_arbitrary_waveform.md
-          - Generalized Kärger exchange: derivations/karger_exchange.md
-  - dmipy-sim:
-      - Forward — overview: sim.md
-      - Acquisition sequences: sequences.md
+  - Get started:
+      - Install: install.md
+      - Your first fit: start/fit.md
+      - Your first simulation: start/sim.md
+      - Your first designed sequence: start/design.md
+  - Acquisition:
+      - One object, every engine: acquisition.md
+      - RF pulses & timing: rf_pulses.md
+      - Scanners & Pulseq: pulseq.md
+      - Sequence explorer: studio/explorer.md
+  - Simulate:
+      - Overview: sim.md
       - Substrate & geometry: substrate.md
       - Mesh substrates: mesh_substrates.md
       - Biophysical constants: constants.md
-      - RF pulses — watch the spins: rf_pulses.md
-      - Pedagogy — watch the spins: pedagogy.md
-  - dmipy-design:
-      - Acquisition design — overview: design.md
-      - Deliverable waveforms & constraints: design/deliverable.md
+      - Spin studio: studio/spins.md
+  - Fit:
+      - Overview: fit.md
+      - Model catalog: catalog.md
+  - Design:
+      - Overview: design.md
+      - Deliverable waveforms: design/deliverable.md
       - OGSE spectral design: design/spectral.md
-      - Max-b vs min-TE (SNR): design/snr.md
+      - Max-b vs min-TE: design/snr.md
       - B1-robust refocusing RF: design/rf.md
-      - Run it on the scanner (Pulseq): design/pulseq.md
-  - Physics effects:
+      - Run it on the scanner: design/pulseq.md
+  - Physics:
       - Overview: physics/index.md
       - Diffusion: physics/diffusion.md
       - Permeability & exchange: physics/permeability.md
@@ -80,10 +83,8 @@ nav:
       - Coherence gating (PGSTE): physics/coherence_gating.md
       - Susceptibility: physics/susceptibility.md
       - Magnetization transfer: physics/magnetization_transfer.md
-  - Studio:
-      - Bloch studio (real pulses): studio/index.md
-      - Spin studio (watch the compartments): studio/spins.md
-  - Examples:
-      - Canonical WM parity (fit ↔ sim): examples/canonical_wm_parity.md
-  - Publications: publications.md
-  - API reference: api.md
+      - Analytical vs Monte Carlo: physics/canonical_wm_parity.md
+  - Reference:
+      - API: api.md
+      - Migrating: migrating.md
+      - Publications: publications.md

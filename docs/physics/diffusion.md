@@ -1,31 +1,27 @@
 # Diffusion
 
-**Status: ✅ released.** The core effect — water molecules diffusing, and the gradient waveform
-`G(t)` encoding their displacement into signal attenuation.
+Spins random-walk through the geometry and accumulate phase φ = γ ∫ G_eff · r dt; the signal is
+the ensemble average of e^{iφ}. Restriction, hindrance and free diffusion come out of the same walk;
+the walls the walker meets are the only difference.
 
-## Forward (dmipy-sim)
+```python
+import numpy as np, dmipy_sim as ds
 
-Spins random-walk through the geometry and accumulate phase `φ = γ∫G·r dt`; the ensemble signal
-is `S/S₀ = ⟨cos φ⟩`, from first principles. Restriction, hindrance and free diffusion all emerge
-from the same walk — the walls the walker meets are the only difference.
+seq = ds.pgse([[1, 0, 0]] * 3, 0.010, 0.030, bvalues=[0, 1e9, 2e9])
+for geom in (ds.FreeDiffusion(), ds.Cylinder(radius=3e-6, orientation=(0, 0, 1))):
+    E = np.asarray(ds.simulate(10_000, 1.7e-9, waveform=seq, geometry=geom, seed=0, require_gpu=False))
+    print(type(geom).__name__, (E / E[0]).round(3))          # free: exp(-bD); axon: held up by the wall
+```
 
-- **Free / hindered / restricted** in `FreeDiffusion`, `Box1D`, `Sphere`, `Cylinder`,
-  `Ellipsoid`, packed ensembles, myelinated cylinders, and arbitrary
-  [meshes](../mesh_substrates.md).
-- **Arbitrary encoding** — PGSE, OGSE, b-tensor (LTE/PTE/STE) and free `G(t)`; see
-  [Acquisition sequences](../sequences.md).
+**Forward**: `FreeDiffusion`, `Box1D`, `Sphere`, `Cylinder`, `Ellipsoid`, packed ensembles,
+myelinated cylinders and [meshes](../mesh_substrates.md), under any
+[acquisition](../acquisition.md): PGSE, PGSTE, OGSE, CPMG, b-tensor, free waveforms.
 
-See the [forward-engine overview](../sim.md).
+**Inverse**: each compartment contributes an analytical attenuation on the same object (closed
+forms for PGSE, the Gaussian-phase integral of the played waveform for OGSE and b-tensor
+encodings, the matrix method and replay models for the rest), composed in a
+`MultiCompartmentModel` — the [model catalog](../catalog.md).
 
-## Inverse (dmipy-fit)
-
-Each compartment contributes an analytical attenuation `E_diff(b)` (or the b-tensor generalisation),
-combined in a `MultiCompartmentModel` and fit on the GPU. Orientation dispersion (Watson / Bingham),
-diameter distributions, CSD and the named literature models (NODDI, SMT, NEXI, VERDICT, SANDI, …)
-are all built on this — see the [inverse overview](../fit.md) and the [Model catalog](../catalog.md).
-
-## Validated against
-
-Free/box/sphere/cylinder/ellipsoid diffusion vs analytical and MISST reference signals, and the
-extra-axonal tortuosity scale sweep — see the sim repo's `examples/validation/` and the
-[canonical-WM parity example](../examples/canonical_wm_parity.md).
+**Validated against**: analytical free, box, sphere, cylinder and ellipsoid signals, MISST
+reference signals, the extra-axonal tortuosity sweep, and the
+[canonical-WM parity](canonical_wm_parity.md) between the two engines.

@@ -1,76 +1,72 @@
 # dmipy
 
-## Towards a physics-complete MRI representation of the brain
+**Diffusion Microstructure Imaging in Python.** Design the sequence, simulate the signal, fit
+the tissue — three engines that read the same two objects: one **acquisition** (what the scanner
+plays, from t = 0 to the readout) and one **substrate** (the tissue the spins walk through).
 
-**dmipy** — *Diffusion Microstructure Imaging in Python* — is the revived and expanded successor
-to the [2019 toolbox](https://doi.org/10.3389/fninf.2019.00064): now a **pulse-sequence designer, a
-forward Monte-Carlo simulator, and an analytical fitter** — one shared physics running the whole
-loop from the scanner to the tissue and back.
+<div class="dm-loop" markdown>
 
-MRI scanners don't measure tissue directly — they measure a **signal** that a physics model turns
-into the numbers people read (*axon density*, *myelin content*, *microstructure*). But today's
-models — **including dmipy 1.x** — are each *incomplete*: each captures some physical effects
-(diffusion) while ignoring others present in the same signal (relaxation, susceptibility, surface
-interactions), so the numbers come out subtly and predictably biased, and most tools can't tell
-you when, or by how much.
+| | | |
+|---|---|---|
+| **[Design](design.md)** a deliverable sequence under a real scanner's limits | **[Simulate](sim.md)** the signal it produces on a known substrate, from first principles | **[Fit](fit.md)** the acquired data with a model validated against that simulation |
+| `design_waveform_now(...).to_sequence()` | `simulate(..., waveform=seq, geometry=...)` | `MultiCompartmentModel(...).fit(AcquisitionScheme(seq), data)` |
 
-**dmipy is built to leave nothing out:** one shared physical description of the tissue, used to
-explain *every* signal a scanner can produce — so the numbers mean what people already assume
-they mean.
+</div>
 
-![A brain dissolving into the geometric compartments dmipy represents it with — cylinders for axons, spheres for cells — the substrate behind the signal.](media/brain_compartments.png){ width="100%" }
+The sequence you designed, the one you simulated and the one you fit are **one object**, so
+agreement between the engines is a statement about the physics, not about a conversion layer.
 
-## How it works: design → run → simulate → fit, one shared physics
+## Start here
 
-dmipy describes the acquisition *once* — a gradient waveform `G(t)` — and the tissue *once* — a
-substrate of geometric compartments. Everything else is a different view of those same two objects,
-so the whole measurement loop stays consistent from the scanner to the tissue and back:
+- **I have diffusion data** → [your first fit](start/fit.md)
+- **I have a substrate, or want one** → [your first simulation](start/sim.md)
+- **I have a scanner** → [your first designed sequence](start/design.md)
 
-- **[dmipy-design](design.md)** — the **acquisition** front-end: design a diffusion pulse sequence
-  that is *deliverable* under a real scanner's limits (slew, PNS, timing), and export it to a
-  scanner-runnable [Pulseq](https://pulseq.github.io/) `.seq`. This is the bridge to the hardware —
-  the exact sequence you optimise here is the one the scanner plays.
-- **[dmipy-sim](https://github.com/dmrai-lab/dmipy-sim)** — the **forward truth**: given that
-  waveform and a substrate, simulate the signal from first principles by random-walking spins
-  through the geometry — a physics-complete Monte-Carlo ground truth, no analytical shortcuts.
-- **[dmipy-fit](https://github.com/dmrai-lab/dmipy-fit)** — the **analytical inverse**: from the
-  signal, recover the tissue — multi-compartment models with T2 and surface relaxivity as
-  composable factors, CSD and myelin-water estimation, fit on the GPU.
-
-Because all three read the *same* `G(t)` and the *same* substrate, the loop is **literal**: you
-design a deliverable sequence, run it on the scanner, simulate what it *should* produce on a known
-substrate, and fit the acquired data with a model that is validated — effect by effect — against
-that simulator. The sequence you scanned, the one you simulated, and the one you fit are one object.
-Agreement is how we earn trust in the numbers.
-
-## Try it
+```bash
+pip install dmipy            # dmipy-design + dmipy-sim + dmipy-fit
+```
 
 ```python
 import numpy as np
-from dmipy_fit.core.acquisition_scheme import acquisition_scheme_from_bvalues
-from dmipy_fit.signal_models.gaussian_models import G1Ball
-from dmipy_fit.signal_models.cylinder_models import C1Stick
-from dmipy_fit.core.modeling_framework import MultiCompartmentModel
+import dmipy_sim as ds
+from dmipy_fit.core.acquisition_scheme import AcquisitionScheme
+from dmipy_fit.signal_models.cylinder_models import C4CylinderGaussianPhaseApproximation
 
-# a small two-shell scheme (b-values in s/m^2 — multiply s/mm^2 by 1e6)
-rng    = np.random.default_rng(0)
-bvals  = np.r_[0.0, np.full(32, 1e9), np.full(32, 2e9)]
-bvecs  = np.zeros((65, 3)); v = rng.standard_normal((64, 3))
-bvecs[1:] = v / np.linalg.norm(v, axis=1, keepdims=True)
-scheme = acquisition_scheme_from_bvalues(bvals, bvecs, delta=0.01, Delta=0.03)
-data   = rng.uniform(0.1, 1.0, size=(10, 65))        # <- swap in your DWI voxels
+seq  = ds.pgse([[1, 0, 0]] * 3, 0.010, 0.030, bvalues=[0, 1e9, 2e9])         # the acquisition, once
+axon = ds.Cylinder(radius=4e-6, orientation=(0, 0, 1))                       # the tissue, once
 
-ball_stick = MultiCompartmentModel([G1Ball(), C1Stick()])
-fit = ball_stick.fit(scheme, data, solver="jax")     # vmap over voxels, GPU if available
-print(fit.fitted_parameters.keys())
+E_mc = ds.simulate(20_000, 1.7e-9, waveform=seq, geometry=axon, seed=0, require_gpu=False)   # forward truth
+E_an = C4CylinderGaussianPhaseApproximation(mu=[0., 0.], lambda_par=1.7e-9, diameter=8e-6)(
+           AcquisitionScheme(seq))                                            # analytical model, same object
+np.abs(E_mc / E_mc[0] - E_an).max()                                           # < 0.01: they agree
 ```
 
-**Start here:** [Install](install.md) → the [inverse](fit.md) or [forward](sim.md) quickstart →
-[designing a deliverable sequence](design.md) → the worked
-[surface-relaxivity / myelin-water walkthrough](surface_relaxivity_bias.md). Coming from the 2019
-toolbox? See [Migrating from dmipy 1.x](migrating.md).
+## Watch it
+
+One dmipy-sim walk per substrate, replayed over a grid of acquisitions offline; the page only
+draws. Move the radius: restriction holds the PGSE signal above free water, and the OGSE
+apparent diffusivity climbs with frequency.
+
+<iframe src="studio/signal.html" style="width:100%;height:300px;border:1px solid #2a2f3a;border-radius:8px" title="Live signal: one walk, every acquisition"></iframe>
+
+More knobs: the [sequence explorer](studio/explorer.md) and the [spin studio](studio/spins.md).
+
+## What is in the box
+
+- **[Acquisition](acquisition.md)** — `ScannerSequence`: PGSE, PGSTE, OGSE, CPMG, gradient echo,
+  b-tensor STE/PTE, or any waveform; RF pulses and timing budgets; scanner catalogue and Pulseq.
+- **[Tissue](substrate.md)** — analytic geometries, packed ensembles, myelinated axons, meshes;
+  every constant cited once.
+- **[Simulate](sim.md)** — the fused Monte-Carlo walk, the vector-Bloch engine, and replay packs
+  that answer any acquisition from one stored walk.
+- **[Fit](fit.md)** — multi-compartment models with relaxation and surface relaxivity as
+  composable factors, CSD, myelin water; GPU fitting with a Rician noise floor.
+- **[Design](design.md)** — deliverable waveforms (NOW), spectral and min-TE design, B1-robust
+  refocusing RF, export to the scanner.
+- **[Physics](physics/index.md)** — each effect, what it does to your numbers, and what it was
+  validated against.
 
 !!! quote "Physics is the specification"
-    Physical laws, invariants, and known analytical results are the correctness criteria — not
-    "the code runs". Every analytical model is validated effect-by-effect against Monte Carlo.
-    More on the philosophy at **[dmrai-lab.org](https://dmrai-lab.org)**.
+    Physical laws and known analytical results are the correctness criteria, not "the code
+    runs". Every analytical model is checked, effect by effect, against the Monte-Carlo forward.
+    The lab behind it: **[dmrai-lab.org](https://dmrai-lab.org)**.

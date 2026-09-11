@@ -7,8 +7,9 @@ analytical forward from `dmipy-fit`, and the Monte-Carlo forward from `dmipy-sim
 they agree, for **diffusion** and for **surface relaxivity**, both ON and OFF.
 
 !!! warning "What agreement here does and does not mean"
-    The two engines share the same `Substrate`/`Sequence` definition (fit's `AcquisitionScheme`
-    delegates to sim; the white-matter parameters are the sim biophysical catalogue). Agreement
+    The two engines share the same substrate and the same acquisition object (fit's
+    `AcquisitionScheme` reads sim's `ScannerSequence`; the white-matter parameters are the sim
+    biophysical catalogue). Agreement
     is therefore the **interface contract working** — necessary, but *not* a proof of
     correctness: the engines are correlated and could be wrong in the same way. The independent
     correctness checks are the against-exact-analytics validations in
@@ -30,19 +31,21 @@ print("D_intra=%.2e  g_ratio=%.2f  rho=%.2e  T2_intra=%.3f  myelin_water_proton_
 The MC substrate is a packed myelinated-cylinder geometry built from the same catalogue Gamma
 calibre distribution, g-ratio and packing fraction; the signal is `simulate()` over the shared
 waveform. Because the sub-micron walk must be **step-resolved** (fine `dt`, `step ≪` fibre) it
-is run on a GPU and cached here — regenerate with `python generate_mc_reference.py`:
+is run on a GPU and cached here — regenerate with `python generate_mc_reference.py` (next to this page):
 
 ```python
-# (run in generate_mc_reference.py; shown for transparency)
-from dmipy_sim import pack_myelinated_cylinders, PackedMyelinatedCylinders, simulate, pgse, set_b
+# docs: skip  (run in generate_mc_reference.py next to this page; shown for transparency)
+from dmipy_sim import pack_myelinated_cylinders, PackedMyelinatedCylinders, simulate, pgse
 inner, gr, cen = pack_myelinated_cylinders(inner_radii=g*d_out/2, g_ratios=..., target_packing=f_axon)
 geom = PackedMyelinatedCylinders(inner_radii=inner, g_ratios=gr, centers=cen, cell_size=cell,
                                  D_intra=D, D_extra=D, T2_intra=..., rho_inner=rho, rho_outer=rho, ...)
-S_mc = simulate(N_walkers, waveform=wf, geometry=geom, seed=1)   # step-resolved
+seq  = pgse(bvecs, delta, Delta, bvalues=bvals, TE=TE)            # the same object the fit reads below
+S_mc = simulate(N_walkers, waveform=seq, geometry=geom, seed=1)   # step-resolved
 ```
 
 ```python
-ref = np.load('flagship_mc_reference.npz')   # cached MC (generate_mc_reference.py)
+# docs: cwd
+ref = np.load('flagship_mc_reference.npz')   # cached MC (generate_mc_reference.py, next to this page)
 ```
 
 ## The analytical forward (dmipy-fit), from the base API + factory

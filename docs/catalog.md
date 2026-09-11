@@ -23,7 +23,7 @@ from dmipy_fit.white_matter.surface import exterior_surface_to_volume
 # one Gamma OUTER (fibre) diameter distribution drives both surface factors
 gamma_shape, gamma_scale = 2.0, 0.304e-6      # mean outer diameter = shape * scale
 f_axon = 0.55                                 # intra-axonal (lumen) volume fraction
-S_ext_over_V = exterior_surface_to_volume(f_axon, gamma_shape, gamma_scale)
+S_ext_over_V = exterior_surface_to_volume(f_axon, gamma_shape, gamma_scale, geometry="cylinder")
 
 # each compartment = a diffusion primitive + opt-in occupancy-gated factors (surface relaxivity + T2)
 intra  = OccupancyGatedModel(C1Stick(), [
@@ -50,9 +50,10 @@ Then `model(scheme, **params)` forward-simulates and `model.fit(scheme, data, so
 Each factory below lives in `dmipy_fit.custom_optimizers.reference_models` and returns a configured `MultiCompartmentModel` (or spherical-mean model) in a few lines.
 
 ```python
+# docs: skip  (your scheme and data)
 from dmipy_fit.custom_optimizers import reference_models as models
 mcm = models.noddi()          # any factory below
-fit = mcm.fit(scheme, data, solver="jax")
+fit = mcm.fit(scheme, data, solver="jax")   # scheme, data: yours
 ```
 
 
@@ -355,14 +356,6 @@ soma = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
 return MultiCompartmentModel([soma, G1Ball()])
 ```
 
-!!! tip "The method *is* the acquisition"
-    IMPULSED is just a sphere and a ball — the cell-size sensitivity comes entirely from the
-    **acquisition**: a composite scheme mixing **OGSE at several frequencies with PGSE**, fed as
-    one object (`AcquisitionScheme.concatenate([pgse, ogse_50Hz, ogse_100Hz, ...])`). Because dmipy
-    is [sequence-agnostic](sequences.md#composite-mixed-encoding-schemes), the same two compartments
-    resolve cell diameter with no model change — you just hand them a richer waveform set. Same
-    story for `mte_impulsed()` (OGSE+PGSE across several TEs).
-
 
 ### Membrane exchange
 
@@ -449,13 +442,6 @@ return mcm
 
 ### Relaxometry (multi-TE)
 
-!!! note "Per-compartment T2 is a factor, not a built-in parameter"
-    A bare `C1Stick()`/`G1Ball()` carries **no `T2` parameter** — diffusion compartments are
-    pure diffusion. To give a compartment its own $T_2$ (or surface relaxivity) you wrap it in an
-    `OccupancyGatedModel` with a `TransverseRelaxation()` factor. The model construction *is* the
-    opt-in; that is what makes the multi-TE models below fit `T2_intra`/`T2_extra`. (These fits
-    also need a multi-echo acquisition — see the [surface-relaxivity page](surface_relaxivity_bias.md).)
-
 #### `mte_ball_stick()` <small>I1</small>
 
 Multi-TE Ball-and-Stick with per-compartment T2 relaxation.
@@ -463,10 +449,9 @@ Multi-TE Ball-and-Stick with per-compartment T2 relaxation.
 *[Gong et al. 2020, NeuroImage 217](https://doi.org/10.1016/j.neuroimage.2020.116906)*
 
 ```python
-from dmipy_fit.signal_models.attenuation import OccupancyGatedModel, TransverseRelaxation
-intra = OccupancyGatedModel(C1Stick(), [TransverseRelaxation()])   # exposes ..._T2
-extra = OccupancyGatedModel(G1Ball(),  [TransverseRelaxation()])
-return MultiCompartmentModel([intra, extra])   # T2_intra, T2_extra now free
+intra = OccupancyGatedModel(C1Stick(), [TransverseRelaxation()])
+extra = OccupancyGatedModel(G1Ball(), [TransverseRelaxation()])
+return MultiCompartmentModel([intra, extra])
 ```
 
 #### `mte_noddi()` <small>I2</small>
@@ -476,14 +461,18 @@ MTE-NODDI: NODDI extended with per-compartment T2 relaxation.
 *[Gong et al. 2020, NeuroImage 217](https://doi.org/10.1016/j.neuroimage.2020.116906)*
 
 ```python
-bundle = SD1WatsonDistributed(models=[C1Stick(), G2Zeppelin()])
+bundle = SD1WatsonDistributed(models=[
+    OccupancyGatedModel(C1Stick(), [TransverseRelaxation()]),
+    OccupancyGatedModel(G2Zeppelin(), [TransverseRelaxation()])])
 bundle.set_tortuous_parameter(
-    'G2Zeppelin_1_lambda_perp', 'G2Zeppelin_1_lambda_par', 'partial_volume_0')
-bundle.set_equal_parameter('G2Zeppelin_1_lambda_par', 'C1Stick_1_lambda_par')
-bundle.set_fixed_parameter('G2Zeppelin_1_lambda_par', _Da)
-mcm = MultiCompartmentModel([bundle, G1Ball()])
-mcm.set_fixed_parameter('G1Ball_1_lambda_iso', _Dcsf)
-return mcm   # wrap each compartment in OccupancyGatedModel([TransverseRelaxation()]) for T2 (see note)
+    'OccupancyGatedModel_2_lambda_perp', 'OccupancyGatedModel_2_lambda_par',
+    'partial_volume_0')
+bundle.set_equal_parameter(
+    'OccupancyGatedModel_2_lambda_par', 'OccupancyGatedModel_1_lambda_par')
+bundle.set_fixed_parameter('OccupancyGatedModel_2_lambda_par', _Da)
+mcm = MultiCompartmentModel([bundle, OccupancyGatedModel(G1Ball(), [TransverseRelaxation()])])
+mcm.set_fixed_parameter('OccupancyGatedModel_1_lambda_iso', _Dcsf)  # CSF ball
+return mcm
 ```
 
 #### `mte_sandi()` <small>I3</small>
@@ -493,10 +482,13 @@ MTE-SANDI: SANDI with per-compartment T2 relaxation.
 *ISMRM 2023 abstract #0766*
 
 ```python
-soma = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
-mcm  = MultiCompartmentModel([soma, C1Stick(), G1Ball()])
-mcm.set_fixed_parameter('C1Stick_1_lambda_par', _Da)
-return mcm   # each compartment wrapped in OccupancyGatedModel([TransverseRelaxation()]) for T2 (see note)
+soma    = OccupancyGatedModel(
+    S4SphereGaussianPhaseApproximation(diffusion_constant=_Din), [TransverseRelaxation()])
+neurite = OccupancyGatedModel(C1Stick(), [TransverseRelaxation()])
+extra   = OccupancyGatedModel(G1Ball(), [TransverseRelaxation()])
+mcm = MultiCompartmentModel([soma, neurite, extra])
+mcm.set_fixed_parameter('OccupancyGatedModel_2_lambda_par', _Da)  # neurite stick
+return mcm   # per-compartment T2 (soma, neurite, extra) via the T2 factors
 ```
 
 #### `wmti()` <small>I4</small>
@@ -525,16 +517,19 @@ NODDIDA-MTE: unconstrained NODDIDA with per-compartment T2.
 *[Jelescu 2015 + Gong 2020](https://doi.org/10.1002/nbm.3450)*
 
 ```python
-mcm = MultiCompartmentModel([C1Stick(), G2Zeppelin(), G1Ball()])
+stick    = OccupancyGatedModel(C1Stick(), [TransverseRelaxation()])
+zeppelin = OccupancyGatedModel(G2Zeppelin(), [TransverseRelaxation()])
+extra    = OccupancyGatedModel(G1Ball(), [TransverseRelaxation()])
+mcm = MultiCompartmentModel([stick, zeppelin, extra])
 mcm.set_tortuous_parameter(
-    'G2Zeppelin_1_lambda_perp',
-    'C1Stick_1_lambda_par',
+    'OccupancyGatedModel_2_lambda_perp',
+    'OccupancyGatedModel_1_lambda_par',
     'partial_volume_0',
     'partial_volume_1',
 )
-mcm.set_equal_parameter('C1Stick_1_mu', 'G2Zeppelin_1_mu')
-mcm.set_equal_parameter('C1Stick_1_lambda_par', 'G2Zeppelin_1_lambda_par')
-return mcm   # each compartment wrapped in OccupancyGatedModel([TransverseRelaxation()]) for T2 (see note)
+mcm.set_equal_parameter('OccupancyGatedModel_1_mu', 'OccupancyGatedModel_2_mu')
+mcm.set_equal_parameter('OccupancyGatedModel_1_lambda_par', 'OccupancyGatedModel_2_lambda_par')
+return mcm   # per-compartment T2 (all three) via the T2 factors
 ```
 
 #### `mte_impulsed()` <small>I6</small>
@@ -544,6 +539,8 @@ MTE-IMPULSED: IMPULSED with per-compartment T2 relaxation.
 *[Jiang et al. 2025, MRM](https://doi.org/10.1002/mrm.30254)*
 
 ```python
-return MultiCompartmentModel([S4SphereGaussianPhaseApproximation(), G1Ball()])
+soma  = OccupancyGatedModel(S4SphereGaussianPhaseApproximation(), [TransverseRelaxation()])
+extra = OccupancyGatedModel(G1Ball(), [TransverseRelaxation()])
+return MultiCompartmentModel([soma, extra])   # per-compartment T2 via the T2 factors
 ```
 

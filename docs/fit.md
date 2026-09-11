@@ -1,125 +1,64 @@
-# Inverse — dmipy-fit
+# Fit — dmipy-fit
 
-Analytical multi-compartment fitting. The measured signal is
+Analytical multi-compartment fitting. The signal is
 
-$$S = S_0 \sum_i f_i\, E^{\text{diff}}_i(b)\, e^{-\mathrm{TE}/T_{2,i}}\, \hat B^{\text{surf}}_i$$
+$$S = S_0 \sum_i f_i\, E^{\text{diff}}_i(\text{acquisition})\, e^{-\mathrm{TE}/T_{2,i}}\, \hat B^{\text{surf}}_i$$
 
-with T2 and **surface relaxivity** as composable occupancy-gated factors on any compartment.
+with relaxation and surface relaxivity as composable factors on any compartment, evaluated on the
+same `ScannerSequence` the simulator plays.
 
 ```python
 import numpy as np
-from dmipy_fit.core.acquisition_scheme import acquisition_scheme_from_bvalues
-from dmipy_fit.signal_models.cylinder_models import C1Stick
-from dmipy_fit.signal_models.gaussian_models import G1Ball, G2Zeppelin
+from dmipy_fit.core.acquisition_scheme import AcquisitionScheme
 from dmipy_fit.core.modeling_framework import MultiCompartmentModel
+from dmipy_fit.signal_models.cylinder_models import C1Stick
+from dmipy_fit.signal_models.gaussian_models import G1Ball
 
-# a small two-shell scheme (b in s/m^2 — multiply s/mm^2 by 1e6) + your DWI voxels
-rng    = np.random.default_rng(0)
-bvals  = np.r_[0.0, np.full(32, 1e9), np.full(32, 2e9)]
-bvecs  = np.zeros((65, 3)); v = rng.standard_normal((64, 3))
-bvecs[1:] = v / np.linalg.norm(v, axis=1, keepdims=True)
-scheme = acquisition_scheme_from_bvalues(bvals, bvecs, delta=0.01, Delta=0.03)
-data   = rng.uniform(0.1, 1.0, size=(10, 65))        # <- swap in your DWI voxels
+rng = np.random.default_rng(0)
+bvals = np.r_[0.0, np.full(24, 1e9), np.full(24, 2e9)]
+bvecs = np.zeros((49, 3)); v = rng.standard_normal((48, 3)); bvecs[1:] = v / np.linalg.norm(v, axis=1, keepdims=True)
+scheme = AcquisitionScheme.from_pgse(bvals, bvecs, delta=0.010, Delta=0.030)
 
-model = MultiCompartmentModel([G1Ball(), G2Zeppelin(), C1Stick()])
-fit = model.fit(scheme, data, solver="jax")
-fractions = fit.fitted_parameters["partial_volume_2"]
+model = MultiCompartmentModel([G1Ball(), C1Stick()], eta=True)      # with a Rician noise floor
+data  = model.simulate_signal(scheme, model.parameters_to_parameter_vector(
+            G1Ball_1_lambda_iso=3e-9, C1Stick_1_lambda_par=1.7e-9, C1Stick_1_mu=[0.5, 1.0],
+            partial_volume_0=0.3, partial_volume_1=0.7, eta=0.03))[None, :]
+fit = model.fit(scheme, data, solver="jax")                          # vmap over voxels, GPU if there is one
+fit.fitted_parameters["partial_volume_1"], fit.fitted_parameters["eta"]   # ≈ 0.7, ≈ 0.03
 ```
 
-- **Compartments:** sticks/cylinders, sphere, ball/zeppelin, plane, capped cylinder.
-- **Dispersion:** Watson / Bingham; Gamma diameter distributions.
-- **CSD:** Tournier / cvxpy / OSQP-JAX; DTI, IVIM.
-- **White matter:** `white_matter.build_white_matter_model()` (a decoupled diffusion-only
-  canonical model — surface relaxivity reweights intra vs extra) and
-  `white_matter.t2_spectrum_mwf()` (standard NNLS myelin-water fraction).
+## What is in it
 
-See the **[Model catalog](catalog.md)** for every published inverse model (NODDI, Ball&Stick,
-Standard Model, SMT, NEXI, VERDICT, SANDI, …) built from these primitives in a few lines.
+- **Compartments**: stick, cylinders (Gaussian phase, Callaghan, Söderman, matrix method), sphere,
+  ball, zeppelin, plane, dot; Watson and Bingham dispersion; Gamma diameter distributions.
+- **Physics factors**: `OccupancyGatedModel(compartment, [TransverseRelaxation(),
+  LongitudinalRelaxation(), IntraPoreSurfaceRelaxivity(), ExteriorSurfaceRelaxivity()])` — diffusion
+  × relaxation × surface, per compartment, on any acquisition family (PGSE, PGSTE, OGSE, CPMG, b-tensor).
+- **Replay models**: `C6MonteCarloReplayCylinder`, `S6MonteCarloReplaySphere` fit against a stored
+  Monte-Carlo walk instead of a closed form.
+- **CSD**: Tournier, cvxpy, OSQP-JAX; multi-tissue; DTI, IVIM.
+- **White matter**: `white_matter.build_white_matter_model()` (the canonical model, surface
+  relaxivity reweighting intra vs extra) and `white_matter.t2_spectrum_mwf()` (NNLS myelin water).
+- **Noise**: `MultiCompartmentModel([...], eta=True)` fits a Rician floor jointly, so high-b
+  parameters are not biased upward; the CSD solvers take the same `eta=`.
+- **Provenance**: every model and constant carries its citations;
+  `dmipy_fit.audit.generate_methods_section(walk_citation_graph(model))` writes the Methods
+  paragraph and `generate_bibtex` the references.
 
----
+Every published model (NODDI, SMT, the Standard Model, NEXI, SANDI, VERDICT, …) is a few lines
+of these primitives: the [model catalog](catalog.md).
 
-## What's new since the original dmipy
+## The acquisition is the simulator's
 
-The original **dmipy** ([Fick, Wassermann & Deriche 2019](https://doi.org/10.3389/fninf.2019.00064))
-established the compartment-model *grammar* — compose sticks, zeppelins, spheres and
-dispersion distributions into a `MultiCompartmentModel` and fit it. This engine keeps that
-grammar verbatim and rebuilds the machinery underneath it. The headline changes:
+`AcquisitionScheme(sequence)` reads a `ScannerSequence` or a `Protocol`; its `from_pgse`,
+`from_pgste`, `from_ogse`, `from_cpmg`, `from_btensor_ste`, `from_btensor_pte` and
+`from_waveform` are the simulator's builders. The models read b, direction, δ, Δ, TE and the OGSE
+fields per measurement from the sequence's encoding; the ones that integrate a waveform read the
+effective gradient itself. Schemes concatenate with `+`; a multi-TE scheme is a `Protocol` and is
+normalised per TE (every TE needs its own b = 0). See [Acquisition](acquisition.md).
 
-### GPU fitting (`solver="jax"`)
+## Fitting on the GPU
 
-Fitting is a JAX program. The forward model is JIT-compiled and the optimiser
-(bounded L-BFGS-B, with a coarse spherical brute-grid initialisation) is **`vmap`-ed across
-voxels**, so a whole brain fits in one vectorised GPU call instead of the original's
-per-voxel CPU loop. The *same* code runs on CPU (`JAX_PLATFORMS=cpu`) for reference and CI.
-
-```python
-fit = model.fit(scheme, data, solver="jax")   # vmap over voxels, GPU if available
-```
-
-### `OccupancyGatedModel` — physics beyond diffusion
-
-The original was diffusion-only: one compartment, one `E(b)`. Here any compartment can be
-wrapped in an `OccupancyGatedModel` that carries **composable, opt-in physics factors** —
-transverse relaxation (`T2`) and intra-pore + exterior **surface relaxivity** — so the signal
-is diffusion × relaxation × surface, per compartment:
-
-```python
-from dmipy_fit.signal_models.gaussian_models import G2Zeppelin
-from dmipy_fit.signal_models.attenuation import (
-    OccupancyGatedModel, TransverseRelaxation, ExteriorSurfaceRelaxivity)
-
-extra = OccupancyGatedModel(G2Zeppelin(), [
-    ExteriorSurfaceRelaxivity(S_ext_over_V=2e5), TransverseRelaxation()])
-```
-
-This is what lets the **[unified white-matter model](catalog.md)** carry the surface-relaxivity
-inter-compartment weighting (surface relaxivity reweights intra vs extra) that plain
-stick+zeppelin cannot represent.
-
-### Noise-aware fitting
-
-The signal magnitude is Rician, not Gaussian, at the SNR of real dMRI. Pass `eta=True` and the
-forward model carries a **Rician noise floor** `η`, fitting against $\sqrt{S^2 + \eta^2}$ so
-parameters are not biased upward by the noise floor at high *b*:
-
-```python
-model = MultiCompartmentModel([G1Ball(), C1Stick()], eta=True)  # jointly fit the noise floor
-fit = model.fit(scheme, data, solver="jax")
-noise_floor = fit.fitted_parameters["eta"]                      # dimensionless, ~ 1/SNR
-```
-
-The CSD solvers accept a matching `eta=` bias correction ($\sqrt{\max(S^2-\eta^2,\,0)}$) before
-the QP solve.
-
-### Citation graph & auto-generated methods
-
-Every signal model and every physical constant carries its own `_citations`. Walk the graph of
-whatever you composed and get a ready-to-paste **Methods paragraph and BibTeX** — reproducibility
-falls out of the model object itself:
-
-```python
-from dmipy_fit.audit import walk_citation_graph, generate_methods_section, generate_bibtex
-
-graph = walk_citation_graph(model)
-print(generate_methods_section(graph))          # "...modeled using ... Zhang H et al. (2012) ..."
-open("refs.bib", "w").write(generate_bibtex(graph))
-```
-
-Physical constants come from one cited catalogue — see **[Biophysical constants](constants.md)**.
-
-### One physical representation, shared with the forward truth
-
-The acquisition and substrate objects are **sim-owned and shared**: the same `from_pgse(...)`
-scheme drives both the analytical fit here and the Monte-Carlo ground truth in dmipy-sim, and
-the same `Substrate` parametrises both. There was no forward-simulation counterpart in the
-original. See **[Acquisition sequences](sequences.md)** and **[Substrate & geometry](substrate.md)**.
-
-### Current scope (this release)
-
-The **mission** is a physics-complete, sequence- and substrate-agnostic MRI computational
-forward model — the free waveform `G(t)` and an arbitrary substrate as the base representation,
-every physical effect on the same footing — paired with its analytical inverse. *This release*
-is the transverse-magnetisation slice of it: diffusion + T2 + surface relaxivity + permeable
-exchange + magnetization transfer, with ideal instantaneous pulses. Susceptibility, gradient-/stimulated-echo and T1 are
-part of the model but not in the released public scope yet — so the boundary above is a
-*release* boundary, not the ceiling.
+Fitting is a JAX program: the forward model is JIT-compiled and a bounded L-BFGS-B (with a
+brute-grid initialisation on the sphere) is `vmap`-ed across voxels, so a whole brain fits in one
+vectorised call. The same code runs on the CPU with `JAX_PLATFORMS=cpu`.

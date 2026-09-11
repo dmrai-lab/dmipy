@@ -68,7 +68,7 @@ from dmipy_fit.white_matter.surface import exterior_surface_to_volume
 # one Gamma OUTER (fibre) diameter distribution drives both surface factors
 gamma_shape, gamma_scale = 2.0, 0.304e-6      # mean outer diameter = shape * scale
 f_axon = 0.55                                 # intra-axonal (lumen) volume fraction
-S_ext_over_V = exterior_surface_to_volume(f_axon, gamma_shape, gamma_scale)
+S_ext_over_V = exterior_surface_to_volume(f_axon, gamma_shape, gamma_scale, geometry="cylinder")
 
 # each compartment = a diffusion primitive + opt-in occupancy-gated factors (surface relaxivity + T2)
 intra  = OccupancyGatedModel(C1Stick(), [
@@ -123,10 +123,10 @@ out = ['# Model catalog', '',
        '',
        'Each factory below lives in `dmipy_fit.custom_optimizers.reference_models` and returns a '
        'configured `MultiCompartmentModel` (or spherical-mean model) in a few lines.', '',
-       '```python',
+       '```python', '# docs: skip  (your scheme and data)',
        'from dmipy_fit.custom_optimizers import reference_models as models',
        'mcm = models.noddi()          # any factory below',
-       'fit = mcm.fit(scheme, data, solver="jax")',
+       'fit = mcm.fit(scheme, data, solver="jax")   # scheme, data: yours',
        '```', '']
 cur = None
 for name, fn in funcs:

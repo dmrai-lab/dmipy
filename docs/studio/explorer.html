@@ -1,0 +1,100 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sequence explorer — dmipy</title>
+<style>
+ :root{--bg:#07090f;--panel:#0d1120;--surface:#111827;--ink:#e8edf5;--mut:#7a8499;--acc:#4af0c4;--acc2:#7b9cff;--warn:#f5a97f;--border:rgba(255,255,255,.08)}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:13px/1.45 "DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+ body{display:flex;min-height:100%}
+ #side{width:300px;flex:none;padding:14px 16px;background:var(--panel);border-right:1px solid var(--border);overflow:auto}
+ #main{flex:1;display:flex;flex-direction:column;padding:12px 16px;gap:8px;min-width:0}
+ h1{font:600 15px/1.2 "Fraunces",Georgia,serif;margin:0 0 4px} .sub{color:var(--mut);font-size:11px;margin:0 0 10px}
+ .fam{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:6px 0 12px}
+ .fam button{background:var(--surface);color:var(--mut);border:1px solid var(--border);border-radius:6px;padding:6px 4px;font:inherit;font-size:12px;cursor:pointer}
+ .fam button.on{background:var(--acc2);color:#07090f;border-color:var(--acc2);font-weight:600}
+ label{display:block;margin:9px 0 3px;color:#c7cdd8;font-size:12px} .val{float:right;color:var(--acc)}
+ select{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--border);border-radius:6px;padding:5px;font:inherit}
+ .grp{margin-top:12px;padding-top:10px;border-top:1px solid var(--border)} .grp h2{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 6px}
+ .rd{font-size:12px;line-height:1.7;color:#c7cdd8} .rd b{color:var(--acc);font-variant-numeric:tabular-nums}
+ .refused{margin-top:10px;padding:8px;border:1px solid var(--warn);border-radius:6px;color:var(--warn);font-size:11.5px;line-height:1.4}
+ .call{margin-top:10px;padding:8px;background:var(--surface);border-radius:6px;font-size:11px;color:#dfe6f2;white-space:pre-wrap;word-break:break-all}
+ canvas{width:100%;display:block;background:var(--bg);border:1px solid var(--border);border-radius:8px}
+ .ttl{font-size:11px;color:var(--mut);margin:2px 0 0 2px} .ttl b{color:var(--ink);font-weight:500}
+ footer{font-size:10.5px;color:var(--mut);margin-top:auto;padding-top:6px}
+ @media (max-width:760px){body{flex-direction:column} #side{width:auto;border-right:none;border-bottom:1px solid var(--border)}}
+</style></head><body>
+<div id="side">
+ <h1>Sequence explorer</h1>
+ <p class="sub">Every curve is a <code>ScannerSequence</code> built by dmipy-sim over a grid of knobs and stored. The page looks up and draws.</p>
+ <div class="fam" id="fam"></div>
+ <div id="knobs"></div>
+ <div class="grp"><h2>The object</h2><div class="rd" id="rd"></div><div id="msg"></div><div class="call" id="call"></div></div>
+</div>
+<div id="main">
+ <div class="ttl"><b>G(t)</b> — the physical gradient, per axis [mT/m]; the RF events in their windows; the readout</div>
+ <canvas id="cG" height="230"></canvas>
+ <div class="ttl"><b>G_eff(t)</b> — as the spins see it: G folded by the sign the pulses impose (derived)</div>
+ <canvas id="cE" height="150"></canvas>
+ <div class="ttl"><b>q(t)</b> = γ ∫ G_eff dt [rad/mm] (derived); q(readout) = 0 is the echo refocusing</div>
+ <canvas id="cQ" height="150"></canvas>
+ <footer id="foot"></footer>
+</div>
+<script>
+(async function(){
+ const $=s=>document.querySelector(s);
+ const idx=await (await fetch('explorer_data/index.json')).json();
+ const cache={}; let fam=null, data=null, sel={};
+ const AX=['#e8edf5','#7b9cff','#4af0c4'], AXN=['x','y','z'];
+ const tOf=s=>s.G_mT[0].map((_,k)=>k*(s.n_t-1)/(s.G_mT[0].length-1)*s.dt_us/1e3);
+ const famBox=$('#fam');
+ for(const [name,f] of Object.entries(idx.families)){const b=document.createElement('button');b.textContent=f.label.split(' — ')[0];b.title=f.label;b.dataset.f=name;b.onclick=()=>pick(name);famBox.appendChild(b)}
+ $('#foot').textContent=`built by tools/gen_explorer_data.py with dmipy-sim ${idx.dmipy_sim}; ${idx.n_draw} drawn samples per curve`;
+ async function pick(name){
+   fam=name; for(const b of famBox.children) b.classList.toggle('on',b.dataset.f===name);
+   data=cache[name] ??= await (await fetch(`explorer_data/${name}.json`)).json();
+   sel={}; for(const [k,vs] of Object.entries(data.knobs)) sel[k]=vs[Math.floor((vs.length-1)/2)];
+   knobs(); render();
+ }
+ function knobs(){
+   const box=$('#knobs'); box.innerHTML='';
+   for(const [k,vs] of Object.entries(data.knobs)){
+     const lab=document.createElement('label'); lab.innerHTML=`${k.replace('_ms',' [ms]').replace('_hz',' [Hz]').replace('b','b [s/m²]')} <span class="val"></span>`;
+     const s=document.createElement('select');
+     for(const v of vs){const o=document.createElement('option');o.value=JSON.stringify(v);o.textContent=(typeof v==='number'&&v>=1e6)?v.toExponential(1):String(v);if(v===sel[k])o.selected=true;s.appendChild(o)}
+     s.onchange=()=>{sel[k]=JSON.parse(s.value);render()}; box.appendChild(lab); box.appendChild(s);
+   }
+ }
+ function point(){return data.points.find(p=>Object.entries(sel).every(([k,v])=>p.knobs[k]===v))}
+ function render(){
+   const p=point(); $('#call').textContent=p.call;
+   const rd=$('#rd'), msg=$('#msg');
+   if(p.refused){ rd.innerHTML=''; msg.innerHTML=`<div class="refused"><b>refused</b> — ${p.refused}</div>`; clear('#cG');clear('#cE');clear('#cQ'); return }
+   msg.innerHTML=''; const s=p.seq;
+   rd.innerHTML=`b = <b>${s.b_smm2}</b> s/mm² &nbsp; b<sub>Δ</sub> = <b>${s.b_delta}</b><br>TE / duration = <b>${s.T_ms}</b> ms &nbsp; n_t = <b>${s.n_t}</b> (dt ${s.dt_us} µs)<br>max |G| = <b>${s.Gmax_mT}</b> mT/m<br>|q(readout)| / max|q| = <b>${s.residual}</b>${s.TM_ms!==null?`<br>T<sub>M</sub> = <b>${s.TM_ms}</b> ms (stored along z)`:''}${s.echoes>1?`<br>echoes read = <b>${s.echoes}</b>`:''}<br>RF: ${s.rf.map(e=>`<b>${e.flip}°</b> ${e.label} @ ${e.t_ms} ms`).join(' · ')}`;
+   plot('#cG', s, s.G_mT, 'mT/m', true); plot('#cE', s, s.G_mT.map(g=>g.map((v,j)=>v*s.sign[j])), 'mT/m', false); plot('#cQ', s, s.q, 'rad/mm', false);
+ }
+ function clear(id){const c=$(id);const ctx=c.getContext('2d');fit(c);ctx.clearRect(0,0,c.width,c.height)}
+ function fit(c){const r=c.getBoundingClientRect();const d=window.devicePixelRatio||1;c.width=Math.round(r.width*d);c.height=Math.round(parseFloat(c.getAttribute('height'))*d);c.style.height=c.getAttribute('height')+'px';return d}
+ function plot(id,s,series,unit,withRF){
+   const c=$(id), d=fit(c), ctx=c.getContext('2d'); const W=c.width,H=c.height; ctx.clearRect(0,0,W,H);
+   const L=54*d,R=10*d,T=10*d,B=22*d; const t=tOf(s); const tmax=Math.max(s.T_ms,t[t.length-1]);
+   let lo=0,hi=0; for(const g of series)for(const v of g){lo=Math.min(lo,v);hi=Math.max(hi,v)} if(hi-lo<1e-9){hi=1;lo=-1} const pad=(hi-lo)*0.08; lo-=pad;hi+=pad;
+   const X=v=>L+(v/tmax)*(W-L-R), Y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
+   ctx.font=`${10*d}px DM Mono, monospace`; ctx.textBaseline='middle';
+   // RF windows and readout
+   for(const e of s.rf){const x0=X(e.t_ms-e.dur_ms/2),x1=X(e.t_ms+e.dur_ms/2);ctx.fillStyle='rgba(123,156,255,.16)';ctx.fillRect(x0,T,Math.max(x1-x0,1.5*d),H-T-B);
+     if(withRF){ctx.fillStyle='#7b9cff';ctx.textAlign='center';ctx.fillText(`${e.flip}° ${e.label}`,(x0+x1)/2,T+9*d)}}
+   for(const r of s.readout_ms){ctx.strokeStyle='#4af0c4';ctx.setLineDash([4*d,3*d]);ctx.lineWidth=1*d;ctx.beginPath();ctx.moveTo(X(r),T);ctx.lineTo(X(r),H-B);ctx.stroke();ctx.setLineDash([])}
+   // axes
+   ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1*d;ctx.beginPath();ctx.moveTo(L,Y(0));ctx.lineTo(W-R,Y(0));ctx.stroke();
+   ctx.fillStyle='#7a8499';ctx.textAlign='right';ctx.fillText(hi.toFixed(hi>10?0:2),L-4*d,Y(hi));ctx.fillText(lo.toFixed(lo<-10?0:2),L-4*d,Y(lo));ctx.fillText('0',L-4*d,Y(0));
+   ctx.textAlign='center';for(let k=0;k<=4;k++){const v=tmax*k/4;ctx.fillText(v.toFixed(0)+(k===4?' ms':''),X(v),H-B/2)}
+   ctx.save();ctx.translate(12*d,(T+H-B)/2);ctx.rotate(-Math.PI/2);ctx.fillText(unit,0,0);ctx.restore();
+   // curves
+   series.forEach((g,i)=>{ ctx.strokeStyle=AX[s.axes[i]];ctx.lineWidth=1.6*d;ctx.beginPath();g.forEach((v,j)=>{const x=X(t[j]),y=Y(v);j?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+     ctx.fillStyle=AX[s.axes[i]];ctx.textAlign='left';ctx.fillText(AXN[s.axes[i]],W-R-30*d+i*10*d,T+9*d)});
+ }
+ window.addEventListener('resize',()=>data&&render());
+ pick('pgse');
+})();
+</script>
+</body></html>

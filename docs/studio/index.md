@@ -1,5 +1,12 @@
 # Bloch studio — real pulses on a brain slice
 
+!!! warning "Preview"
+    This page is a hand-built preview from before the acquisition object and the replay phantom
+    were unified. Its pulses are not guaranteed to match the engine; it will be regenerated from
+    a replay phantom (`.rph`) after the phantom code is refactored
+    ([dmipy#8](https://github.com/dmrai-lab/dmipy/issues/8)). The
+    [spin studio](spins.md) and the [sequence explorer](explorer.md) are the maintained ones.
+
 An in-browser demonstration that runs the real dmipy-sim physics **client-side** — no install, no server, nothing to download. Pick a sequence (**PGSE · PGSTE · OGSE · GRE**) built from real finite-duration RF pulses, then sweep the B0 orientation, susceptibility, off-resonance and B1⁺ inhomogeneity and watch the signal form across the slice.
 
 ## What you're looking at — the slice is *replayed*, not an image

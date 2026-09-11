@@ -1,95 +1,48 @@
 # Coherence gating
 
-Every other page in this section describes *one* loss mechanism. Coherence gating is different in
-kind: it is a **meta-effect**. It adds no new term — it sets **when** each of the others acts,
-according to where the magnetization points.
+Every other page here describes one loss mechanism. Coherence gating adds no term; it sets
+**when** each of the others acts, by where the magnetization points. The transverse fraction
+accrues the transverse channels (T2, surface relaxivity, susceptibility, the transverse face of
+MT); the fraction stored along z accrues only the longitudinal ones (T1 and their siblings).
+Diffusion and exchange depend on motion, not on coherence, and act in both states.
 
-The rule is a property of the coherence state itself: whichever fraction of the magnetization lies
-**transverse** accrues the transverse channels ($T_2$, surface relaxivity, susceptibility, the
-transverse face of MT); whichever fraction is **stored longitudinally** accrues only the
-longitudinal channels ($T_1$, and their longitudinal siblings). It makes no difference how the
-magnetization came to be along $z$ — a deliberate storage pulse or the residue of an imperfect flip.
-A **stimulated echo (PGSTE)** is simply the sequence that exploits this on purpose, parking the
-magnetization along $z$ for a mixing time $T_m$ so the transverse channels pause while exchange keeps
-running — the lever dmipy uses to **separate** effects a spin echo only sees combined.
+In dmipy the gate is not a flag. It is `chi_perp`, derived from the acquisition's RF schedule
+([Acquisition](../acquisition.md)): a spin echo is transverse throughout; a stimulated echo
+(`pgste`) is transverse only over its two encoding lobes and stored across the mixing time.
+
+```python
+import numpy as np, dmipy_sim as ds
+
+se  = ds.pgse([[1, 0, 0]], 0.006, 0.046, bvalues=[1e9])
+ste = ds.pgste([[1, 0, 0]], 0.006, 0.040, bvalues=[1e9])
+se.chi_perp is None, np.asarray(ste.chi_perp).mean(), ste.TM      # transverse throughout; ≈0.2 transverse; 40 ms stored
+```
 
 ## Two apparent rates, one gate
 
-Write $\chi_\perp(t)\in[0,1]$ for the transverse fraction at time $t$ (the rest, $1-\chi_\perp$, is
-stored). In the released idealized-pulse limit (instantaneous, perfect $90^\circ/180^\circ$ pulses)
-it is a binary mask: a [PGSE](../sequences.md) spin echo is transverse throughout
-($\chi_\perp\equiv1$); a [PGSTE](../sequences.md) sets $\chi_\perp=0$ across $T_m$ and is transverse
-only over its two encoding lobes.
+While transverse the magnetization decays at
 
-Every wall and field mechanism collapses into **two apparent rates** — one per coherence state.
-While transverse, the magnetization decays at the apparent **transverse** rate
+$$\frac{1}{T_2^{\mathrm{app}}} = \frac{1}{T_2} + \rho_2\,\frac{S}{V} + R_2' + k_f ,$$
 
-$$
-\frac{1}{T_2^{\mathrm{app}}}
-   = \underbrace{\frac{1}{T_2}}_{\text{bulk}}
-   + \underbrace{\rho_2\,\frac{S}{V}}_{\text{surface relaxivity}}
-   + \underbrace{R_2'}_{\text{susceptibility}}
-   + \underbrace{k_f}_{\text{MT, transverse}} ,
-$$
+while stored only
 
-while stored, only the apparent **longitudinal** rate acts:
+$$\frac{1}{T_1^{\mathrm{app}}} = \frac{1}{T_1} + \rho_1\,\frac{S}{V} + k_{\mathrm{MT}}^{\parallel}$$
 
-$$
-\frac{1}{T_1^{\mathrm{app}}}
-   = \underbrace{\frac{1}{T_1}}_{\text{bulk}}
-   + \underbrace{\rho_1\,\frac{S}{V}}_{\text{longitudinal surface}}
-   + \underbrace{k_{\mathrm{MT}}^{\parallel}}_{\text{MT, saturation transfer}\;🔬} .
-$$
+acts, and the weight a walker carries is
 
-The gate is $\chi_\perp$ selecting between them. As the per-compartment log-weight a walk
-accumulates,
+$$\log w = -\int_0^{T_E}\Big[\chi_\perp(t)\,\frac{1}{T_2^{\mathrm{app}}} + \big(1-\chi_\perp(t)\big)\,\frac{1}{T_1^{\mathrm{app}}}\Big]\,dt .$$
 
-$$
-\log w \;=\; -\!\int_0^{T_E}\!\Big[\;\chi_\perp(t)\,\frac{1}{T_2^{\mathrm{app}}}
-             \;+\;\big(1-\chi_\perp(t)\big)\,\frac{1}{T_1^{\mathrm{app}}}\;\Big]\,dt .
-$$
-
-The two rates are **exact siblings** — transverse and longitudinal faces of the same walls — each a
-bulk term plus one $S/V$-weighted (or field) term per mechanism. (🔬 marks the one term not yet in
-the released public scope — MT's longitudinal saturation transfer $k_{\mathrm{MT}}^{\parallel}$; the
-engines carry $T_2$, $\rho_2$, $T_1$, $\rho_1$, susceptibility's $R_2'$ and MT's transverse $k_f$
-— see [susceptibility](susceptibility.md) and [magnetization transfer](magnetization_transfer.md).)
-
-**Diffusion and [permeability/exchange](permeability.md) are outside the gate.** They depend on
-molecular motion, not on where the magnetization points, so they act in **both** states: the
-diffusion grating keeps decaying by displacement through $T_m$, and walkers keep crossing membranes
-while stored. That is exactly why storage separates them from the transverse wall sinks.
-
-!!! warning "Magnetization transfer sits on both sides"
-    MT (exchange with a short-$T_2$ bound pool) has **two** pathways, and the gate splits them. Its
-    **transverse** pathway ($k_f$) drains the free pool during encoding — the same $S/V$-differential
-    $T_2$ form as surface relaxivity — and **is** paused by storage. Its **longitudinal**
-    saturation-transfer pathway ($k_{\mathrm{MT}}^{\parallel}$) exchanges $M_z$ in *both* states and
-    is **not** paused. So a stimulated echo removes every *transverse* wall sink (surface relaxivity
-    and the transverse face of MT) but still pays the longitudinal terms during $T_m$ — the residual,
-    non-gated confound. The advantage holds to the extent the dominant mechanism is
-    transverse-dephasing rather than a longitudinal population sink.
+The two rates are siblings: a bulk term plus one S/V-weighted (or field) term per mechanism. MT
+sits on both sides — its transverse pathway k_f is paused by storage, its longitudinal saturation
+transfer is not — so a stimulated echo removes every transverse wall sink but still pays the
+longitudinal terms during the mixing time.
 
 ## Why it matters
 
-The headline is separating **surface relaxivity from permeability** — two rates of the same wall. In
-a spin echo, surface relaxivity ($\rho_2\,S/V$ in $T_2^{\mathrm{app}}$) erases the wall-adjacent
-spins that carry the exchange signal, so the two entangle. A stimulated echo pauses the whole
-$T_2^{\mathrm{app}}$ bundle over $T_m$ while exchange accrues, so the exchange time is read far more
-robustly — the PGSE bias is several times the PGSTE bias at the same relaxivity (worked through in
-the [surface-relaxivity study](../surface_relaxivity_bias.md)).
-
-Both sides matter. The **transverse** rate is what biases $T_2$/relaxometry and signal-fraction
-estimates when ignored — intra- and extra-cellular water carry different $S/V$, hence different
-$T_2^{\mathrm{app}}$, so a $b{=}0$-normalized fraction turns TE-dependent. The **longitudinal** rate
-opens the $T_1$/exchange window. Modeling both compartment-wise keeps recovered microstructure
-consistent across PGSE, PGSTE and mixed protocols (the [inverse side](../fit.md) adds the
-longitudinal interval as the exact sibling of the transverse factor).
-
-!!! note "Released vs planned"
-    Gating of the released transverse terms ($T_2$, surface relaxivity, MT's transverse $k_f$) with
-    $T_1$ storage is the newest public capability (idealized-pulse PGSTE), previewed here on the
-    development site. Susceptibility ($R_2'$) is now released in dmipy-sim (see its
-    [effect page](susceptibility.md)); MT's longitudinal saturation transfer
-    ($k_{\mathrm{MT}}^{\parallel}$) is the remaining planned term. The equations above already fix
-    how the gate treats each.
+Surface relaxivity and permeability are two rates of the same wall. In a spin echo the surface
+term erases the wall-adjacent spins that carry the exchange signal, so the two entangle; a
+stimulated echo pauses the whole T2 bundle over the mixing time while exchange keeps running, and
+the exchange time is read far more robustly. The
+[surface-relaxivity study](../surface_relaxivity_bias.md) works the bias through for both
+sequences, and dmipy-fit's `LongitudinalRelaxation` factor is the exact sibling of its
+`TransverseRelaxation` on the same `chi_perp`.
