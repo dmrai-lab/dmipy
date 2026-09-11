@@ -138,6 +138,6 @@ for name, fn in funcs:
     out += [f'#### `{name}()` <small>{code}</small>', '',
             f'{desc(fn)}', '',
             f'*{cite_link(fn, cite)}*', '',
-            '```python', body(fn), '```', '']
+            '```python', '# docs: skip  (the factory body, for reference)', body(fn), '```', '']
 open('docs/catalog.md', 'w').write('\n'.join(out) + '\n')
 print(f'wrote docs/catalog.md — {len(funcs)} models')

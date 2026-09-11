@@ -29,6 +29,8 @@ jobs:
         run: python tools/run_snippets.py
       - name: The sequence explorer's page script runs over its whole grid
         run: node tools/check_explorer.js
+      - name: The spin studio's in-browser Bloch integration agrees with dmipy-sim's replay
+        run: python tools/check_spin_studio.py
       - name: The explorer data is what the installed dmipy-sim builds
         run: |
           python tools/gen_explorer_data.py

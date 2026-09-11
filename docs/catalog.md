@@ -66,6 +66,7 @@ Isotropic Gaussian (single ADC).
 *[Stejskal & Tanner 1965, JCP 42](https://doi.org/10.1063/1.1695690)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 return MultiCompartmentModel([G1Ball()])
 ```
 
@@ -76,6 +77,7 @@ Axially symmetric Gaussian (DTI-like, single fascicle).
 *[Basser et al. 1994, Biophys J 66](https://doi.org/10.1016/S0006-3495%2894%2980775-1)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 return MultiCompartmentModel([G2Zeppelin()])
 ```
 
@@ -86,6 +88,7 @@ Anisotropic compartment with structural-disorder time dependence.
 *[Novikov et al. 2019, NMR Biomed 32](https://doi.org/10.1002/nbm.3998)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 return MultiCompartmentModel([G3TemporalZeppelin()])
 ```
 
@@ -99,6 +102,7 @@ Isotropic Ball + zero-radius Stick (intra-axonal).
 *[Behrens et al. 2003, MRM 50](https://doi.org/10.1002/mrm.10609)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 return MultiCompartmentModel([C1Stick(), G1Ball()])
 ```
 
@@ -109,6 +113,7 @@ Isotropic Ball + anisotropic Zeppelin (tissue DTI tensor).
 *[Panagiotaki et al. 2012, NeuroImage 59](https://doi.org/10.1016/j.neuroimage.2011.09.081)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 return MultiCompartmentModel([G2Zeppelin(), G1Ball()])
 ```
 
@@ -119,6 +124,7 @@ Intra-axonal Stick + tortuous extra-axonal Zeppelin.
 *[Novikov et al. 2019, NMR Biomed 32](https://doi.org/10.1002/nbm.3998)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 mcm = MultiCompartmentModel([C1Stick(), G2Zeppelin()])
 mcm.set_tortuous_parameter(          # must come before set_equal_parameter
     'G2Zeppelin_1_lambda_perp',
@@ -138,6 +144,7 @@ Tissue Zeppelin + fixed free-water Ball (D_iso = 3.0e-9 m²/s).
 *[Pasternak et al. 2009, MRM 62](https://doi.org/10.1002/mrm.22055)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 mcm = MultiCompartmentModel([G2Zeppelin(), G1Ball()])
 mcm.set_fixed_parameter('G1Ball_1_lambda_iso', _Dcsf)
 return mcm
@@ -150,6 +157,7 @@ IVIM: tissue diffusion + vascular pseudo-diffusion.
 *[Le Bihan et al. 1988, Radiology 161](https://doi.org/10.1148/radiology.168.2.3393671)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 mcm = MultiCompartmentModel([G1Ball(), G1Ball()])
 mcm.set_fixed_parameter('G1Ball_2_lambda_iso', 7e-9)
 mcm.set_parameter_optimization_bounds('G1Ball_1_lambda_iso', [0.5e-9, 6e-9])
@@ -166,6 +174,7 @@ NODDI: Watson-dispersed Stick + tortuous Zeppelin + CSF Ball.
 *[Zhang et al. 2012, NeuroImage 61](https://doi.org/10.1016/j.neuroimage.2012.03.072)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 bundle = SD1WatsonDistributed(models=[C1Stick(), G2Zeppelin()])
 bundle.set_tortuous_parameter(       # tortuosity before set_equal
     'G2Zeppelin_1_lambda_perp',
@@ -186,6 +195,7 @@ Bingham-NODDI: Bingham-dispersed Stick + tortuous Zeppelin + CSF Ball.
 *[Tariq et al. 2016, NeuroImage 133](https://doi.org/10.1016/j.neuroimage.2016.01.046)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 bundle = SD2BinghamDistributed(models=[C1Stick(), G2Zeppelin()])
 bundle.set_tortuous_parameter(
     'G2Zeppelin_1_lambda_perp',
@@ -206,6 +216,7 @@ NODDIDA: Stick + tortuous Zeppelin + free Ball — all diffusivities free.
 *[Jelescu et al. 2015, NMR Biomed 28](https://doi.org/10.1002/nbm.3450)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 mcm = MultiCompartmentModel([C1Stick(), G2Zeppelin(), G1Ball()])
 mcm.set_tortuous_parameter(          # tortuosity before set_equal
     'G2Zeppelin_1_lambda_perp',
@@ -225,6 +236,7 @@ MC-SMT: Multi-Compartment Spherical Mean Technique.
 *[Kaden et al. 2016, NeuroImage 139](https://doi.org/10.1016/j.neuroimage.2016.06.002)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 mcm = MultiCompartmentSphericalMeanModel([C1Stick(), G2Zeppelin()])
 mcm.set_tortuous_parameter(
     'G2Zeppelin_1_lambda_perp',
@@ -246,6 +258,7 @@ Two independently oriented Watson-NODDI bundles + shared CSF Ball.
 *[Behrens et al. 2007, NeuroImage 34](https://doi.org/10.1016/j.neuroimage.2006.09.018)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 bundle1 = SD1WatsonDistributed(models=[C1Stick(), G2Zeppelin()])
 bundle1.set_tortuous_parameter(
     'G2Zeppelin_1_lambda_perp', 'G2Zeppelin_1_lambda_par', 'partial_volume_0')
@@ -273,6 +286,7 @@ CHARMED: Callaghan cylinder (restricted) + tortuous Zeppelin (hindered).
 *[Assaf & Basser 2005, NeuroImage 27](https://doi.org/10.1016/j.neuroimage.2005.03.042)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 cyl  = C3CylinderCallaghanApproximation()
 zepp = G2Zeppelin()
 mcm  = MultiCompartmentModel([cyl, zepp])
@@ -296,6 +310,7 @@ AxCaliber: Gamma-distributed Callaghan cylinders + Zeppelin.
 *[Assaf et al. 2008, MRM 59](https://doi.org/10.1002/mrm.21577)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 gamma_cyl = DD1GammaDistributed([C3CylinderCallaghanApproximation()])
 mcm = MultiCompartmentModel([gamma_cyl, G2Zeppelin()])
 mcm.set_equal_parameter(
@@ -312,6 +327,7 @@ ActiveAx: single-diameter Callaghan cylinder + Zeppelin + free Ball.
 *[Alexander et al. 2010, NeuroImage 52](https://doi.org/10.1016/j.neuroimage.2010.05.043)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 mcm = MultiCompartmentModel([
     C3CylinderCallaghanApproximation(), G2Zeppelin(), G1Ball()])
 mcm.set_fixed_parameter('G1Ball_1_lambda_iso', _Dcsf)
@@ -328,6 +344,7 @@ VERDICT: Sphere (cell body) + Stick (membrane/vascular) + Ball (EES).
 *[Panagiotaki et al. 2014, Cancer Res 74](https://doi.org/10.1158/0008-5472.can-13-2511)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 return MultiCompartmentModel([
     S4SphereGaussianPhaseApproximation(), C1Stick(), G1Ball()])
 ```
@@ -339,6 +356,7 @@ SANDI: Sphere (soma) + Stick (neurite) + Ball (extra-cellular).
 *[Palombo et al. 2020, NeuroImage 215](https://doi.org/10.1016/j.neuroimage.2020.116835)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 soma = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
 mcm  = MultiCompartmentModel([soma, C1Stick(), G1Ball()])
 mcm.set_fixed_parameter('C1Stick_1_lambda_par', _Da)
@@ -352,6 +370,7 @@ IMPULSED: Sphere + isotropic Ball (two-compartment, fixed D_in).
 *[Xu et al. 2019, Magn Reson Med](https://doi.org/10.1002/mrm.28056)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 soma = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
 return MultiCompartmentModel([soma, G1Ball()])
 ```
@@ -366,6 +385,7 @@ NEXI: Neurite Exchange Imaging — Stick + Zeppelin with Kärger exchange.
 *[Jelescu et al. 2022, NeuroImage 256](https://doi.org/10.1016/j.neuroimage.2022.119277)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 stick, zeppelin = C1Stick(), G2Zeppelin()
 karger = X0GeneralizedKarger(
     stick, zeppelin,
@@ -381,6 +401,7 @@ Generic Kärger two-compartment model: Ball + Ball with exchange.
 *[Kärger 1985, Adv Colloid Interface Sci 23](https://doi.org/10.1016/0001-8686%2885%2980018-X)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 return MultiCompartmentModel([X0GeneralizedKarger(G1Ball(), G1Ball())])
 ```
 
@@ -391,6 +412,7 @@ FEXI: Filter EXchange Imaging — two isotropic pools with exchange.
 *[Lasič et al. 2011, MRM 66](https://doi.org/10.1002/mrm.22782)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 slow = G1Ball()
 fast = G1Ball()
 mcm  = MultiCompartmentModel([X0GeneralizedKarger(slow, fast)])
@@ -405,6 +427,7 @@ SANDIX: SANDI with exchange between soma (sphere) and extracellular (Ball).
 *[SANDI (Palombo 2020) + Kärger 1985](https://doi.org/10.1016/j.neuroimage.2020.116835)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 soma  = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
 extra = G1Ball()
 mcm   = MultiCompartmentModel([X0GeneralizedKarger(soma, extra), C1Stick()])
@@ -419,6 +442,7 @@ EXCHANGE: IMPULSED + transcytolemmal Kärger exchange (tumour).
 *[Shi et al. 2025, Magn Reson Imaging](https://doi.org/10.1016/j.mri.2025.110433)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 soma  = S4SphereGaussianPhaseApproximation(diffusion_constant=_Din)
 extra = G1Ball()
 return MultiCompartmentModel([X0GeneralizedKarger(soma, extra)])
@@ -434,6 +458,7 @@ Temporal Zeppelin + free Ball: Standard Model with structural disorder.
 *[Novikov et al. 2019, NMR Biomed 32](https://doi.org/10.1002/nbm.3998)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 mcm = MultiCompartmentModel([G3TemporalZeppelin(), G1Ball()])
 mcm.set_fixed_parameter('G1Ball_1_lambda_iso', _Dcsf)
 return mcm
@@ -449,6 +474,7 @@ Multi-TE Ball-and-Stick with per-compartment T2 relaxation.
 *[Gong et al. 2020, NeuroImage 217](https://doi.org/10.1016/j.neuroimage.2020.116906)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 intra = OccupancyGatedModel(C1Stick(), [TransverseRelaxation()])
 extra = OccupancyGatedModel(G1Ball(), [TransverseRelaxation()])
 return MultiCompartmentModel([intra, extra])
@@ -461,6 +487,7 @@ MTE-NODDI: NODDI extended with per-compartment T2 relaxation.
 *[Gong et al. 2020, NeuroImage 217](https://doi.org/10.1016/j.neuroimage.2020.116906)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 bundle = SD1WatsonDistributed(models=[
     OccupancyGatedModel(C1Stick(), [TransverseRelaxation()]),
     OccupancyGatedModel(G2Zeppelin(), [TransverseRelaxation()])])
@@ -482,6 +509,7 @@ MTE-SANDI: SANDI with per-compartment T2 relaxation.
 *ISMRM 2023 abstract #0766*
 
 ```python
+# docs: skip  (the factory body, for reference)
 soma    = OccupancyGatedModel(
     S4SphereGaussianPhaseApproximation(diffusion_constant=_Din), [TransverseRelaxation()])
 neurite = OccupancyGatedModel(C1Stick(), [TransverseRelaxation()])
@@ -498,6 +526,7 @@ WMTI: White Matter Tract Integrity — biophysical Standard Model structure.
 *[Fieremans et al. 2011, NeuroImage 58](https://doi.org/10.1016/j.neuroimage.2011.06.006)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 mcm = MultiCompartmentModel([C1Stick(), G2Zeppelin()])
 mcm.set_tortuous_parameter(
     'G2Zeppelin_1_lambda_perp',
@@ -517,6 +546,7 @@ NODDIDA-MTE: unconstrained NODDIDA with per-compartment T2.
 *[Jelescu 2015 + Gong 2020](https://doi.org/10.1002/nbm.3450)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 stick    = OccupancyGatedModel(C1Stick(), [TransverseRelaxation()])
 zeppelin = OccupancyGatedModel(G2Zeppelin(), [TransverseRelaxation()])
 extra    = OccupancyGatedModel(G1Ball(), [TransverseRelaxation()])
@@ -539,6 +569,7 @@ MTE-IMPULSED: IMPULSED with per-compartment T2 relaxation.
 *[Jiang et al. 2025, MRM](https://doi.org/10.1002/mrm.30254)*
 
 ```python
+# docs: skip  (the factory body, for reference)
 soma  = OccupancyGatedModel(S4SphereGaussianPhaseApproximation(), [TransverseRelaxation()])
 extra = OccupancyGatedModel(G1Ball(), [TransverseRelaxation()])
 return MultiCompartmentModel([soma, extra])   # per-compartment T2 via the T2 factors
