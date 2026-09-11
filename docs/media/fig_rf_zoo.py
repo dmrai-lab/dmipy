@@ -2,7 +2,7 @@
 """Regenerates ``rf_zoo.gif`` — watch the spins under a 90 vs a 180 hard pulse.
 
 The forward model has no idea a pulse is "excitation" or "refocusing" — hand
-``dmipy_sim.rf.bloch_simulate`` any B1(t) and it integrates the Bloch equation. Here two hard
+``dmipy_sim.acquisition.rf.bloch_simulate`` any B1(t) and it integrates the Bloch equation. Here two hard
 pulses of the same duration but different flip: a 90 tips the magnetisation from +z into the
 transverse plane; a 180 drives it through to −z (inversion). Same code path, different area.
 
@@ -20,7 +20,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, PillowWriter
 
-from dmipy_sim.rf import B1Pulse, bloch_simulate
+from dmipy_sim.acquisition.rf import B1Pulse, bloch_simulate
 
 DT, DUR = 2e-5, 2e-3
 p90 = B1Pulse.hard(90, DUR, DT)

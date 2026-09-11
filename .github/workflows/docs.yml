@@ -36,6 +36,8 @@ jobs:
         run: mkdocs build --strict --site-dir "$GITHUB_WORKSPACE/site"
 
       # --- Staging preview (staging) -> site/dev/ ---
+      # /dev/ documents the engines' git mains (the 3.0 line before it ships), so it builds in
+      # its own environment; the root keeps the released 2.x pins above.
       - name: Check out staging
         uses: actions/checkout@v4
         continue-on-error: true
@@ -47,7 +49,14 @@ jobs:
         run: |
           if [ -f _staging/mkdocs.yml ]; then
             echo "Building staging preview -> /dev/"
-            mkdocs build -f _staging/mkdocs.yml --site-dir "$GITHUB_WORKSPACE/site/dev"
+            python -m venv _venv_dev && . _venv_dev/bin/activate
+            pip install "./_staging[docs]" "jax[cpu]>=0.6.2" jaxopt matplotlib
+            # the git mains carry the same version numbers as the released wheels until 3.0, so pip must be told to replace them
+          pip install --force-reinstall --no-deps "dmipy-sim @ git+https://github.com/dmrai-lab/dmipy-sim@main" \
+                        "dmipy-design @ git+https://github.com/dmrai-lab/dmipy-design@main" \
+                        "dmipy-fit @ git+https://github.com/dmrai-lab/dmipy-fit@main"
+            (cd _staging && JAX_PLATFORMS=cpu MPLBACKEND=Agg python tools/run_snippets.py)
+            mkdocs build --strict -f _staging/mkdocs.yml --site-dir "$GITHUB_WORKSPACE/site/dev"
             # A CNAME only belongs at the site root; drop any copied into /dev/.
             rm -f "$GITHUB_WORKSPACE/site/dev/CNAME"
           else

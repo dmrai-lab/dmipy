@@ -19,6 +19,8 @@ Every value below links to its source paper.
 | `D_extra_axonal` | 1.2e-09 m^2/s | Extra-axonal hindered diffusivity (typical WM) | [Fieremans 2011](https://doi.org/10.1016/j.neuroimage.2011.06.006) |
 | `D_extra_axonal_intrinsic` | 1.7e-09 m^2/s | Intrinsic (pre-tortuosity) extra-axonal diffusivity used by the Monte Carlo substrate, where the apparent perpendicular reduction emerges from the explicit packed geometry. | [Beaulieu 2002](https://doi.org/10.1002/nbm.782) |
 | `D_intra_axonal` | 1.7e-09 m^2/s | In vivo intra-axonal parallel diffusivity | [Beaulieu 2002](https://doi.org/10.1002/nbm.782) |
+| `D_myelin_radial` | 2e-10 m^2/s | Radial (across-lamellae) diffusivity of myelin water in the sheath compartment of the canonical substrate. | [MacKay 1994](https://doi.org/10.1002/mrm.1910310614) |
+| `D_myelin_tangential` | 1e-09 m^2/s | Tangential (along-lamellae) diffusivity of myelin water in the sheath compartment of the canonical substrate. | [MacKay 1994](https://doi.org/10.1002/mrm.1910310614) |
 | `D_water_25C` | 2.299e-09 m^2/s | Free water self-diffusion coefficient at 25 deg C (lab temperature) | [Mills 1973](https://doi.org/10.1021/j100624a025) |
 | `D_water_37C` | 3.05e-09 m^2/s | Free water self-diffusion coefficient at 37 deg C (in vivo body temperature) | [Mills 1973](https://doi.org/10.1021/j100624a025) |
 
@@ -26,6 +28,11 @@ Every value below links to its source paper.
 
 | Constant | Default | Description | Reference |
 | --- | --- | --- | --- |
+| `T1_csf` | 4 s | T1 relaxation time of CSF | [Rooney 2007](https://doi.org/10.1002/mrm.21122) |
+| `T1_extra_axonal` | 1 s | T1 relaxation time of extra-axonal (hindered) water in WM at 3T. No direct compartment-specific measurement exists; value from mcDESPOT IE-compartment simulation ground truth (Deoni 2012). | [Deoni 2013](https://doi.org/10.1002/mrm.24429) |
+| `T1_intra_axonal` | 1.2 s | T1 relaxation time of white matter at 3T | [Wright 2008](https://doi.org/10.1007/s10334-008-0104-8) |
+| `T1_myelin` | 0.44 s | T1 relaxation time of myelin water at 3T, in vivo human WM | [Deoni 2015](https://doi.org/10.1002/mrm.25108) |
+| `T2_bound_pool` | 1e-05 s |  | [Stanisz 2005](https://doi.org/10.1002/mrm.20605) |
 | `T2_csf` | 2 s | T2 relaxation time of CSF | [Piechnik 2009](https://doi.org/10.1002/mrm.21897) |
 | `T2_extra_axonal` | 0.08 s | T2 relaxation time of extra-axonal water | [MacKay 1994](https://doi.org/10.1002/mrm.1910310614) |
 | `T2_intra_axonal` | 0.07 s | T2 relaxation time of intra-axonal water | [MacKay 1994](https://doi.org/10.1002/mrm.1910310614) |
@@ -39,8 +46,8 @@ Every value below links to its source paper.
 | `axon_radius_std` | 2.15e-07 m | Standard deviation of axon radius in corpus callosum | [Aboitiz 1992](https://doi.org/10.1016/0006-8993%2892%2990178-C) |
 | `g_ratio_corpus_callosum` | 0.7 dimensionless (inner/outer radius) | Mean g-ratio (inner axon radius / outer myelin radius) in human corpus callosum.  Relatively conserved across WM tracts in healthy adults (range ~0.65–0.75).  Used as canonical value in the hollow-cylinder susceptibility model: Δχ_a·(1−g²) determines the dipolar field amplitude. | [Stikov 2015](https://doi.org/10.1016/j.neuroimage.2015.05.023) |
 | `g_ratio_typical` | 0.7 | Typical g-ratio (inner/outer myelin radius) in WM | [Stikov 2015](https://doi.org/10.1016/j.neuroimage.2015.05.023) |
-| `gamma_scale_diameter` | 3.04e-07 m (Gamma scale over diameter) | Gamma scale parameter (diameter) of the canonical axon-diameter distribution. | [Aboitiz 1992](https://doi.org/10.1016/0006-8993%2892%2990178-C) |
-| `gamma_shape_diameter` | 2 dimensionless (Gamma shape α over diameter) | Gamma shape parameter of the axon-diameter distribution used in the canonical packed-cylinder white-matter substrate. | [Aboitiz 1992](https://doi.org/10.1016/0006-8993%2892%2990178-C) |
+| `gamma_scale_diameter` | 3.04e-07 m (Gamma scale over diameter) | Gamma scale parameter of the canonical fibre (OUTER) diameter distribution. | [Aboitiz 1992](https://doi.org/10.1016/0006-8993%2892%2990178-C) |
+| `gamma_shape_diameter` | 2 dimensionless (Gamma shape α over diameter) | Gamma shape parameter of the fibre (OUTER) diameter distribution used in the canonical packed-cylinder substrate. | [Aboitiz 1992](https://doi.org/10.1016/0006-8993%2892%2990178-C) |
 | `myelin_water_fraction` | 0.15 | Typical myelin water fraction in normal-appearing WM. CAUTION: values differ by method (~10% STAIR, ~10-15% MESE/GRASE at 3T) and by region (CST ~0.21 vs CC genu ~0.09-0.15). mcDESPOT yields ~2x higher values than MESE (known positive bias). | [MacKay 1994](https://doi.org/10.1002/mrm.1910310614) |
 
 ## Membrane & surface
@@ -48,10 +55,26 @@ Every value below links to its source paper.
 | Constant | Default | Description | Reference |
 | --- | --- | --- | --- |
 | `kappa_membrane` | 1e-05 m/s | Axonal membrane permeability | [Nilsson 2013](https://doi.org/10.1002/mrm.24395) |
+| `rho1_axon_membrane` | 8.7e-08 m/s | T1 surface relaxivity of the axon membrane (axolemma). Use paired with corrected T1_bulk_intra (~1.40 s), not T1_apparent. | [Barakovic 2023](https://doi.org/10.3389/fnins.2023.1209521) |
 | `rho2_axon_membrane` | 1.16e-06 m/s | T2 surface relaxivity of the axon membrane (axolemma). Use paired with corrected T2_bulk_intra, not T2_apparent. | [Barakovic 2023](https://doi.org/10.3389/fnins.2023.1209521) |
+
+## Susceptibility
+
+| Constant | Default | Description | Reference |
+| --- | --- | --- | --- |
+| `delta_chi_a_myelin` | -1e-07 SI (dimensionless) | Susceptibility anisotropy of myelinated white matter: difference between susceptibility parallel and perpendicular to the fibre axis, Δχ_a = χ_∥ − χ_⊥.  Negative because myelin is more diamagnetic along the axon than perpendicular to it (phospholipid bilayer geometry).  In SI units (dimensionless); 1 ppm = 1×10⁻⁶.  Enters the hollow-cylinder dipolar field as: ΔB_ea = (Δχ_a·B₀·sin²θ/2)·b²(1−g²)/r²·cos(2φ). | [Liu 2010](https://doi.org/10.1002/mrm.22391) |
 
 ## Physical constants
 
 | Constant | Default | Description | Reference |
 | --- | --- | --- | --- |
 | `gamma_proton` | 2.675e+08 rad/s/T | Proton gyromagnetic ratio | [CODATA 2021](https://doi.org/10.1103/RevModPhys.93.025010) |
+
+## Other
+
+| Constant | Default | Description | Reference |
+| --- | --- | --- | --- |
+| `chi_iso_myelin` | -1e-07 SI (dimensionless) | Isotropic (orientation-independent) volume susceptibility of myelin relative to water: the chi_iso replay knob of the field tier. The Winther meshes were built and published with chi_myelin - chi_water = +1.06e-6 (their own convention), which winther_spec keeps. | [Wharton 2012](https://doi.org/10.1073/pnas.1211075109) |
+| `mt_bound_pool_fraction` | 0.139 |  | [Stanisz 2005](https://doi.org/10.1002/mrm.20605) |
+| `mt_exchange_rate` | 23 1/s |  | [Stanisz 2005](https://doi.org/10.1002/mrm.20605) |
+| `myelin_water_proton_density` | 0.4 (fraction of myelin-sheath VOLUME that is water) | Myelin water content: the fraction of the myelin-sheath VOLUME that is water (~0.40 = 1 - lipid/protein fraction). This is an INTENSIVE, per-volume proton-density weight -- NOT a signal fraction. | [West 2018](https://doi.org/10.1016/j.neuroimage.2016.12.067) |

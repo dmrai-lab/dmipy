@@ -48,7 +48,7 @@ The forward substrate: closed pores, packed ensembles, and free diffusion the wa
 
 Unbounded free diffusion — walkers move without any reflection.
 
-```python
+```text
 FreeDiffusion(*args, **kwargs)
 ```
 
@@ -56,7 +56,7 @@ FreeDiffusion(*args, **kwargs)
 
 Reflecting sphere of given radius centred at the origin.
 
-```python
+```text
 Sphere(radius: float, surface_relaxivity_t2=None, permeability=None)
 ```
 
@@ -64,7 +64,7 @@ Sphere(radius: float, surface_relaxivity_t2=None, permeability=None)
 
 Reflecting infinite cylinder of given radius and orientation.
 
-```python
+```text
 Cylinder(radius: float, orientation, surface_relaxivity_t2=None, permeability=None)
 ```
 
@@ -72,15 +72,15 @@ Cylinder(radius: float, orientation, surface_relaxivity_t2=None, permeability=No
 
 Three-compartment myelinated cylinder: intra-axonal, myelin sheath, extra-axonal.
 
-```python
-MyelinatedCylinder(inner_radius, outer_radius, orientation, D_intra, D_extra, D_myelin=0.0, kappa_inner=None, kappa_outer=None, T2_intra=None, T2_myelin=None, T2_extra=None, water_fractions=(1.0, 0.15, 1.0))
+```text
+MyelinatedCylinder(inner_radius, outer_radius, orientation, D_intra, D_extra, D_myelin=0.0, kappa_inner=None, kappa_outer=None, T2_intra=None, T2_myelin=None, T2_extra=None, water_fractions=None, compartments=None)
 ```
 
 ### `Ellipsoid`
 
 Reflecting axis-aligned ellipsoid with semi-axes (a, b, c) along (x, y, z).
 
-```python
+```text
 Ellipsoid(semiaxes, surface_relaxivity_t2=None, permeability=None)
 ```
 
@@ -88,7 +88,7 @@ Ellipsoid(semiaxes, surface_relaxivity_t2=None, permeability=None)
 
 1D reflecting slab with walls at x=0 and x=length.
 
-```python
+```text
 Box1D(length: float, surface_relaxivity_t2=None)
 ```
 
@@ -96,7 +96,7 @@ Box1D(length: float, surface_relaxivity_t2=None)
 
 Closed 1-D two-compartment slab: a permeable membrane at x=L/2 with reflecting
 
-```python
+```text
 PermeableSlab1D(length, permeability, surface_relaxivity_t2=None)
 ```
 
@@ -104,7 +104,7 @@ PermeableSlab1D(length, permeability, surface_relaxivity_t2=None)
 
 Extra-axonal diffusion in a periodic cubic domain packed with spheres.
 
-```python
+```text
 PackedSpheres(radii, centers, L, surface_relaxivity_t2=None, permeability=None)
 ```
 
@@ -112,7 +112,7 @@ PackedSpheres(radii, centers, L, surface_relaxivity_t2=None, permeability=None)
 
 Extra-axonal diffusion in a periodic square domain packed with cylinders.
 
-```python
+```text
 PackedCylinders(radii, centers, L, orientation=(0.0, 0.0, 1.0), surface_relaxivity_t2=None, permeability=None)
 ```
 
@@ -120,8 +120,8 @@ PackedCylinders(radii, centers, L, orientation=(0.0, 0.0, 1.0), surface_relaxivi
 
 Periodic RVE with N_actual myelinated cylinders — three-compartment.
 
-```python
-PackedMyelinatedCylinders(inner_radii, g_ratios, centers, cell_size, N_max=128, orientation=(0.0, 0.0, 1.0), D_intra=2e-09, D_myelin=0.0, D_extra=2e-09, T2_intra=None, T2_myelin=None, T2_extra=None, kappa_inner=0.0, kappa_outer=0.0, rho_inner=0.0, rho_outer=0.0)
+```text
+PackedMyelinatedCylinders(inner_radii, g_ratios, centers, cell_size, N_max=128, orientation=(0.0, 0.0, 1.0), D_intra=2e-09, D_myelin=0.0, D_extra=2e-09, T2_intra=None, T2_myelin=None, T2_extra=None, kappa_inner=0.0, kappa_outer=0.0, rho_inner=0.0, rho_outer=0.0, compartments=None)
 ```
 
 ## Substrate parameters

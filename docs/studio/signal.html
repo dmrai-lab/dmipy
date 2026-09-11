@@ -1,0 +1,55 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live signal — dmipy</title>
+<style>
+ :root{--bg:#07090f;--panel:#0d1120;--surface:#111827;--ink:#e8edf5;--mut:#7a8499;--acc:#4af0c4;--acc2:#7b9cff;--border:rgba(255,255,255,.08)}
+ *{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--ink);font:12.5px/1.45 "DM Mono",ui-monospace,Menlo,monospace}
+ #wrap{display:flex;gap:12px;padding:10px;flex-wrap:wrap}
+ #ctl{flex:0 0 220px;display:flex;flex-direction:column;gap:8px}
+ #plot{flex:1 1 380px;min-width:0}
+ .seg{display:flex;gap:4px} .seg button{flex:1;background:var(--surface);color:var(--mut);border:1px solid var(--border);border-radius:6px;padding:5px 4px;font:inherit;cursor:pointer}
+ .seg button.on{background:var(--acc2);color:#07090f;border-color:var(--acc2);font-weight:600}
+ label{font-size:11px;color:var(--mut)} .val{color:var(--acc);float:right}
+ input[type=range]{width:100%}
+ canvas{width:100%;display:block;background:var(--bg);border:1px solid var(--border);border-radius:8px}
+ .rd{font-size:11px;color:#c7cdd8;line-height:1.6} .rd b{color:var(--acc)}
+ footer{font-size:10px;color:var(--mut);padding:0 10px 8px}
+</style></head><body>
+<div id="wrap">
+ <div id="ctl">
+  <div class="seg" id="seq"><button data-s="pgse" class="on">PGSE b-sweep</button><button data-s="ogse">OGSE f-sweep</button></div>
+  <label>axon radius <span class="val" id="rv"></span></label><input type="range" id="r" min="0" max="3" step="1" value="2">
+  <label class="chk"><input type="checkbox" id="free" checked> show free water</label>
+  <div class="rd" id="rd"></div>
+ </div>
+ <div id="plot"><canvas id="c" height="230"></canvas></div>
+</div>
+<footer id="foot"></footer>
+<script>
+(async function(){
+ const $=s=>document.querySelector(s); const D=await (await fetch('signal_data.json')).json();
+ const radii=Object.keys(D.substrates).filter(k=>k!=='free');
+ let seq='pgse';
+ for(const b of $('#seq').children) b.onclick=()=>{seq=b.dataset.s;for(const x of $('#seq').children)x.classList.toggle('on',x===b);draw()};
+ $('#r').max=radii.length-1; $('#r').oninput=draw; $('#free').onchange=draw;
+ $('#foot').textContent=`one dmipy-sim walk per substrate (${D.dmipy_sim}), replayed over the grid offline by tools/gen_signal_widget.py; the page only draws`;
+ function draw(){
+   const key=radii[+$('#r').value], sub=D.substrates[key]; $('#rv').textContent=sub.label.replace('axon, radius ','');
+   const x=seq==='pgse'?D.b_smm2:D.f_hz, y=sub[seq], yf=D.substrates.free[seq];
+   const c=$('#c'), d=window.devicePixelRatio||1, r=c.getBoundingClientRect(); c.width=r.width*d; c.height=230*d; c.style.height='230px';
+   const ctx=c.getContext('2d'), W=c.width,H=c.height,L=48*d,R=12*d,T=14*d,B=26*d;
+   ctx.clearRect(0,0,W,H); ctx.font=`${10*d}px DM Mono, monospace`; ctx.textBaseline='middle';
+   const xmax=x[x.length-1], X=v=>L+(v/xmax)*(W-L-R), Y=v=>T+(1-v)*(H-T-B);
+   ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=d; for(const v of [0,.5,1]){ctx.beginPath();ctx.moveTo(L,Y(v));ctx.lineTo(W-R,Y(v));ctx.stroke();ctx.fillStyle='#7a8499';ctx.textAlign='right';ctx.fillText(v.toFixed(1),L-4*d,Y(v))}
+   ctx.textAlign='center'; for(const v of x){ctx.fillText(String(v),X(v),H-B/2)} ctx.fillText(seq==='pgse'?'b [s/mm²]':'f [Hz]',(L+W-R)/2,H-4*d);
+   const line=(ys,col,dash)=>{ctx.strokeStyle=col;ctx.lineWidth=1.8*d;ctx.setLineDash(dash||[]);ctx.beginPath();ys.forEach((v,i)=>i?ctx.lineTo(X(x[i]),Y(v)):ctx.moveTo(X(x[i]),Y(v)));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ys.forEach((v,i)=>{ctx.beginPath();ctx.arc(X(x[i]),Y(v),2.4*d,0,7);ctx.fill()})};
+   if($('#free').checked) line(yf,'#7a8499',[4*d,3*d]);
+   line(y,'#4af0c4');
+   ctx.fillStyle='#4af0c4';ctx.textAlign='left';ctx.fillText(sub.label,L+6*d,T+8*d); if($('#free').checked){ctx.fillStyle='#7a8499';ctx.fillText('free water  exp(−bD)',L+6*d,T+20*d)}
+   $('#rd').innerHTML=seq==='pgse'?`PGSE δ = ${D.pgse.delta_ms} ms, Δ = ${D.pgse.Delta_ms} ms, gradient across the axon. Restriction keeps the signal above exp(−bD): at b = 3000, <b>${y[x.indexOf(3000)]}</b> vs <b>${yf[x.indexOf(3000)]}</b>.`
+                                  :`OGSE cosine, σ = ${D.ogse.sigma_ms} ms, b = ${D.ogse.b_smm2} s/mm². The apparent diffusivity rises with frequency — the size of the restriction is in the slope.`;
+ }
+ draw(); window.addEventListener('resize',draw);
+})();
+</script>
+</body></html>

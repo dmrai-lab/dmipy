@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from matplotlib.animation import FuncAnimation, PillowWriter
 
-from dmipy_sim.rf import B1Pulse, bloch_simulate
+from dmipy_sim.acquisition.rf import B1Pulse, bloch_simulate
 GAMMA = 2.675e8
 dt, T, A0 = 2e-5, 4e-3, 19e-6      # dt=20us keeps the GIF light
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regenerates ``rf_slice_spectral.png`` — slice selectivity and the frequency dual.
 
-Two panels, both straight from ``dmipy_sim.rf`` forwards:
+Two panels, both straight from ``dmipy_sim.acquisition.rf`` forwards:
   (left)  slice profile under a slice-select gradient — a windowed-sinc 90 excites a sharp
           slice (``slice_profile``); a hard 90 of the same duration has no spatial selectivity.
   (right) the small-tip (Pauly) frequency dual — |M_xy| vs off-resonance for low-flip pulses:
@@ -21,7 +21,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from dmipy_sim.rf import B1Pulse, bloch_simulate, slice_profile
+from dmipy_sim.acquisition.rf import B1Pulse, bloch_simulate, slice_profile
 
 SINC, HARDC = "#1b6ca8", "#c1440e"
 

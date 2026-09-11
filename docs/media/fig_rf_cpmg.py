@@ -25,7 +25,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from dmipy_sim.rf import B1Pulse, bloch_simulate
+from dmipy_sim.acquisition.rf import B1Pulse, bloch_simulate
 GAMMA = 2.675e8
 CP, MG = "#c1440e", "#1b6ca8"
 dt = 2e-5

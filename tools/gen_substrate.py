@@ -93,7 +93,7 @@ out = [
 for g in _GEOMS:
     cls = getattr(dmipy_sim, g)
     out += [f'### `{g}`', '', _first(cls), '',
-            '```python', _sig(cls), '```', '']
+            '```text', _sig(cls), '```', '']
 
 out += [
     '## Substrate parameters', '',
