@@ -43,11 +43,14 @@ _ns = {}
 exec(SUBSTRATE_SNIPPET, _ns)
 assert len(_ns['model'].models) == 3, 'substrate parity example changed'
 
-# --- the public geometry set (walkers diffuse in these) -----------------------------
-_GEOMS = ['FreeDiffusion', 'Sphere', 'Cylinder', 'MyelinatedCylinder', 'Ellipsoid',
-          'Box1D', 'PermeableSlab1D', 'PackedSpheres', 'PackedCylinders',
-          'PackedMyelinatedCylinders']
-_GEOMS = [g for g in _GEOMS if hasattr(dmipy_sim, g)]
+# --- the public geometry set: every Geometry subclass dmipy-sim exports, in the order of the tree -------------
+from dmipy_sim.geometry.base import Geometry as _Geometry
+_ORDER = ['FreeDiffusion', 'Box1D', 'PermeableSlab1D', 'Sphere', 'Cylinder', 'Ellipsoid', 'MyelinatedCylinder',
+          'CurvedCylinder', 'CurvedMyelinatedCylinder', 'PackedSpheres', 'PackedCylinders',
+          'PackedMyelinatedCylinders', 'PackedCurvedCylinders', 'SphereUnion', 'Mesh']
+_ALL = [n for n in dir(dmipy_sim) if inspect.isclass(getattr(dmipy_sim, n))
+        and issubclass(getattr(dmipy_sim, n), _Geometry) and getattr(dmipy_sim, n) is not _Geometry]
+_GEOMS = [n for n in _ORDER if n in _ALL] + sorted(n for n in _ALL if n not in _ORDER)   # nothing exported is left out
 
 
 def _sig(cls):

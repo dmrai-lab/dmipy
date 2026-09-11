@@ -52,6 +52,22 @@ Unbounded free diffusion — walkers move without any reflection.
 FreeDiffusion(*args, **kwargs)
 ```
 
+### `Box1D`
+
+1D reflecting slab with walls at x=0 and x=length.
+
+```text
+Box1D(length: float, surface_relaxivity_t2=None)
+```
+
+### `PermeableSlab1D`
+
+Closed 1-D two-compartment slab: a permeable membrane at x=L/2 with reflecting
+
+```text
+PermeableSlab1D(length, permeability, surface_relaxivity_t2=None)
+```
+
 ### `Sphere`
 
 Reflecting sphere of given radius centred at the origin.
@@ -68,14 +84,6 @@ Reflecting infinite cylinder of given radius and orientation.
 Cylinder(radius: float, orientation, surface_relaxivity_t2=None, permeability=None)
 ```
 
-### `MyelinatedCylinder`
-
-Three-compartment myelinated cylinder: intra-axonal, myelin sheath, extra-axonal.
-
-```text
-MyelinatedCylinder(inner_radius, outer_radius, orientation, D_intra, D_extra, D_myelin=0.0, kappa_inner=None, kappa_outer=None, T2_intra=None, T2_myelin=None, T2_extra=None, water_fractions=None, compartments=None)
-```
-
 ### `Ellipsoid`
 
 Reflecting axis-aligned ellipsoid with semi-axes (a, b, c) along (x, y, z).
@@ -84,20 +92,28 @@ Reflecting axis-aligned ellipsoid with semi-axes (a, b, c) along (x, y, z).
 Ellipsoid(semiaxes, surface_relaxivity_t2=None, permeability=None)
 ```
 
-### `Box1D`
+### `MyelinatedCylinder`
 
-1D reflecting slab with walls at x=0 and x=length.
+Three-compartment myelinated cylinder: intra-axonal, myelin sheath, extra-axonal.
 
 ```text
-Box1D(length: float, surface_relaxivity_t2=None)
+MyelinatedCylinder(inner_radius, outer_radius, orientation, D_intra, D_extra, D_myelin=0.0, kappa_inner=None, kappa_outer=None, T2_intra=None, T2_myelin=None, T2_extra=None, water_fractions=None, compartments=None)
 ```
 
-### `PermeableSlab1D`
+### `CurvedCylinder`
 
-Closed 1-D two-compartment slab: a permeable membrane at x=L/2 with reflecting
+A substrate the walk moves through: where a walker may be and what a wall does to it.
 
 ```text
-PermeableSlab1D(length, permeability, surface_relaxivity_t2=None)
+CurvedCylinder(centerline, radius: 'float')
+```
+
+### `CurvedMyelinatedCylinder`
+
+A myelinated curved axon: concentric intra / myelin / extra shells swept along a
+
+```text
+CurvedMyelinatedCylinder(centerline, r_in: 'float', r_out: 'float', pool='intra')
 ```
 
 ### `PackedSpheres`
@@ -122,6 +138,30 @@ Periodic RVE with N_actual myelinated cylinders — three-compartment.
 
 ```text
 PackedMyelinatedCylinders(inner_radii, g_ratios, centers, cell_size, N_max=128, orientation=(0.0, 0.0, 1.0), D_intra=2e-09, D_myelin=0.0, D_extra=2e-09, T2_intra=None, T2_myelin=None, T2_extra=None, kappa_inner=0.0, kappa_outer=0.0, rho_inner=0.0, rho_outer=0.0, compartments=None)
+```
+
+### `PackedCurvedCylinders`
+
+Extra-axonal diffusion around a pack of curved tubes, accelerated by a sparse grid
+
+```text
+PackedCurvedCylinders(centerlines, radii, cell_size=None, interior=False, box=None, box_reflect=True)
+```
+
+### `SphereUnion`
+
+Union-of-spheres geometry (metres): one pool, inside (``pool="intra"``) or outside (``pool="extra"``).
+
+```text
+SphereUnion(centers, radii, pool='intra', feature_radius=None, cell_size=None, octaves=(None, 4.0, 2.0), max_candidates=8192, max_bytes=2000000000.0, surface_relaxivity_t2=None, max_bounces=4, box=None, box_reflect=True)
+```
+
+### `Mesh`
+
+Reflecting/permeable triangular-mesh geometry (see module docstring).
+
+```text
+Mesh(vertices, faces, periodic=False, voxel_min=None, voxel_max=None, feature_radius=None, surface_relaxivity_t2=None, permeability=None, compartments=None, intra=None, extra=None, orientation=None, R=None, cell_size=None, cap=None, max_bounces=None, pool='intra', reject_escape=True, box_reflect=True, adaptive_nudge=False)
 ```
 
 ## Substrate parameters
