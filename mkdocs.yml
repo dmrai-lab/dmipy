@@ -65,6 +65,8 @@ nav:
       - Mesh substrates: mesh_substrates.md
       - Biophysical constants: constants.md
       - Spin studio: studio/spins.md
+      - Replay phantoms:
+          - The brain, replayed: phantoms/brain.md
   - Fit:
       - Overview: fit.md
       - Model catalog: catalog.md

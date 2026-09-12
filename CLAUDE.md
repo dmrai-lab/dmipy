@@ -29,8 +29,9 @@ engines are the sibling repos.
   against the engine in CI. Do not add physics in JavaScript without a parity check.
 - **One page, one question, one runnable example at the top.** Physics exposition goes under
   *Physics*; derivations stay reachable by link but out of the tabs. Do not restate docstrings.
-- The brain-slice Bloch studio (`studio/index.md`) is a pre-unification preview kept out of the
-  navigation; it is rebuilt from a replay phantom after the rph refactor (dmipy#8).
+- The brain demo (`phantoms/brain.md` + `studio/brain.html`, data in `studio/brain_data/` from
+  `tools/gen_brain_demo.py`, checked by `tools/check_brain.js`) supersedes the old brain-slice Bloch studio;
+  `studio/index.md` only says so.
 - Until the 3.0 wheels ship, `/dev/` is the 3.0 site and the root stays 2.x; `main` fast-forwards
   from `staging` on release day and the root pins move to `>=3,<4`.
 
