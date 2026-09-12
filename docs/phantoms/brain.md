@@ -58,20 +58,26 @@ c = so3.rotate_sh(fod.data.reshape(-1, 45), R.T)                # the FODs in th
 ## Step 3 — compose
 
 Three tissues, declared as objects: two packs and one closed form. The white matter is oriented by
-the FOD, the grey matter by an isotropic ODF (a cortex has no fibre axis), the CSF is `exp(-bD)`,
+the FOD, the grey matter by an isotropic ODF (a cortex has no fibre axis), the CSF is `exp(-bD)` with its T2,
 and what is not tissue is `Inert()`. The file that comes out (64 MB) is the arrangement — fractions
 and FODs per voxel — citing the packs by URI; the physics stays in the packs.
 
 ```python
 # docs: skip
 from dmipy_sim.phantom import Phantom, PackSubstrate, FreeWater, Inert, ODF
-wm = PackSubstrate(wm_pack, m0=0.70, T2_s=[0.055, 0.050, 0.010])    # CACTUS bundle: extra / intra / myelin pools
-gm = PackSubstrate(gm_pack, m0=0.85, T2_s=[0.085, 0.085])           # packed spheres 2-9 um
-csf = FreeWater(D_m2_s=3.0e-9, m0=1.0)
+from dmipy_sim.substrate.biophysical_constants import get_value as v      # every value by key, with its citation
+wm = PackSubstrate(wm_pack, m0=v("proton_density_white_matter"),          # CACTUS bundle: extra / intra / myelin pools
+                   T2_s=[v(k, 3.0) for k in ("T2_extra_axonal", "T2_intra_axonal", "T2_myelin")])
+gm = PackSubstrate(gm_pack, m0=v("proton_density_grey_matter"), T2_s=[v("T2_grey_matter", 3.0)] * 2)   # packed spheres
+csf = FreeWater(D_m2_s=v("D_csf"), m0=v("proton_density_csf"), T2_s=v("T2_csf", 3.0))
 ph = Phantom.compose(grid, fractions={wm: f_wm, gm: f_gm, csf: f_csf}, remainder=Inert(),
                      orientation={wm: ODF(c, basis="mrtrix3"), gm: ODF(iso, basis="mrtrix3")})
 ph.write("batman_brain.rph", id="phantoms/batman-brain", license="CC-BY-4.0", citation="Tahedl 2018 ...")
 ```
+
+No number in this phantom is typed by hand: every T2, proton density, diffusivity and susceptibility is
+read from dmipy-sim's biophysical constants table by key, and the page lists each with its source, its
+location in the paper and its DOI.
 
 ## Step 4 — prescribe the acquisition
 
@@ -124,11 +130,11 @@ fod_fit = MultiCompartmentSphericalHarmonicsModel(models=[tr2]).fit(scheme, S, s
   and the closed-form pose expansion): stored per head tilt (sagittal and coronal, 10–15° steps), B0
   at 1.5 and 3 T, spin echo, three shells and 40 directions — exact where stored, nearest neighbour
   between. The grey-matter substrate declares no susceptibility source, so its field is zero and its
-  response at any B0 is its gradient-only one; free water is a closed form and contributes at it, as
-  the page says. A gradient echo keeps the static
+  response at any B0 is its gradient-only one; free water is a closed form, full-tier with zeros —
+  `exp(-bD) exp(-TE/T2)` at any field. A gradient echo keeps the static
   dephasing a spin echo refocuses, and 7 T multiplies it; either pushes the closed form's band, and
   the table's memory, past what a demo should carry, so neither is offered here.
-- **Not here:** transmit and bias fields (the Bloch route), T2 beyond the fixed per-pool values,
+- **Not here:** transmit and bias fields (the Bloch route), T2 beyond the catalogued per-tissue values at 3 T,
   exchange, and other sequence families. The old brain-slice Bloch studio, which this page
   supersedes, hand-coded its susceptibility as an off-resonance formula; nothing here is hand-coded.
 

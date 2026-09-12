@@ -9,7 +9,11 @@ stored per (head tilt, B0, spin/gradient echo, shell, direction). Everything her
 tools/check_brain.js runs the page against the stored checks.
 
 Run:  python tools/gen_brain_demo.py --stage voxels   (seconds)
-      python tools/gen_brain_demo.py --stage field    (about an hour: the field route costs ~50 s per call)
+      python tools/gen_brain_demo.py --stage field    (half an hour: the field route costs ~60 s per call)
+      python tools/gen_brain_demo.py --stage checks   (minutes: the field-mode checks alone, after a tissue value changes)
+
+No physical value is written here: every T2, proton density, diffusivity and susceptibility comes from
+``dmipy_sim.substrate.biophysical_constants`` by key, and the page lists each with its citation.
 """
 from __future__ import annotations
 import argparse
@@ -53,17 +57,45 @@ def _image_rotation():
     return np.asarray(R, float), m
 
 
+CONSTANTS = dict(                                              # every physical value on the page, by its table key
+    T2_wm=["T2_extra_axonal", "T2_intra_axonal", "T2_myelin"],    # the CACTUS pools, in id order (0 extra, 1 intra, 2 myelin)
+    T2_gm="T2_grey_matter", T2_csf="T2_csf", D_csf="D_csf",
+    chi_iso="chi_iso_myelin", chi_aniso="delta_chi_a_myelin",
+    m0_wm="proton_density_white_matter", m0_gm="proton_density_grey_matter", m0_csf="proton_density_csf",
+)
+FIELD_T_OF_VALUES = 3.0                                        # the relaxation and susceptibility values' field
+
+
 def _tissue(packs):
-    """Per-pool T2 (s) the demo replays at: the catalogued white matter at 3 T for the CACTUS pools (extra, intra,
-    myelin), the grey-matter pack's own spec, none for the free-water closed form (it has no T2, RPH.md 3.1)."""
-    from dmipy_sim.substrate.biophysical_constants import canonical_white_matter
-    from dmipy_sim.spec.tissue import Tissue
-    w = canonical_white_matter(field_T=3.0)
-    T2_wm = [w["T2_extra"], w["T2_intra"], w["T2_myelin"]]
-    T2_gm = Tissue.from_spec(packs["gm"].substrate).knobs().get("T2")
-    if T2_gm is None:                                              # the sphere pack's spec declares no T2: the demo states one
-        T2_gm = [0.085, 0.085]                                     # grey matter at 3 T, both pools
-    return dict(T2_wm=T2_wm, T2_gm=[float(v) for v in T2_gm], chi_iso=w["chi_iso_myelin"], chi_aniso=w["delta_chi_a"])
+    """Every physical value the demo replays at, from dmipy-sim's biophysical constants table by key, with the
+    table entry (value, unit, field, source, location, citation) kept for the page. Free water has no T2 of the
+    pack's kind: it takes the catalogued CSF T2 as its own."""
+    from dmipy_sim.substrate import biophysical_constants as bc
+    from dmipy_sim.substrate.biophysical_constants import get_constant, get_value
+    citations = {c["key"]: c for n in dir(bc) if n.startswith("_CITATION_") for c in [getattr(bc, n)] if isinstance(c, dict)}
+    for e in bc.BIOPHYSICAL_CONSTANTS.values():
+        c = e.get("citation")
+        if isinstance(c, dict) and c.get("key"):
+            citations.setdefault(c["key"], c)
+    def rec(name, field_T=None):
+        """The table entry the value came from: the candidate matched to the field (the default, or the alternative
+        at that field), with ITS source and location, and the citation of that source."""
+        e = get_constant(name); v = get_value(name, field_T, allow_nearest=True) if field_T is not None else get_value(name)
+        cands = [e["default"]] + list(e.get("alternatives", []))
+        d = next((c for c in cands if c["value"] == v and (field_T is None or c.get("field_T") in (field_T, None))), e["default"])
+        return dict(value=float(v), unit=d.get("unit"), field_T=d.get("field_T"), source_key=d.get("source_key"),
+                    location=d.get("location"), citation=citations.get(d.get("source_key"), e.get("citation")),
+                    description=e.get("description"))
+    table = {}
+    def val(name, field_T=None):
+        table[name] = rec(name, field_T); return table[name]["value"]
+    out = dict(T2_wm=[val(k, FIELD_T_OF_VALUES) for k in CONSTANTS["T2_wm"]],
+               T2_gm=[val(CONSTANTS["T2_gm"], FIELD_T_OF_VALUES)] * 2,           # both pools of the sphere packing
+               T2_csf=val(CONSTANTS["T2_csf"], FIELD_T_OF_VALUES), D_csf=val(CONSTANTS["D_csf"]),
+               chi_iso=val(CONSTANTS["chi_iso"]), chi_aniso=val(CONSTANTS["chi_aniso"]),
+               m0=dict(wm=val(CONSTANTS["m0_wm"]), gm=val(CONSTANTS["m0_gm"]), csf=val(CONSTANTS["m0_csf"])))
+    out["table"] = table
+    return out
 
 
 def _even_sh_map():
@@ -118,9 +150,9 @@ def _check_phantom(ph, packs, voxels, tissue, wm_only=False):
                 out_f[v] = fr[v, k[0]]; out_sh[v] = sh[v, k[0]]
         return out_f, out_sh
     f_wm, sh_wm = slot(0); f_gm, sh_gm = slot(1); f_csf, _ = slot(2)
-    wm = PackSubstrate(packs["wm"], m0=0.70, name="wm", T2_s=tissue["T2_wm"])
-    gm = PackSubstrate(packs["gm"], m0=0.85, name="gm", T2_s=tissue["T2_gm"])
-    csf = FreeWater(D_m2_s=3.0e-9, m0=1.0)
+    wm = PackSubstrate(packs["wm"], m0=tissue["m0"]["wm"], name="wm", T2_s=tissue["T2_wm"])
+    gm = PackSubstrate(packs["gm"], m0=tissue["m0"]["gm"], name="gm", T2_s=tissue["T2_gm"])
+    csf = FreeWater(D_m2_s=tissue["D_csf"], m0=tissue["m0"]["csf"], T2_s=tissue["T2_csf"])
     grid = Grid(shape=(n, 1, 1), voxel_size_m=(2.5e-3,) * 3)
     iso = np.zeros_like(sh_gm); iso[:, 0] = 1.0 / np.sqrt(4 * np.pi)
     sh_gm = np.where(np.abs(sh_gm).sum(1, keepdims=True) > 0, sh_gm, iso)
@@ -141,7 +173,11 @@ def stage_voxels():
     t0 = time.time()
     ph, packs = _phantom_and_packs(); f = ph.file
     R, mask_img = _image_rotation()
-    tissue = _tissue(packs)
+    tissue = _tissue(packs); m0 = tissue["m0"]
+    declared = {sub["id"]: sub["m0"] for sub in f.meta["substrates"]}
+    for k, sid_ in (("wm", "wm"), ("gm", "gm"), ("csf", "csf/free-water")):
+        if abs(declared[sid_] - m0[k]) > 1e-9:
+            raise ValueError(f"the phantom file declares m0 = {declared[sid_]} for {sid_} but the table says {m0[k]}: rebuild the phantom")
     idx = np.asarray(f.arrays["voxel_index"], np.int16)
     sid = np.asarray(f.arrays["substrate_id"]); fr = np.asarray(f.arrays["geometric_fraction"]); sh = np.asarray(f.arrays["odf_sh"])
     n = idx.shape[0]
@@ -196,15 +232,22 @@ def stage_voxels():
         grid=dict(shape=[int(x) for x in ph.grid.shape], voxel_size_mm=[float(v) * 1e3 for v in ph.grid.voxel_size_m], axes=ph.grid.axes,
                   R_image_to_scanner=R.tolist()),
         acquisition=dict(TE_ms=TE * 1e3, delta_ms=DELTA * 1e3, Delta_ms=DDELTA * 1e3, b_grid_smm2=(B_GRID / 1e6).tolist()),
-        tissues=[dict(id="wm", kind="pack", m0=0.70, T2_s=tissue["T2_wm"], pack=os.path.basename(PACKS["wm"]),
-                      line='PackSubstrate(wm_pack, m0=0.70, T2_s=[0.055, 0.050, 0.010])',
+        tissues=[dict(id="wm", kind="pack", m0=m0["wm"], T2_s=tissue["T2_wm"], pack=os.path.basename(PACKS["wm"]),
+                      line=f'PackSubstrate(wm_pack, m0={m0["wm"]:g}, T2_s={[round(v, 4) for v in tissue["T2_wm"]]})',
+                      keys=dict(m0=CONSTANTS["m0_wm"], T2_s=CONSTANTS["T2_wm"]),
                       note="CACTUS bundle, 366 strands, 120k walkers, 100 ms; pools extra / intra / myelin"),
-                 dict(id="gm", kind="pack", m0=0.85, T2_s=tissue["T2_gm"], pack=os.path.basename(PACKS["gm"]),
-                      line='PackSubstrate(gm_pack, m0=0.85, T2_s=[0.085, 0.085])', note="packed spheres 2-9 um, 20k walkers, 100 ms; isotropic"),
-                 dict(id="csf", kind="analytic", m0=1.0, D_m2_s=3.0e-9, line='FreeWater(D_m2_s=3.0e-9, m0=1.0)',
-                      note="exp(-b D): the one closed form the format defines; no T2 (RPH.md 3.1)")],
+                 dict(id="gm", kind="pack", m0=m0["gm"], T2_s=tissue["T2_gm"], pack=os.path.basename(PACKS["gm"]),
+                      line=f'PackSubstrate(gm_pack, m0={m0["gm"]:g}, T2_s={[round(v, 4) for v in tissue["T2_gm"]]})',
+                      keys=dict(m0=CONSTANTS["m0_gm"], T2_s=[CONSTANTS["T2_gm"]] * 2),
+                      note="packed spheres 2-9 um, 20k walkers, 100 ms; isotropic"),
+                 dict(id="csf", kind="analytic", m0=m0["csf"], D_m2_s=tissue["D_csf"], T2_s=tissue["T2_csf"],
+                      line=f'FreeWater(D_m2_s={tissue["D_csf"]:g}, m0={m0["csf"]:g}, T2_s={tissue["T2_csf"]:g})',
+                      keys=dict(m0=CONSTANTS["m0_csf"], D_m2_s=CONSTANTS["D_csf"], T2_s=CONSTANTS["T2_csf"]),
+                      note="exp(-b D) exp(-TE / T2): the one closed form the format defines, full-tier with zeros (RPH.md 3.1)")],
+        constants=dict(field_T=FIELD_T_OF_VALUES, table=tissue["table"],
+                       note="every physical value on the page, by its key in dmipy_sim.substrate.biophysical_constants, with its citation"),
         response=dict(lmax=LMAX, wm_a_l=a_wm.tolist(), wm_factorisation_spread=spread, gm_E=E_gm.tolist(),
-                      note="wm_a_l[b][l/2]: c_lm(g, b) = a_l(b) Y_lm(g); gm_E[b]: the isotropic pack's signal; csf: exp(-b D)"),
+                      note="wm_a_l[b][l/2]: c_lm(g, b) = a_l(b) Y_lm(g); gm_E[b]: the isotropic pack's signal; csf: exp(-b D) exp(-TE / T2)"),
         sh=dict(order="even l to lmax, m = -l..l, orthonormal real (RPH.md 4.1), the pack's own basis",
                 axis_map=M.tolist(), Y_check=dict(dirs=Yd.tolist(), Y=Y_chk.tolist())),
         voxels=dict(file="voxels.bin", n=int(n), layout=layout, frac_order=["wm", "gm", "csf"], angle="CSD round-trip peak angle (deg), 255 = not WM"),
@@ -292,14 +335,40 @@ def stage_field():
                           chi_iso=tissue["chi_iso"], chi_aniso=tissue["chi_aniso"],
                           note="WM coefficients per (tilt, B0, se|gre, shell, direction); the GM substrate declares no "
                                "susceptibility source, so its field is zero and its response its gradient-only one; CSF is a "
-                               "closed form (physics stated, RPH.md 3.1)",
+                               "closed form, full-tier with zeros (RPH.md 3.1)",
                           checks=checks)
     with open(os.path.join(OUT, "index.json"), "w") as fh:
         json.dump(index, fh)
     print(f"field.bin: {arr.nbytes / 1e6:.2f} MB  [{time.time() - t0:.0f}s]", flush=True)
 
 
+def stage_checks():
+    """Recompute the field-mode checks against the phantom route (the tables stay): what a changed tissue value
+    needs."""
+    from dmipy_sim import sequences
+    t0 = time.time()
+    ph, packs = _phantom_and_packs(); tissue = _tissue(packs)
+    with open(os.path.join(OUT, "index.json")) as fh:
+        index = json.load(fh)
+    F = index["field"]; dirs_s = np.asarray(F["dirs_scanner"]); R = np.asarray(index["grid"]["R_image_to_scanner"])
+    chk = np.asarray(index["check"]["voxels"])[:100]
+    ph_c = _check_phantom(ph, packs, chk, tissue)
+    checks = []
+    for c in F["checks"]:
+        t = F["tilts"][c["tilt"]]; T = np.asarray(t["T"]); b0_img = np.asarray(t["b0_image"]); g_img = (dirs_s @ T) @ R
+        G = np.tile(g_img, (len(SHELLS), 1)); bv = np.repeat(SHELLS, len(dirs_s)); sub = c["meas"]
+        seq_c = sequences.pgse(G[sub], DELTA, DDELTA, bvalues=bv[sub], TE=TE)
+        S = np.asarray(ph_c.replay(seq_c, B0_T=c["B0"], b0_dir=tuple(b0_img), chi_iso=tissue["chi_iso"],
+                                   chi_aniso=tissue["chi_aniso"]))[:, 0, 0, :]
+        checks.append(dict(c, S=np.round(S, 6).tolist()))
+        print(f"field check tilt {c['tilt']} B0 {c['B0']}: {len(sub)} measurements  [{time.time() - t0:.0f}s]", flush=True)
+    index["field"]["checks"] = checks
+    with open(os.path.join(OUT, "index.json"), "w") as fh:
+        json.dump(index, fh)
+    print(f"field checks rewritten  [{time.time() - t0:.0f}s]", flush=True)
+
+
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("--stage", choices=["voxels", "field"], default="voxels")
+    ap = argparse.ArgumentParser(); ap.add_argument("--stage", choices=["voxels", "field", "checks"], default="voxels")
     a = ap.parse_args()
-    stage_voxels() if a.stage == "voxels" else stage_field()
+    {"voxels": stage_voxels, "field": stage_field, "checks": stage_checks}[a.stage]()

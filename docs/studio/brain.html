@@ -53,6 +53,7 @@
  </div>
  <div class="grp"><h2>The voxel under the pointer</h2><div class="rd" id="vox">hover the slice</div><div class="call" id="line"></div></div>
  <div class="grp"><h2>What is exact here</h2><div class="rd" id="exact" style="font-size:11px"></div></div>
+ <div class="grp"><h2>Every physical value, cited</h2><div class="rd" id="consts" style="font-size:11px"></div></div>
 </div>
 <div id="main">
  <div class="row">
@@ -78,7 +79,7 @@
  const N=idx.voxels.n, NC=45, [NX,NY,NZ]=idx.grid.shape;
  const row=new Int32Array(NX*NY*NZ).fill(-1); for(let v=0;v<N;v++) row[(L.idx[3*v]*NY+L.idx[3*v+1])*NZ+L.idx[3*v+2]]=v;
  const R=idx.grid.R_image_to_scanner;                      // image -> scanner
- const T=idx.tissues, m0={wm:T[0].m0,gm:T[1].m0,csf:T[2].m0}, D_csf=T[2].D_m2_s;
+ const T=idx.tissues, m0={wm:T[0].m0,gm:T[1].m0,csf:T[2].m0}, D_csf=T[2].D_m2_s, CSF_T2=T[2].T2_s==null?1:Math.exp(-idx.acquisition.TE_ms/1e3/T[2].T2_s);
  const A=idx.response.wm_a_l, BG=idx.acquisition.b_grid_smm2, GM=idx.response.gm_E;
  const TWO_SQRT_PI=2*Math.sqrt(Math.PI);                    // the axis-density map is this times the identity
  let field=null;                                            // filled when brain_data/field.bin exists
@@ -112,12 +113,12 @@
  }
  function weightsGrad(gImg,b){                               // w_lm = 2 sqrt(pi) a_l(b) Y_lm(g): what a voxel's FOD is dotted with
    const {a,gm}=interpA(b), Y=realSH(gImg), w=new Float32Array(NC); for(let k=0;k<NC;k++) w[k]=TWO_SQRT_PI*a[lOf[k]]*Y[k];
-   return {w, gm, csf:Math.exp(-b*1e6*D_csf)};
+   return {w, gm, csf:CSF_T2*Math.exp(-b*1e6*D_csf)};
  }
  function weightsField(ti,bi,si,shi,di){                     // the stored coefficients at one (tilt, B0, seq, shell, direction)
    const [nt,nb,ns,nsh,nd,nc]=field.shape, o=((((ti*nb+bi)*ns+si)*nsh+shi)*nd+di)*nc, w=new Float32Array(NC);
    for(let k=0;k<NC;k++) w[k]=TWO_SQRT_PI*field.c[o+k];
-   const b=field.shells_smm2[shi], {gm}=interpA(b); return {w, gm, csf:Math.exp(-b*1e6*D_csf)};
+   const b=field.shells_smm2[shi], {gm}=interpA(b); return {w, gm, csf:CSF_T2*Math.exp(-b*1e6*D_csf)};
  }
  function signal(v,W){                                        // one voxel: sum over tissues of fraction x m0 x response
    const fw=L.frac[3*v],fg=L.frac[3*v+1],fc=L.frac[3*v+2]; let e=0; const o=v*NC;
@@ -159,7 +160,7 @@
    $('#bV').textContent=`${st.b} s/mm²`; $('#gV').textContent=st.g.map(x=>x.toFixed(2)).join(', ');
    $('#tsV').textContent=`${st.ts}°`; $('#tcV').textContent=`${st.tc}°`;
    $('#tiltNote').textContent=st.mode==='field'&&field?'with the field on, the head sits at the nearest stored tilt (10° steps) and ĝ at the nearest of 40 stored directions':'a rigid tilt of the head is the gradient turned the other way in the tissue: exact, at any angle';
-   $('#exact').innerHTML=st.mode==='field'?`the WM pack's field response at the stored knobs, contracted with each voxel's FOD: exact where stored, nearest-neighbour between; the GM substrate declares no susceptibility source, so its field is zero and its response is its gradient-only one; CSF is a closed form and contributes at it (stated, not composed)`:`each voxel is Σ<sub>tissue</sub> fraction · m0 · response; the WM response is its FOD convolved with the pack's kernel a<sub>l</sub>(b), exact at any direction, linear in b between the engine's 100 s/mm² grid points`;
+   $('#exact').innerHTML=st.mode==='field'?`the WM pack's field response at the stored knobs, contracted with each voxel's FOD: exact where stored, nearest-neighbour between; the GM substrate declares no susceptibility source, so its field is zero and its response is its gradient-only one; CSF is a closed form, full-tier with zeros: exp(-b D) exp(-TE / T2) at any field`:`each voxel is Σ<sub>tissue</sub> fraction · m0 · response; the WM response is its FOD convolved with the pack's kernel a<sub>l</sub>(b), exact at any direction, linear in b between the engine's 100 s/mm² grid points`;
    drawSphere(); drawFOD();
  }
  function drawSphere(){
@@ -207,6 +208,8 @@
  { const c=$('#cG'); let drag=false; const pick=ev=>{const r=c.getBoundingClientRect(); const x=(ev.clientX-r.left)/r.width*c.width, y=(ev.clientY-r.top)/r.height*c.height, o=c.width/2, rr=c.width/2-12; let ux=(x-o)/rr, uz=(o-y)/rr; const d=ux*ux+uz*uz; let uy=d<1?Math.sqrt(1-d):0; if(d>=1){ux/=Math.sqrt(d);uz/=Math.sqrt(d)} st.g=norm([ux,-uy,uz]); render()};
    c.onpointerdown=ev=>{drag=true; c.setPointerCapture(ev.pointerId); pick(ev)}; c.onpointermove=ev=>{if(drag) pick(ev)}; c.onpointerup=()=>{drag=false} }
  { const c=$('#cS'); c.onpointermove=ev=>{const r=c.getBoundingClientRect(); const [W_,H_]=sliceDims(); const i=Math.floor((ev.clientX-r.left)/r.width*W_), j=H_-1-Math.floor((ev.clientY-r.top)/r.height*H_); hover(voxelAt(i,j))}; c.onpointerleave=()=>hover(null) }
+ { const tb=idx.constants.table, rows=Object.keys(tb).map(k=>{const e=tb[k], c=e.citation||{}; const f=e.field_T!=null?` at ${e.field_T} T`:''; return `<b>${k}</b> = ${Number(e.value).toPrecision(3)} ${e.unit||''}${f}<br><span style="color:var(--mut)">${c.authors||e.source_key} (${c.year||''}), ${c.title||''}${c.doi?' — doi:'+c.doi:''}; ${e.location||''}</span>`});
+   $('#consts').innerHTML=`from <code>dmipy_sim.substrate.biophysical_constants</code>, by key:<br>`+rows.join('<br>'); }
  $('#foot').textContent=`built by tools/gen_brain_demo.py with dmipy-sim ${idx.dmipy_sim} on ${idx.generated}: ${N} brain voxels on a ${NX}×${NY}×${NZ} grid of ${idx.grid.voxel_size_mm[0].toFixed(1)} mm; subject: B.A.T.M.A.N. tutorial (Tahedl, osf.io/fkyht, CC BY 4.0), MRtrix3 CSD; WM ${T[0].note}; GM ${T[1].note}. CSD round trip on ${idx.roundtrip.n_wm} WM voxels: ${(100*idx.roundtrip.angle_below_10_deg).toFixed(0)}% of peaks within 10°.`;
  // ---------------------------------------------------------------- the check hook (tools/check_brain.js): the browser's numbers against the engine's
  window.__brain={
