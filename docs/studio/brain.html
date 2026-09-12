@@ -3,30 +3,52 @@
 <title>The brain, replayed — dmipy</title>
 <style>
  :root{--bg:#07090f;--panel:#0d1120;--surface:#111827;--ink:#e8edf5;--mut:#7a8499;--acc:#4af0c4;--acc2:#7b9cff;--warn:#f5a97f;--border:rgba(255,255,255,.08)}
- *{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:13px/1.45 "DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
- body{display:flex;min-height:100%;overflow:hidden}
- #side{width:320px;flex:none;padding:14px 16px;background:var(--panel);border-right:1px solid var(--border);overflow:auto}
+ *{box-sizing:border-box} html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:13px/1.45 "DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+ body{display:flex;height:100vh;overflow:hidden}
+ #side{order:-1;width:320px;flex:none;padding:14px 16px;background:var(--panel);border-right:1px solid var(--border);overflow:auto}
  #main{flex:1 1 0;min-width:0;display:flex;flex-direction:column;padding:12px 16px;gap:8px;overflow:auto}
  h1{font:600 15px/1.2 "Fraunces",Georgia,serif;margin:0 0 4px} .sub{color:var(--mut);font-size:11px;margin:0 0 10px}
  .grp{margin-top:12px;padding-top:10px;border-top:1px solid var(--border)} .grp h2{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 6px}
  label{display:block;margin:8px 0 3px;color:#c7cdd8;font-size:12px} label .val{float:right;color:var(--acc);font-variant-numeric:tabular-nums}
  select,input[type=range]{width:100%} select{background:var(--bg);color:var(--ink);border:1px solid var(--border);border-radius:6px;padding:5px;font:inherit}
+ input[type=range]{accent-color:var(--acc2)}
  .seg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin:4px 0}
- .seg button,.btn{background:var(--surface);color:var(--mut);border:1px solid var(--border);border-radius:6px;padding:6px 4px;font:inherit;font-size:12px;cursor:pointer}
+ .seg button,.btn{background:var(--surface);color:var(--mut);border:1px solid var(--border);border-radius:6px;padding:8px 4px;font:inherit;font-size:12px;cursor:pointer;touch-action:manipulation}
  .seg button.on{background:var(--acc2);color:#07090f;border-color:var(--acc2);font-weight:600}
  .chk{display:flex;gap:6px;align-items:center;margin:6px 0;font-size:12px;color:#c7cdd8}
- .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}
- canvas{display:block;background:var(--bg);border:1px solid var(--border);border-radius:8px}
+ #viz{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}
+ #glyphs{display:flex;flex-direction:column;gap:6px}
+ canvas{display:block;background:var(--bg);border:1px solid var(--border);border-radius:8px;max-width:100%;height:auto;touch-action:none}
+ #cS{width:384px}
  .ttl{font-size:11px;color:var(--mut);margin:2px 0 0 2px} .ttl b{color:var(--ink);font-weight:500}
  .rd{font-size:12px;line-height:1.7;color:#c7cdd8} .rd b{color:var(--acc);font-variant-numeric:tabular-nums}
  .call{margin-top:8px;padding:8px;background:var(--surface);border-radius:6px;font-size:11px;color:#dfe6f2;white-space:pre-wrap;word-break:break-all}
- .note{margin-top:8px;padding:8px;border:1px solid var(--warn);border-radius:6px;color:var(--warn);font-size:11.5px;line-height:1.4}
+ #voxLine{font-size:11px;color:#c7cdd8;margin:2px 0 0 2px;min-height:1.4em} #voxLine b{color:var(--acc)}
+ details{margin-top:10px;border-top:1px solid var(--border);padding-top:8px} summary{cursor:pointer;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
  footer{font-size:10.5px;color:var(--mut);margin-top:auto;padding-top:6px}
- @media (max-width:820px){body{flex-direction:column;overflow:auto} #side{width:auto;border-right:none;border-bottom:1px solid var(--border)} #main{overflow:visible}}
+ @media (max-width:820px){
+   body{flex-direction:column;height:auto;overflow:auto}
+   #main{order:0;overflow:visible;padding:8px 12px;position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--border)}
+   #side{order:1;width:auto;border-right:none;overflow:visible;padding:10px 12px 40px}
+   #main details,#main footer{display:none}
+   #viz{gap:8px} #cS{width:min(100%, 62vh)}
+   #glyphs{flex-direction:row;gap:8px} #glyphs canvas{width:96px;height:96px} #glyphs .ttl{display:none}
+   .seg button{padding:10px 4px}
+ }
 </style></head><body>
+<div id="main">
+ <div id="viz">
+  <div><div class="ttl"><b id="mainTtl">synthetic DWI</b> <span id="mainSub"></span></div><canvas id="cS"></canvas><div id="voxLine">tap or hover a voxel</div></div>
+  <div id="glyphs"><div><div class="ttl"><b>ĝ</b> in the scanner frame, B<sub>0</sub> along the bore (drag)</div><canvas id="cG" width="200" height="200"></canvas></div>
+       <div><div class="ttl"><b>FOD</b> of the chosen voxel, in the slice plane</div><canvas id="cF" width="200" height="200"></canvas></div></div>
+ </div>
+ <details id="constsBox"><summary>Every physical value, cited</summary><div class="rd" id="consts" style="font-size:11px"></div></details>
+ <details id="exactBox"><summary>What is exact here</summary><div class="rd" id="exact" style="font-size:11px"></div></details>
+ <footer id="foot"></footer>
+</div>
 <div id="side">
  <h1>The brain, replayed</h1>
- <p class="sub">An open-source subject (B.A.T.M.A.N., Tahedl 2018, CC BY 4.0) as a 3-D replay phantom: one Monte-Carlo walk per tissue, MRtrix's FOD and tissue fractions per voxel, composed by dmipy-sim. Every pixel below is that composition, recombined in this page from tables the engine wrote — nothing is a stored image.</p>
+ <p class="sub">An open-source subject (B.A.T.M.A.N., Tahedl 2018, CC BY 4.0) as a 3-D replay phantom: one Monte-Carlo walk per tissue, MRtrix's FOD and tissue fractions per voxel, composed by dmipy-sim. Every pixel is that composition, recombined in this page from tables the engine wrote — nothing is a stored image.</p>
  <div class="grp"><h2>Where</h2>
   <div class="seg" id="plane"><button data-p="2" class="on">axial</button><button data-p="1">coronal</button><button data-p="0">sagittal</button></div>
   <label>slice <span class="val" id="sliceV"></span></label><input type="range" id="slice" min="0" max="59" value="30" step="1">
@@ -43,7 +65,7 @@
    <label>B0</label><select id="B0"></select>
    <div class="seg" style="grid-template-columns:1fr 1fr"><button id="seqSE" class="on">spin echo</button><button id="seqGRE">gradient echo</button></div>
   </div>
-  <label>gradient direction (drag the sphere) <span class="val" id="gV"></span></label>
+  <label>gradient direction (drag the sphere above) <span class="val" id="gV"></span></label>
   <div class="seg"><button data-g="1,0,0">x (L-R)</button><button data-g="0,1,0">y (A-P)</button><button data-g="0,0,1">z (bore)</button></div>
  </div>
  <div class="grp"><h2>The head in the bore</h2>
@@ -51,17 +73,7 @@
   <label>roll (coronal) <span class="val" id="tcV"></span></label><input type="range" id="tc" min="-30" max="30" value="0" step="1">
   <div class="rd" id="tiltNote" style="font-size:11px"></div>
  </div>
- <div class="grp"><h2>The voxel under the pointer</h2><div class="rd" id="vox">hover the slice</div><div class="call" id="line"></div></div>
- <div class="grp"><h2>What is exact here</h2><div class="rd" id="exact" style="font-size:11px"></div></div>
- <div class="grp"><h2>Every physical value, cited</h2><div class="rd" id="consts" style="font-size:11px"></div></div>
-</div>
-<div id="main">
- <div class="row">
-  <div><div class="ttl"><b id="mainTtl">synthetic DWI</b> <span id="mainSub"></span></div><canvas id="cS"></canvas></div>
-  <div><div class="ttl"><b>ĝ</b> in the scanner frame, B<sub>0</sub> along the bore</div><canvas id="cG" width="200" height="200"></canvas>
-       <div class="ttl" style="margin-top:6px"><b>FOD</b> of the voxel under the pointer, in the slice plane</div><canvas id="cF" width="200" height="200"></canvas></div>
- </div>
- <footer id="foot"></footer>
+ <div class="grp"><h2>The chosen voxel</h2><div class="rd" id="vox">tap or hover the slice</div><div class="call" id="line"></div></div>
 </div>
 <script>
 (async function(){
@@ -126,7 +138,7 @@
    return fw*m0.wm*e + fg*m0.gm*W.gm + fc*m0.csf*W.csf;
  }
  // ---------------------------------------------------------------- state
- const st={plane:2, slice:30, layer:'dwi', mode:'grad', b:1000, g:[1,0,0], ts:0, tc:0, shell:0, B0:0, seq:0, auto:true, hover:null};
+ const st={plane:2, slice:30, layer:'dwi', mode:'grad', b:1000, g:[1,0,0], ts:0, tc:0, shell:0, B0:0, seq:0, auto:true, hover:null, pinned:null};
  function poseGImg(){ const Tm=tiltMatrix(st.ts,st.tc); return norm(mulMTV(R, mulMTV(Tm, st.g))) }   // g in the image frame, head tilted
  function nearest(list,v){let bi=0,bd=-2; list.forEach((d,i)=>{const s=d[0]*v[0]+d[1]*v[1]+d[2]*v[2]; if(s>bd){bd=s;bi=i}}); return {i:bi,dot:bd}}
  function fieldChoice(){                                      // the stored tilt and direction closest to the knobs
@@ -140,7 +152,8 @@
  function sliceDims(){ return st.plane===2?[NX,NY]:st.plane===1?[NX,NZ]:[NY,NZ] }
  function voxelAt(i,j){ const s=st.slice; const [x,y,z]=st.plane===2?[i,j,s]:st.plane===1?[i,s,j]:[s,i,j]; if(x<0||y<0||z<0||x>=NX||y>=NY||z>=NZ) return -1; return row[(x*NY+y)*NZ+z] }
  function render(){
-   const [W_,H_]=sliceDims(), c=$('#cS'), d=window.devicePixelRatio||1; c.width=W_*SCALE; c.height=H_*SCALE; c.style.width=(W_*SCALE)+'px'; c.style.height=(H_*SCALE)+'px';
+   if(st.hover!=null&&st.hover>=0) setTimeout(()=>hover(st.hover),0);
+   const [W_,H_]=sliceDims(), c=$('#cS'); c.width=W_*SCALE; c.height=H_*SCALE;               // the CSS sizes it: width fixed, height by aspect
    const ctx=c.getContext('2d'), img=ctx.createImageData(W_,H_), px=img.data;
    const {W,c:choice}=currentWeights();
    const vals=new Float32Array(W_*H_).fill(NaN); let lst=[];
@@ -186,14 +199,17 @@
  }
  function hover(v){
    st.hover=v; const rd=$('#vox'), line=$('#line');
-   if(v==null||v<0){rd.textContent='hover the slice'; line.textContent=''; drawFOD(); return}
+   if(v==null||v<0){rd.textContent='tap or hover the slice'; line.textContent=''; $('#voxLine').textContent='tap or hover a voxel'; drawFOD(); return}
    const fw=L.frac[3*v],fg=L.frac[3*v+1],fc=L.frac[3*v+2], {W}=currentWeights();
    rd.innerHTML=`voxel <b>${L.idx[3*v]}, ${L.idx[3*v+1]}, ${L.idx[3*v+2]}</b><br>WM <b>${fw.toFixed(2)}</b> · GM <b>${fg.toFixed(2)}</b> · CSF <b>${fc.toFixed(2)}</b> · inert <b>${Math.max(0,1-fw-fg-fc).toFixed(2)}</b><br>signal here <b>${signal(v,W).toFixed(4)}</b> (of a CSF voxel's 1 at b = 0)<br>CSD round trip: peak angle <b>${L.angle[v]===255?'—':L.angle[v]+'°'}</b>`;
+   $('#voxLine').innerHTML=`voxel ${L.idx[3*v]},${L.idx[3*v+1]},${L.idx[3*v+2]} · WM <b>${fw.toFixed(2)}</b> GM <b>${fg.toFixed(2)}</b> CSF <b>${fc.toFixed(2)}</b> · S <b>${signal(v,W).toFixed(3)}</b>`;
    line.textContent=`fractions={wm: ${fw.toFixed(2)}, gm: ${fg.toFixed(2)}, csf: ${fc.toFixed(2)}}   ${T[0].line}   ${T[1].line}   ${T[2].line}   orientation={wm: ODF(fod_sh, basis="mrtrix3")}`;
    drawFOD();
  }
  // ---------------------------------------------------------------- wiring
- $('#plane').querySelectorAll('button').forEach(b=>b.onclick=()=>{st.plane=+b.dataset.p; $('#plane').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); const n=st.plane===2?NZ:st.plane===1?NY:NX; $('#slice').max=n-1; st.slice=Math.min(st.slice,n-1); $('#slice').value=st.slice; render()});
+ const centre=[0,1,2].map(ax=>{const v=[]; for(let i=0;i<N;i++) v.push(L.idx[3*i+ax]); v.sort((a,b)=>a-b); return v[Math.floor(v.length/2)]});   // the brain's middle along each axis
+ st.slice=centre[2]; $('#slice').value=st.slice;
+ $('#plane').querySelectorAll('button').forEach(b=>b.onclick=()=>{st.plane=+b.dataset.p; $('#plane').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); const n=st.plane===2?NZ:st.plane===1?NY:NX; $('#slice').max=n-1; st.slice=centre[st.plane]; $('#slice').value=st.slice; render()});
  $('#slice').oninput=e=>{st.slice=+e.target.value; render()};
  $('#layer').onchange=e=>{st.layer=e.target.value; render()};
  $('#auto').onchange=e=>{st.auto=e.target.checked; render()};
@@ -207,7 +223,9 @@
  if(field){ if(field.seqs.length<2){ $('#seqGRE').hidden=true; $('#seqSE').textContent=field.seqs[0]==='se'?'spin echo':'gradient echo' } field.shells_smm2.forEach((s,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=`${s} s/mm²`; $('#shell').appendChild(o)}); field.B0_T.forEach((s,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=`${s} T`; $('#B0').appendChild(o)}) }
  { const c=$('#cG'); let drag=false; const pick=ev=>{const r=c.getBoundingClientRect(); const x=(ev.clientX-r.left)/r.width*c.width, y=(ev.clientY-r.top)/r.height*c.height, o=c.width/2, rr=c.width/2-12; let ux=(x-o)/rr, uz=(o-y)/rr; const d=ux*ux+uz*uz; let uy=d<1?Math.sqrt(1-d):0; if(d>=1){ux/=Math.sqrt(d);uz/=Math.sqrt(d)} st.g=norm([ux,-uy,uz]); render()};
    c.onpointerdown=ev=>{drag=true; c.setPointerCapture(ev.pointerId); pick(ev)}; c.onpointermove=ev=>{if(drag) pick(ev)}; c.onpointerup=()=>{drag=false} }
- { const c=$('#cS'); c.onpointermove=ev=>{const r=c.getBoundingClientRect(); const [W_,H_]=sliceDims(); const i=Math.floor((ev.clientX-r.left)/r.width*W_), j=H_-1-Math.floor((ev.clientY-r.top)/r.height*H_); hover(voxelAt(i,j))}; c.onpointerleave=()=>hover(null) }
+ { const c=$('#cS'); const at=ev=>{const r=c.getBoundingClientRect(); const [W_,H_]=sliceDims(); const i=Math.floor((ev.clientX-r.left)/r.width*W_), j=H_-1-Math.floor((ev.clientY-r.top)/r.height*H_); return voxelAt(i,j)};
+   c.onpointerdown=ev=>{const v=at(ev); st.pinned=v>=0?v:null; hover(v)};                     // a tap chooses and keeps the voxel; a tap outside lets go
+   c.onpointermove=ev=>{if(ev.pointerType==='mouse'&&st.pinned==null) hover(at(ev))}; c.onpointerleave=()=>{if(st.pinned==null) hover(null)} }
  { const tb=idx.constants.table, rows=Object.keys(tb).map(k=>{const e=tb[k], c=e.citation||{}; const f=e.field_T!=null?` at ${e.field_T} T`:''; return `<b>${k}</b> = ${Number(e.value).toPrecision(3)} ${e.unit||''}${f}<br><span style="color:var(--mut)">${c.authors||e.source_key} (${c.year||''}), ${c.title||''}${c.doi?' — doi:'+c.doi:''}; ${e.location||''}</span>`});
    $('#consts').innerHTML=`from <code>dmipy_sim.substrate.biophysical_constants</code>, by key:<br>`+rows.join('<br>'); }
  $('#foot').textContent=`built by tools/gen_brain_demo.py with dmipy-sim ${idx.dmipy_sim} on ${idx.generated}: ${N} brain voxels on a ${NX}×${NY}×${NZ} grid of ${idx.grid.voxel_size_mm[0].toFixed(1)} mm; subject: B.A.T.M.A.N. tutorial (Tahedl, osf.io/fkyht, CC BY 4.0), MRtrix3 CSD; WM ${T[0].note}; GM ${T[1].note}. CSD round trip on ${idx.roundtrip.n_wm} WM voxels: ${(100*idx.roundtrip.angle_below_10_deg).toFixed(0)}% of peaks within 10°.`;
