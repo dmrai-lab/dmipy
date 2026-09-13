@@ -128,13 +128,13 @@ fod_fit = MultiCompartmentSphericalHarmonicsModel(models=[tr2]).fit(scheme, S, s
   exact at any angle.
 - **With the B0 field on** (the myelin's susceptibility, through the white-matter pack's field tier
   and the closed-form pose expansion): stored per head tilt (sagittal and coronal, 10–15° steps), B0
-  at 1.5 and 3 T, spin echo, three shells and 40 directions — exact where stored, nearest neighbour
+  at 1.5, 3 and 7 T, spin echo, three shells and 40 directions — exact where stored, nearest neighbour
   between. The grey-matter substrate declares no susceptibility source, so its field is zero and its
   response at any B0 is its gradient-only one; free water is a closed form, full-tier with zeros —
   `exp(-bD) exp(-TE/T2)` at any field. A gradient echo keeps the static
-  dephasing a spin echo refocuses, and 7 T multiplies it; either pushes the closed form's band, and
-  the table's memory, past what a demo should carry, so neither is offered here.
-- **Not here:** transmit and bias fields (the Bloch route), T2 beyond the catalogued per-tissue values at 3 T,
+  dephasing a spin echo refocuses, which pushes the closed form's band, and the table's memory, past
+  what a demo should carry, so it is not offered here.
+- **Not here:** transmit and bias fields (the Bloch route), surface relaxivity (the packs carry the tier; the page replays it at zero), T2 beyond the catalogued per-tissue values at 3 T,
   exchange, and other sequence families. The old brain-slice Bloch studio, which this page
   supersedes, hand-coded its susceptibility as an off-resonance formula; nothing here is hand-coded.
 
