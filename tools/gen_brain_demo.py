@@ -35,7 +35,7 @@ LMAX = 8
 B_GRID = np.arange(0.0, 3000.1, 100.0) * 1e6                  # s/m^2
 SHELLS = [1000e6, 2000e6, 3000e6]
 TILTS = [("sagittal", a) for a in (-30, -20, -10, 0, 10, 20, 30)] + [("coronal", a) for a in (-30, -15, 15, 30)]
-B0_T = [1.5, 3.0]                                             # 7 T: the static dephasing band outgrows a demo table
+B0_T = [1.5, 3.0, 7.0]                                        # 7 T spin echo: ~7 min per call (band 20), still a table
 N_FIELD_DIRS = 40
 N_CHECK = 300
 
@@ -150,8 +150,11 @@ def _check_phantom(ph, packs, voxels, tissue, wm_only=False):
                 out_f[v] = fr[v, k[0]]; out_sh[v] = sh[v, k[0]]
         return out_f, out_sh
     f_wm, sh_wm = slot(0); f_gm, sh_gm = slot(1); f_csf, _ = slot(2)
-    wm = PackSubstrate(packs["wm"], m0=tissue["m0"]["wm"], name="wm", T2_s=tissue["T2_wm"])
-    gm = PackSubstrate(packs["gm"], m0=tissue["m0"]["gm"], name="gm", T2_s=tissue["T2_gm"])
+    # the page models diffusion, the table's T2 per pool and, in field mode, the table's susceptibility at the
+    # chosen B0 -- nothing nominal: a pack that embeds its spec would otherwise replay the spec's wall relaxivity
+    # and myelin susceptibility, which the page's kernel does not carry (the checks caught 3.6 %)
+    wm = PackSubstrate(packs["wm"], m0=tissue["m0"]["wm"], name="wm", T2_s=tissue["T2_wm"], rho_m_s=0.0, chi_iso=0.0, chi_aniso=0.0)
+    gm = PackSubstrate(packs["gm"], m0=tissue["m0"]["gm"], name="gm", T2_s=tissue["T2_gm"], rho_m_s=0.0, chi_iso=0.0, chi_aniso=0.0)
     csf = FreeWater(D_m2_s=tissue["D_csf"], m0=tissue["m0"]["csf"], T2_s=tissue["T2_csf"])
     grid = Grid(shape=(n, 1, 1), voxel_size_m=(2.5e-3,) * 3)
     iso = np.zeros_like(sh_gm); iso[:, 0] = 1.0 / np.sqrt(4 * np.pi)
@@ -233,11 +236,11 @@ def stage_voxels():
                   R_image_to_scanner=R.tolist()),
         acquisition=dict(TE_ms=TE * 1e3, delta_ms=DELTA * 1e3, Delta_ms=DDELTA * 1e3, b_grid_smm2=(B_GRID / 1e6).tolist()),
         tissues=[dict(id="wm", kind="pack", m0=m0["wm"], T2_s=tissue["T2_wm"], pack=os.path.basename(PACKS["wm"]),
-                      line=f'PackSubstrate(wm_pack, m0={m0["wm"]:g}, T2_s={[round(v, 4) for v in tissue["T2_wm"]]})',
+                      line=f'PackSubstrate(wm_pack, m0={m0["wm"]:g}, T2_s={[round(v, 4) for v in tissue["T2_wm"]]}, rho_m_s=0.0, chi_iso=0.0, chi_aniso=0.0)',
                       keys=dict(m0=CONSTANTS["m0_wm"], T2_s=CONSTANTS["T2_wm"]),
                       note="CACTUS bundle, 366 strands, 120k walkers, 100 ms; pools extra / intra / myelin"),
                  dict(id="gm", kind="pack", m0=m0["gm"], T2_s=tissue["T2_gm"], pack=os.path.basename(PACKS["gm"]),
-                      line=f'PackSubstrate(gm_pack, m0={m0["gm"]:g}, T2_s={[round(v, 4) for v in tissue["T2_gm"]]})',
+                      line=f'PackSubstrate(gm_pack, m0={m0["gm"]:g}, T2_s={[round(v, 4) for v in tissue["T2_gm"]]}, rho_m_s=0.0, chi_iso=0.0, chi_aniso=0.0)',
                       keys=dict(m0=CONSTANTS["m0_gm"], T2_s=[CONSTANTS["T2_gm"]] * 2),
                       note="packed spheres 2-9 um, 20k walkers, 100 ms; isotropic"),
                  dict(id="csf", kind="analytic", m0=m0["csf"], D_m2_s=tissue["D_csf"], T2_s=tissue["T2_csf"],
@@ -317,7 +320,7 @@ def stage_field():
                 tables.append(C)
                 if P is None:
                     continue
-                if seq_kind == "se" and B0 == 3.0 and kind == "sagittal" and deg in (0, 20):
+                if seq_kind == "se" and B0 in (3.0, 7.0) and kind == "sagittal" and deg in (0, 20):   # checks at 3 and 7 T
                     sub = list(range(0, len(SHELLS) * len(dirs_s), 7))
                     seq_c = (sequences.pgse(G[sub], DELTA, DDELTA, bvalues=bv[sub], TE=TE))
                     S = np.asarray(ph_c.replay(seq_c, B0_T=B0, b0_dir=tuple(b0_img), chi_iso=tissue["chi_iso"],
