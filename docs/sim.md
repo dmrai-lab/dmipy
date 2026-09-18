@@ -28,13 +28,15 @@ dmipy-fit's replay models fit against.
 walk = ds.simulate_trajectories(4_000, 2e-9, ds.Cylinder(radius=4e-6, orientation=(0, 0, 1)),
                                 T_max=0.10, dt_save=2e-4, seed=0, require_gpu=False)   # 100 ms of walk
 pack = ds.build_replay_pack(walk, id="docs/cylinder", license="CC-BY-4.0", citation="dmipy.org", K=32)
-E_pgse = pack.replay(ds.pgse([[1, 0, 0]], 0.010, 0.030, bvalues=[1e9]), tissue=False)
-E_ogse = pack.replay(ds.ogse([[1, 0, 0]], 50.0, 0.040, shape="cosine", bvalues=[1e9]), tissue=False)
+E_pgse = pack.replay(ds.pgse([[1, 0, 0]], 0.010, 0.030, bvalues=[1e9]))
+E_ogse = pack.replay(ds.ogse([[1, 0, 0]], 50.0, 0.040, shape="cosine", bvalues=[1e9]))
 ```
 
 The walk depends only on the geometry, the diffusivity and the seed; the acquisition, the field,
 the relaxation times and the pose are replay knobs. That invariant is why one walk answers every
-sequence.
+sequence. **[The replay guide](replay/index.md)** is the manual for that side: one page per object
+(pack, sequence, tissue, scanner, orientation), the table of what each knob touches and which channel it
+needs, images from a pack opened by reference, and two recipes.
 
 ## Geometries
 

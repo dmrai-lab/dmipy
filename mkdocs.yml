@@ -67,6 +67,18 @@ nav:
       - Spin studio: studio/spins.md
       - Replay phantoms:
           - The brain, replayed: phantoms/brain.md
+      - The replay guide:
+          - What it covers: replay/index.md
+          - The pack: replay/pack.md
+          - The sequence: replay/sequence.md
+          - The tissue: replay/tissue.md
+          - The scanner: replay/scanner.md
+          - The orientation: replay/orientation.md
+          - The replay: replay/replay.md
+          - Images by reference: replay/images.md
+          - Phantoms: replay/phantoms.md
+          - "Recipe: a canonical pore": replay/recipes/canonical_pore.md
+          - "Recipe: DiSCo from the hub": replay/recipes/disco.md
   - Fit:
       - Overview: fit.md
       - Model catalog: catalog.md
