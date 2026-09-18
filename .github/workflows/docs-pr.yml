@@ -21,7 +21,7 @@ jobs:
         with: { node-version: "20" }
       - name: Install the docs toolchain and the engines from their git mains
         run: |
-          pip install ".[docs]" "jax[cpu]>=0.6.2" jaxopt matplotlib
+          pip install ".[docs]" "jax[cpu]>=0.6.2" jaxopt matplotlib safetensors
           # the git mains carry the same version numbers as the released wheels until 3.0, so pip must be told to replace them
           pip install --force-reinstall --no-deps "dmipy-sim @ git+https://github.com/dmrai-lab/dmipy-sim@main" \
                       "dmipy-design @ git+https://github.com/dmrai-lab/dmipy-design@main" \
