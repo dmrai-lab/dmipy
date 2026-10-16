@@ -61,7 +61,8 @@ from dmipy_fit.white_matter.mwf import t2_spectrum_mwf
 
 geom = ds.MyelinatedCylinder(inner_radius=2.5e-6, outer_radius=3.57e-6, orientation=(0, 0, 1),
     D_intra=1.7e-9, D_extra=1.7e-9, D_myelin=0.1e-9,
-    T2_intra=0.080, T2_myelin=0.015, T2_extra=0.080)
+    compartments=ds.Compartments(intra=ds.Pool(T2=0.080), myelin=ds.Pool(T2=0.015),
+                                 extra=ds.Pool(T2=0.080)))
 
 echo_times = np.arange(1, 9) * 8e-3
 S = np.array([                                    # a bare spin echo at each TE: relaxation only

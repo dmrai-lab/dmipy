@@ -75,6 +75,7 @@ nav:
           - The scanner: replay/scanner.md
           - The orientation: replay/orientation.md
           - The replay: replay/replay.md
+          - Views: replay/views.md
           - Images by reference: replay/images.md
           - Phantoms: replay/phantoms.md
           - "Recipe: a canonical pore": replay/recipes/canonical_pore.md
@@ -98,6 +99,7 @@ nav:
       - Susceptibility: physics/susceptibility.md
       - Magnetization transfer: physics/magnetization_transfer.md
       - Analytical vs Monte Carlo: physics/canonical_wm_parity.md
+      - The step law, shown: physics/step_law.md
   - Reference:
       - API: api.md
       - Migrating: migrating.md
