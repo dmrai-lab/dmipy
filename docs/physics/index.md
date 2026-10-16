@@ -18,6 +18,11 @@ The [analytical-vs-Monte-Carlo parity page](canonical_wm_parity.md) runs the can
 matter through both engines on one object and shows the agreement, for diffusion and for surface
 relaxivity.
 
+[The step law, shown](step_law.md) is the evidence for the walk's step itself: the two-length step that
+carries the Gaussian step's moments, the operator of the engine's own reflection on the analytic pores, the
+fused engine against it, the two-walk certificate every build records, and what the step costs. Every number
+on that page is regenerated from the engine by one script.
+
 **Why one footing matters.** Two effects reading the same wall (diffusion and relaxation,
 exchange and surface relaxivity) bias each other's numbers when a model accounts for only one. The
 [surface-relaxivity study](../surface_relaxivity_bias.md) is the worked example; the
