@@ -10,7 +10,7 @@ Both pulses invert (+z → −z) B1-insensitively, but by very different routes:
 
 Single spin at B1⁺ = 1 (on resonance), traced in the rotating frame, with |B1(t)| playing below.
 
-    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu PYTHONPATH=/path/sim python fig_rf_bir4_movie.py
+    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu python fig_rf_bir4_movie.py
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from matplotlib.animation import FuncAnimation, PillowWriter
 
-from dmipy_sim.rf import B1Pulse, bloch_simulate
+from dmipy_replay.acquisition.rf import B1Pulse, bloch_simulate
 GAMMA = 2.675e8
 dt, T, A0 = 2e-5, 4e-3, 19e-6      # dt=20us keeps the GIF light
 

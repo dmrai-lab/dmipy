@@ -3,10 +3,10 @@ name: docs
 # (staging branch -> https://dmipy.org/dev/) into a single GitHub Pages artifact.
 #
 # Both branches carry this workflow; a push event runs the copy on the pushed ref.
-# Whatever the trigger, the root is always rebuilt from `main` and /dev/ from
-# `staging`, so the two stay consistent. The staging build is non-fatal: if it
-# fails or the branch is absent, /dev/ is simply skipped and the production site
-# still deploys.
+# Whatever the trigger, the root is always rebuilt from `main`, with the released packages, and
+# /dev/ from `staging`, with the packages' git mains, so the two stay consistent. The staging
+# build is non-fatal: if it fails or the branch is absent, /dev/ is skipped and the production
+# site still deploys.
 on:
   push:
     branches: [main, staging]
@@ -29,13 +29,15 @@ jobs:
           ref: main
       - uses: actions/setup-python@v5
         with: { python-version: "3.11" }
-      # Install the docs toolchain + both engines (CPU JAX) so mkdocstrings can
-      # import dmipy_sim / dmipy_fit and autodoc the API reference from their docstrings.
-      - run: pip install ".[docs,cpu]"
+      # The docs toolchain and the released packages (CPU JAX), through main's own extras, so that
+      # mkdocstrings reads the API reference from the docstrings of what main documents.
+      - run: pip install ".[docs,cpu,tract]"
       - name: Build production site
         run: mkdocs build --strict --site-dir "$GITHUB_WORKSPACE/site"
 
       # --- Staging preview (staging) -> site/dev/ ---
+      # /dev/ documents the packages' git mains, so it builds in its own environment, with the
+      # snippets run first.
       - name: Check out staging
         uses: actions/checkout@v4
         continue-on-error: true
@@ -47,7 +49,10 @@ jobs:
         run: |
           if [ -f _staging/mkdocs.yml ]; then
             echo "Building staging preview -> /dev/"
-            mkdocs build -f _staging/mkdocs.yml --site-dir "$GITHUB_WORKSPACE/site/dev"
+            python -m venv _venv_dev && . _venv_dev/bin/activate
+            bash _staging/tools/install_packages.sh mains
+            (cd _staging && JAX_PLATFORMS=cpu MPLBACKEND=Agg python tools/run_snippets.py)
+            mkdocs build --strict -f _staging/mkdocs.yml --site-dir "$GITHUB_WORKSPACE/site/dev"
             # A CNAME only belongs at the site root; drop any copied into /dev/.
             rm -f "$GITHUB_WORKSPACE/site/dev/CNAME"
           else

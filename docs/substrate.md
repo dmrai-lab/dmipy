@@ -10,85 +10,47 @@ A `Substrate` is the physical ground truth. Its derived accessors (volume fracti
 import dmipy_sim
 from dmipy_sim.substrate import Substrate
 from dmipy_fit.white_matter import build_white_matter_model
-from dmipy_fit.audit import biophysical_constants as fit_consts
-from dmipy_sim.substrate import biophysical_constants as sim_consts
 
 # --- describe the microstructure ONCE (dmipy-sim owns the physical ground truth) ---
 sub = Substrate()          # canonical healthy white matter; override any field
 # derived quantities the analytical model needs are computed here, once:
 #   sub.f_intra, sub.f_extra, sub.lambda_perp_extra (tortuosity), sub.mean_inner_radius, ...
 
-# forward truth (dmipy-sim): an explicit geometry the walkers diffuse in,
-# its inner/outer radii and diffusivities taken from the substrate
+# forward truth (dmipy-sim): an explicit geometry the walkers diffuse in, its inner/outer
+# radii from the substrate and its pools (D, T2, T1, water fraction) the substrate's own
 geom = dmipy_sim.MyelinatedCylinder(
     inner_radius=sub.mean_inner_radius, outer_radius=sub.mean_outer_radius,
-    orientation=(0, 0, 1), D_intra=sub.D_intra, D_extra=sub.D_extra,
-    D_myelin=sub.D_myelin)   # myelin water is stuck (D_myelin = 0) by default
+    orientation=(0, 0, 1), compartments=sub.compartments)   # myelin water is stuck (D = 0)
 
 # analytical inverse (dmipy-fit): the SAME physical numbers parametrize the model
 model, params = build_white_matter_model(
     gamma_shape=sub.gamma_shape_diameter,
     gamma_scale_outer_diameter=sub.gamma_scale_diameter,
     g_ratio=sub.g_ratio, f_axon=sub.f_axon, D_intra=sub.D_intra)
-
-# every physical CONSTANT is defined once: fit re-exports the sim catalogue
-assert fit_consts.get_value is sim_consts.get_value
 ```
 
-The geometry and the model are parametrised from the *same* `Substrate` fields, and the tissue constants come from a single catalogue: `dmipy_fit.audit.biophysical_constants` re-exports `dmipy_sim.substrate.biophysical_constants` verbatim, so there is exactly one definition (with citation provenance) of every physical constant. Derived geometric quantities — the exterior surface-to-volume ratio, the intra-pore ⟨4/d⟩ average, the tortuosity `lambda_perp_extra` — use the same closed forms on both sides.
+The geometry and the model are parametrised from the *same* `Substrate` fields, and the tissue constants come from a single catalogue, `dmipy_sim.substrate.biophysical_constants`, which dmipy-fit reads for its citations and its Methods paragraph: there is exactly one definition (with citation provenance) of every physical constant. Derived geometric quantities (the exterior surface-to-volume ratio, the intra-pore ⟨4/d⟩ average, the tortuosity `lambda_perp_extra`) are the closed forms of [dmipy-analytic](analytic/index.md), on both sides.
 
 !!! note "Input parity, not output agreement"
     One substrate feeding both engines lets you check the analytical model against the Monte-Carlo ground truth on matched tissue. Agreement is necessary evidence, not proof — the two engines are correlated and can be wrong the same way.
 
 ## Geometries
 
-The forward substrate: closed pores, packed ensembles, and free diffusion the walkers sample. Each is a `dmipy_sim` `Geometry` accepted by `dmipy_sim.simulate(n_walkers, D, waveform, geometry)`.
+The forward substrate: closed pores, packed ensembles, and free diffusion the walkers sample. Each is a `dmipy_sim` `Geometry`, written out as a `SubstrateSpec` by its `.spec`, and accepted by `dmipy_sim.walk(spec, ...)` and `dmipy_sim.simulate(n_walkers, D, waveform, geometry)`.
 
 ### `FreeDiffusion`
 
 Unbounded free diffusion — walkers move without any reflection.
 
-```python
+```text
 FreeDiffusion(*args, **kwargs)
-```
-
-### `Sphere`
-
-Reflecting sphere of given radius centred at the origin.
-
-```python
-Sphere(radius: float, surface_relaxivity_t2=None, permeability=None)
-```
-
-### `Cylinder`
-
-Reflecting infinite cylinder of given radius and orientation.
-
-```python
-Cylinder(radius: float, orientation, surface_relaxivity_t2=None, permeability=None)
-```
-
-### `MyelinatedCylinder`
-
-Three-compartment myelinated cylinder: intra-axonal, myelin sheath, extra-axonal.
-
-```python
-MyelinatedCylinder(inner_radius, outer_radius, orientation, D_intra, D_extra, D_myelin=0.0, kappa_inner=None, kappa_outer=None, T2_intra=None, T2_myelin=None, T2_extra=None, water_fractions=(1.0, 0.15, 1.0))
-```
-
-### `Ellipsoid`
-
-Reflecting axis-aligned ellipsoid with semi-axes (a, b, c) along (x, y, z).
-
-```python
-Ellipsoid(semiaxes, surface_relaxivity_t2=None, permeability=None)
 ```
 
 ### `Box1D`
 
 1D reflecting slab with walls at x=0 and x=length.
 
-```python
+```text
 Box1D(length: float, surface_relaxivity_t2=None)
 ```
 
@@ -96,32 +58,112 @@ Box1D(length: float, surface_relaxivity_t2=None)
 
 Closed 1-D two-compartment slab: a permeable membrane at x=L/2 with reflecting
 
-```python
+```text
 PermeableSlab1D(length, permeability, surface_relaxivity_t2=None)
+```
+
+### `Sphere`
+
+Reflecting sphere of given radius centred at the origin.
+
+```text
+Sphere(radius: float, surface_relaxivity_t2=None, permeability=None)
+```
+
+### `Cylinder`
+
+Reflecting infinite cylinder along +z of its own frame.
+
+```text
+Cylinder(radius: float, orientation, surface_relaxivity_t2=None, permeability=None)
+```
+
+### `Ellipsoid`
+
+Reflecting axis-aligned ellipsoid with semi-axes (a, b, c) along (x, y, z).
+
+```text
+Ellipsoid(semiaxes, surface_relaxivity_t2=None, permeability=None)
+```
+
+### `MyelinatedCylinder`
+
+Three-compartment myelinated cylinder: intra-axonal, myelin sheath, extra-axonal.
+
+```text
+MyelinatedCylinder(inner_radius, outer_radius, orientation, kappa_inner=None, kappa_outer=None, compartments=None)
+```
+
+### `CurvedCylinder`
+
+A substrate the walk moves through: where a walker may be and what a wall does to it.
+
+```text
+CurvedCylinder(centerline, radius: 'float', surface_relaxivity_t2=None)
+```
+
+### `CurvedMyelinatedCylinder`
+
+A myelinated curved axon: concentric intra / myelin / extra shells swept along a
+
+```text
+CurvedMyelinatedCylinder(centerline, r_in: 'float', r_out: 'float', pool='intra', surface_relaxivity_t2=None)
 ```
 
 ### `PackedSpheres`
 
-Extra-axonal diffusion in a periodic cubic domain packed with spheres.
+Diffusion in a periodic cubic domain packed with spheres: two pools of water.
 
-```python
-PackedSpheres(radii, centers, L, surface_relaxivity_t2=None, permeability=None)
+```text
+PackedSpheres(radii, centers, L, surface_relaxivity_t2=None, permeability=None, pool=None)
 ```
 
 ### `PackedCylinders`
 
-Extra-axonal diffusion in a periodic square domain packed with cylinders.
+Diffusion in a periodic square domain packed with cylinders: two pools of water.
 
-```python
-PackedCylinders(radii, centers, L, orientation=(0.0, 0.0, 1.0), surface_relaxivity_t2=None, permeability=None)
+```text
+PackedCylinders(radii, centers, L, orientation=(0.0, 0.0, 1.0), surface_relaxivity_t2=None, permeability=None, pool=None)
 ```
 
 ### `PackedMyelinatedCylinders`
 
 Periodic RVE with N_actual myelinated cylinders — three-compartment.
 
-```python
-PackedMyelinatedCylinders(inner_radii, g_ratios, centers, cell_size, N_max=128, orientation=(0.0, 0.0, 1.0), D_intra=2e-09, D_myelin=0.0, D_extra=2e-09, T2_intra=None, T2_myelin=None, T2_extra=None, kappa_inner=0.0, kappa_outer=0.0, rho_inner=0.0, rho_outer=0.0)
+```text
+PackedMyelinatedCylinders(inner_radii, g_ratios, centers, cell_size, N_max=128, orientation=(0.0, 0.0, 1.0), T2_intra=None, T2_myelin=None, T2_extra=None, kappa_inner=0.0, kappa_outer=0.0, rho_inner=0.0, rho_outer=0.0, compartments=None)
+```
+
+### `PackedCurvedCylinders`
+
+Extra-axonal diffusion around a pack of curved tubes, accelerated by a sparse grid
+
+```text
+PackedCurvedCylinders(centerlines, radii, cell_size=None, interior=False, box=None, box_reflect=True, surface_relaxivity_t2=None, backend='jax')
+```
+
+### `SphereUnion`
+
+Union-of-spheres geometry (metres): one pool, inside (``pool="intra"``) or outside (``pool="extra"``).
+
+```text
+SphereUnion(centers, radii, pool='intra', feature_radius=None, cell_size=None, octaves=(None, 4.0, 2.0), max_candidates=8192, max_bytes=2000000000.0, surface_relaxivity_t2=None, max_bounces=4, box=None, box_reflect=True)
+```
+
+### `Mesh`
+
+Reflecting/permeable triangular-mesh geometry (see module docstring).
+
+```text
+Mesh(vertices, faces, periodic=False, voxel_min=None, voxel_max=None, feature_radius=None, permeability=None, compartments=None, orientation=None, R=None, cell_size=None, cap=None, max_bounces=None, pool='intra', reject_escape=True, box_reflect=True, adaptive_nudge=False, seeding=None)
+```
+
+### `LabelVolume`
+
+Diffusion in one pool of a segmented 3-D image (metres).
+
+```text
+LabelVolume(labels, voxel_size, origin=(0.0, 0.0, 0.0), periodic=False, pools=None, pool=None, surface_relaxivity_t2=None, permeability=None)
 ```
 
 ## Substrate parameters

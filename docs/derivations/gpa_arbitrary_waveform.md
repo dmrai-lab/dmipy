@@ -220,8 +220,8 @@ $l{=}4\to10$, $l{=}6\to21$, $l{=}8\to36$.
 **ODF normalisation.** For any properly normalised ODF, $f_{00} = 1/(2\sqrt\pi)$, so the dispersed
 signal at $b=0$ equals 1: $S = E_{lm}\!\cdot\! f_{lm} = 1$.
 
-**Watson ODF.** Use GL quadrature (not sphere-grid fitting) for accuracy at $\kappa \ge 20$;
-`dmipy_sim.sh_convolution.watson_odf_sh(kappa, lmax=8)` provides accurate coefficients.
+**Watson ODF.** `dmipy_analytic.orientation.watson_sh(mu, kappa, l_max=8)` gives its coefficients
+exactly, from the closed-form zonal ratios: no sphere-grid fit, accurate at any $\kappa$.
 
 ---
 

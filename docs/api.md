@@ -1,72 +1,85 @@
 # API reference
 
-Rendered live from the installed packages' docstrings via
-[mkdocstrings](https://mkdocstrings.github.io/) — the docstrings in
-[dmipy-sim](https://github.com/dmrai-lab/dmipy-sim),
-[dmipy-replay](https://github.com/dmrai-lab/dmipy-replay),
-[dmipy-fit](https://github.com/dmrai-lab/dmipy-fit) and
-[dmipy-design](https://github.com/dmrai-lab/dmipy-design) are the source of truth, so this reference
-can't drift from the code. For the conceptual entry points see the
-[forward](sim.md), [inverse](fit.md) and [design](design.md) overviews.
+Rendered from the installed packages' docstrings with
+[mkdocstrings](https://mkdocstrings.github.io/): the code is the source of truth. For the
+concepts see [the packages](packages.md), [Acquisition](acquisition.md), [Simulate](sim.md),
+[the replay guide](replay/index.md), [Fit](fit.md), [Design](design.md) and
+[Closed forms](analytic/index.md).
 
-## dmipy-sim — forward
+## dmipy-replay — the acquisition
 
-dmipy-sim walks a substrate and produces replay packs; `simulate` is the walk and the replay in one call.
+::: dmipy_replay.acquisition.scanner_sequence.ScannerSequence
+::: dmipy_replay.acquisition.scanner_sequence.Protocol
+::: dmipy_replay.acquisition.scanner_sequence.Encoding
 
-### The walk and the pack
+### Builders
 
-::: dmipy_sim.walk
-::: dmipy_sim.build_replay_pack
+::: dmipy_replay.sequences.builders.pgse
+::: dmipy_replay.sequences.builders.pgste
+::: dmipy_replay.sequences.builders.ogse
+::: dmipy_replay.sequences.builders.cpmg
+::: dmipy_replay.sequences.builders.splice
+::: dmipy_replay.sequences.builders.gre
+::: dmipy_replay.sequences.builders.ste
+::: dmipy_replay.sequences.builders.pte
+::: dmipy_replay.sequences.builders.from_waveform
 
-### Simulation
+### RF, timing, scanners, Pulseq
 
-::: dmipy_sim.simulate
-::: dmipy_sim.simulate_cpmg
+::: dmipy_replay.acquisition.rf.RFEvent
+::: dmipy_replay.acquisition.rf.RFSchedule
+::: dmipy_replay.acquisition.rf.B1Pulse
+::: dmipy_replay.acquisition.timing.SequenceTiming
+::: dmipy_replay.acquisition.scanners.ScannerLimits
+::: dmipy_replay.sequences.pulseq.from_pulseq
+::: dmipy_sim.sequences.pulseq.to_pulseq
 
-### Geometries
+## dmipy-replay — the pack
 
+::: dmipy_replay.replay.replay.ReplayPack
+::: dmipy_replay.replay.envelope.Envelope
+::: dmipy_replay.replay.envelope.envelope_of
+::: dmipy_replay.spec.tissue.Tissue
+::: dmipy_replay.spec.substrate.SubstrateSpec
+
+## dmipy-sim — the producer
+
+::: dmipy_sim.spec.walk.walk
+::: dmipy_sim.replay.bank.build_replay_pack
+::: dmipy_sim.engine.core.simulate
+::: dmipy_sim.compartments.Compartments
+::: dmipy_sim.compartments.Pool
 ::: dmipy_sim.Sphere
 ::: dmipy_sim.Cylinder
+::: dmipy_sim.MyelinatedCylinder
 ::: dmipy_sim.Mesh
 
-## dmipy-replay — the signal side
+## dmipy-analytic — the closed forms
 
-dmipy-replay turns a replay pack into a signal or an image, and owns the acquisition object that
-every package shares.
+[Every form and its source](analytic/forms.md) lists all of them; the modules a fit or a check reaches for
+first:
 
-### Waveforms & encoding
+::: dmipy_analytic.gaussian
+::: dmipy_analytic.restricted.cylinder
 
-::: dmipy_replay.pgse
-::: dmipy_replay.set_b
+## dmipy-fit — the inverse
 
-### Replay packs
-
-::: dmipy_replay.ReplayPack
-::: dmipy_replay.Envelope
-::: dmipy_replay.envelope_of
-
-## dmipy-fit — inverse
-
-### Modelling framework
-
+::: dmipy_fit.core.acquisition_scheme.AcquisitionScheme
 ::: dmipy_fit.core.modeling_framework.MultiCompartmentModel
-
-### Acquisition scheme
-
-::: dmipy_fit.core.acquisition_scheme.acquisition_scheme_from_bvalues
-
-### White matter
-
 ::: dmipy_fit.white_matter.mwf.t2_spectrum_mwf
 
 ## dmipy-design — sequence design
 
-### Waveforms
-
 ::: dmipy_design.design_waveform_now
 ::: dmipy_design.min_te_for_b
-
-### Certificates
-
+::: dmipy_design.design_stimulated_echo
+::: dmipy_design.design_refocusing_rf
+::: dmipy_design.NowDesign
 ::: dmipy_design.certify.certify
 ::: dmipy_design.certify.deliverable_set
+
+## dmipy-tract — tractography
+
+::: dmipy_tract.field.FODField
+::: dmipy_tract.tracker.track
+::: dmipy_tract.tractogram.Tractogram

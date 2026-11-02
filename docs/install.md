@@ -1,43 +1,47 @@
 # Install
 
-`dmipy` is a thin umbrella that pulls the packages of the ecosystem:
-
 ```bash
-pip install dmipy                 # dmipy-sim + dmipy-replay + dmipy-fit + dmipy-design
+pip install dmipy                 # dmipy-sim + dmipy-replay + dmipy-fit + dmipy-design (and dmipy-analytic under them)
 pip install "dmipy[tract]"        # + dmipy-tract, tractography on FOD fields
-pip install "dmipy[cuda12]"       # + JAX CUDA-12 GPU (JAX, jaxopt)
-pip install "dmipy[cpu]"          # + JAX CPU
+pip install "dmipy[cpu]"          # + JAX on the CPU, with jaxopt
+pip install "dmipy[cuda12]"       # + JAX on a CUDA-12 GPU, with jaxopt
 ```
 
-!!! note "GPU (`[cuda12]`)"
-    Needs a working CUDA-12 stack, and the environment must export `LD_LIBRARY_PATH` so the
-    dynamic loader resolves the CUDA libraries — see the
-    [dmipy-sim README](https://github.com/dmrai-lab/dmipy-sim#gpu) for the exact export.
-
-!!! tip "CPU-only / shared machine"
-    Set `JAX_PLATFORMS=cpu` to force JAX onto CPU regardless of what is installed.
-
-There is no importable `dmipy` package — import the packages directly:
+Extras combine: `pip install "dmipy[tract,cuda12]"`. There is no importable `dmipy` package; import the
+packages ([what each one is](packages.md)):
 
 ```python
-import dmipy_sim          # forward Monte Carlo: walks the substrates, produces the replay packs
-import dmipy_replay       # the replay packs as a signal or an image; the acquisition object
-import dmipy_fit          # analytical inverse
-import dmipy_design       # sequence design
+import dmipy_analytic             # the closed forms
+import dmipy_replay               # the reader and the acquisition object
+import dmipy_sim                  # the producer: walks and replay packs
+import dmipy_fit                  # the analytical inverse
+import dmipy_design               # sequence design
 ```
 
-!!! warning "Upgrading from dmipy 1.x"
-    dmipy 2.0 is a ground-up rewrite. The 1.x line (the original 2019 toolbox) was a single
-    importable `dmipy` package; **2.x is a meta-package with no importable `dmipy` module**.
-    Old `import dmipy` code will not run under 2.x. To stay on the original toolbox, pin
-    `pip install "dmipy<2"` — it remains available on PyPI.
+## One package alone
 
-Or install a package on its own:
+Each package installs on its own, with the packages it depends on:
 
 ```bash
-pip install dmipy-sim
-pip install dmipy-replay
-pip install "dmipy-fit[jax]"
-pip install dmipy-design
-pip install dmipy-tract
+pip install dmipy-analytic                # NumPy only
+pip install "dmipy-analytic[special]"     # + the forms that need scipy's special functions
+pip install "dmipy-analytic[jax]"         # + dmipy_analytic.jax, the JAX twins
+pip install dmipy-replay                  # read and replay packs: NumPy only
+pip install "dmipy-replay[pose]"          # + the pose expansion (scipy)
+pip install dmipy-sim                     # walk substrates, write packs (JAX)
+pip install "dmipy-sim[mesh]"             # + .ply meshes (trimesh)
+pip install "dmipy-fit[jax]"              # the batched fits (JAX, jaxopt)
+pip install "dmipy-design[pulseq]"        # + the Pulseq export (pypulseq)
+pip install dmipy-tract                   # tractography (JAX)
 ```
+
+!!! note "GPU"
+    The walk, the fits and the tracker run on the GPU when JAX finds one. With `[cuda12]` the environment
+    exports `LD_LIBRARY_PATH` so the loader finds the CUDA libraries; the
+    [dmipy-sim install notes](https://github.com/dmrai-lab/dmipy-sim#install) have the exact line. Set
+    `JAX_PLATFORMS=cpu` to force the CPU, for example in CI. Every example on this site runs on the CPU, and
+    dmipy-replay needs no GPU at all.
+
+!!! warning "Coming from dmipy 1.x"
+    The 2019 toolbox was a single importable `dmipy` package. It stays on PyPI:
+    `pip install "dmipy<2"`. Everything else is in [Migrating](migrating.md).

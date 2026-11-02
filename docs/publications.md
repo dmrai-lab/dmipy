@@ -1,6 +1,18 @@
 # Publications
 
-## Preprint
+## The replay paper
+
+!!! quote "Replayable Monte Carlo MRI (2026)"
+    **Replayable Monte Carlo MRI: From Persistent Tissue Microphysics to Queryable Virtual Phantoms.**
+    Rutger H.J. Fick (2026). Preprint.<!-- ARXIV_URL: the replay paper's arXiv link goes here once it has an identifier -->
+
+The method under dmipy-sim's replay packs and dmipy-replay: a Monte-Carlo walk stored once as the sine-band
+projections of every walker's path, its pool and its wall contact, certified, and replayed against any
+acquisition, tissue and scanner within its certificate. Its DiSCo phantom is the
+[DiSCo Space](https://huggingface.co/spaces/rfick/disco-replay), and its packs are on
+[SubstrateCommons](https://huggingface.co/SubstrateCommons). The [replay guide](replay/index.md) is the manual.
+
+## Surface relaxivity
 
 !!! quote "Two observables of one wall"
     **Two observables of one wall: how surface relaxivity can bias the diffusion intra-axonal
@@ -15,7 +27,7 @@ forms for the interior (Brownstein–Tarr) and exterior (Novikov–Burcaw) surfa
 myelinated cylinders, validates them with wall-counting Monte Carlo, and quantifies the resulting
 bias on the diffusion intra-axonal signal fraction `f_intra` and on the myelin water fraction
 (MWF). The [surface relaxivity & MWF](surface_relaxivity_bias.md) page is the reproducible
-walkthrough, and every figure regenerates from the engines here.
+walkthrough; the paper's figure scripts are in `papers/surface_relaxivity_bias/`.
 
 ## The original dmipy toolbox
 

@@ -129,4 +129,4 @@ Per-compartment `T2`/`T1` are picked up from the compartments when present (fall
 global `T2` or to no relaxation); the SE vs. PGSTE propagator is selected from the acquisition
 scheme (mixing time $T_M$). See also the
 [GPA-for-arbitrary-waveforms derivation](gpa_arbitrary_waveform.md) and
-[Acquisition sequences](../sequences.md).
+[Acquisition sequences](../acquisition.md).

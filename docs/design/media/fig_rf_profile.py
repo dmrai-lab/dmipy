@@ -11,8 +11,8 @@ Three panels:
            modulation) — the composite/adiabatic-like structure that buys the robustness,
            against the flat hard 180. Peak-B1 and the SAR cost are annotated.
 
-Needs the working-tree dmipy-design + dmipy-sim on the path:
-    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu PYTHONPATH=/path/design:/path/sim python fig_rf_profile.py
+Needs dmipy-design and dmipy-replay installed:
+    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu python fig_rf_profile.py
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):

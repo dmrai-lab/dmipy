@@ -1,89 +1,63 @@
 # Susceptibility
 
-!!! success "✅ Released in dmipy-sim"
-    Magnetic susceptibility is a **released** effect in the public [dmipy-sim](../sim.md) forward
-    Bloch engine, validated against exact analytics and published Monte-Carlo findings. The
-    matched analytical inverse (the $R_2'$ term in the [coherence-gating](coherence_gating.md)
-    law) follows the same release path as the other effects.
+Myelin, iron and deoxyhaemoglobin perturb the local field. Each source gives an off-resonance
+field ΔB_z(r); a diffusing spin accrues the extra phase γ ∫ ΔB_z(r(t)) dt on top of the gradient
+phase, read through the same substrate as diffusion, relaxation and exchange.
 
-Tissue components perturb the local magnetic field — myelin in white matter (an
-orientation-dependent hollow-cylinder law) and non-heme iron / deoxyhaemoglobin in grey
-matter (a static-dephasing field around impermeable cells). Each source produces an
-off-resonance field $\Delta B_z(\mathbf r)$; a diffusing spin accrues an extra phase
-$\gamma\int \Delta B_z(\mathbf r(t))\,dt$ on top of the gradient phase, read through the
-*same* substrate as diffusion, relaxation and exchange.
+![Same susceptibility, same B0, same spins, only the axon shape differs: a circular lumen's internal field is uniform so the spins stay coherent; a real segmented monkey axon's field varies point to point and the net magnetization collapses.](media/susceptibility_morphology.gif){ width="100%" }
 
-![Same susceptibility, same B0, same spins — only the axon shape differs. A circular lumen's internal field is uniform so the spins stay coherent; a real XNH monkey axon's field varies point-to-point and the net magnetization collapses.](media/susceptibility_morphology.gif){ width="100%" }
+Inside a circular lumen the internal field is uniform, so every spin precesses together and the
+signal only rotates. Inside a real, non-circular lumen the field varies, the spins fan out and the
+signal collapses: susceptibility-induced dephasing reads out the morphology (Winther 2024).
 
-**This is the whole story in one loop.** The top row is each axon in 3-D — a generated
-myelinated cylinder and the real XNH monkey axon mesh (Winther's G6 segmentation), same
-orientation — with a cutting plane marking where the cross-section below is taken. In the
-cross-section the two lumens carry *identical* susceptibility, main field and spins. Inside
-the circle the internal field is uniform, so every spin precesses together and the net
-magnetization only rotates (|S| stays 1). Inside the real, non-circular lumen the field varies
-from point to point, the spins fan out on the phasor clock, and the signal collapses. The
-susceptibility-induced dephasing **reads out the morphology** — the Winther 2024 finding, live.
+## Where the field comes from
 
-![Off-resonance field ΔBz(r) for the three susceptibility source types, all from one engine.](media/susceptibility_fields.png){ width="100%" }
+A substrate's field is its magnetic pools' own: a pool of the spec that carries a `susceptibility` is a field
+source, and the walk computes the field basis of the sources and reads it along every walker's path. The basis is
+linear in χ and B₀, so the pack stores it once and a replay multiplies it by the tissue's susceptibility and the
+scanner's field. The basis comes by one of two routes:
 
-## One engine, three sources
+- **The myelin sheath in closed form**: the hollow cylinder of isotropic and anisotropic susceptibility (Wharton &
+  Bowtell 2012), infinite or as finite segments of a swept strand (`dmipy_analytic.fields`); the intra-axonal
+  offset ½ Δχ_A B₀ sin²θ ln(1/g) is uniform inside the lumen and zero when B₀ is along the fibre.
+- **Any shape on a grid**: the distribution of susceptibility rasterised on the domain grid and solved by the
+  Lorentz-corrected k-space dipole model (Salomir 2003; Marques & Bowtell 2005; `dmipy_sim.dipole_field`). The
+  route for real morphology: a segmented axon, an undulating sheath, a mesh, a sphere union.
 
-The field enters the walk as a per-step z-precession $\gamma\,\Delta B_z(\mathbf r)\,dt$;
-$\Delta B_z$ comes from whichever source describes the tissue:
+![Off-resonance field ΔBz(r) of magnetised spheres, a hollow-cylinder sheath and a grid source.](media/susceptibility_fields.png){ width="100%" }
 
-- **`SusceptibilitySources`** — isotropic magnetised spheres (grey-matter iron,
-  vasculature): superposed uniformly-magnetised-sphere dipoles (Schenck 1996).
-- **`MyelinSusceptibility`** — the anisotropic hollow-cylinder myelin field
-  (Wharton & Bowtell 2012) in closed form; the intra-axonal offset is
-  $\tfrac12\,\Delta\chi_A B_0 \sin^2\!\theta\,\ln(1/g)$ — uniform inside the lumen and
-  zero when $B_0\parallel$ fibre.
-- **`GridSusceptibility`** — an arbitrary distribution voxelised onto a grid and solved by
-  the Lorentz-corrected k-space dipole model (Salomir 2003; Marques & Bowtell 2005). This
-  is the route for real morphology — a segmented axon, an undulating sheath, any mesh.
-
-![Intra-axonal off-resonance field vs B0-to-fibre angle: Monte-Carlo on the analytic sin²θ law, zero at parallel.](media/susceptibility_orientation.png){ width="62%" }
-
-The intra-axonal field is **orientation-dependent** and vanishes when $B_0\parallel$ fibre —
-where the internal field is uniform and the echo refocuses it completely — which is exactly
-why susceptibility reads out fibre orientation and morphology.
-
-Because the field precesses the spin at its current position, it **composes with the other
-effects in one pass**: a substrate can carry diffusion, magnetization transfer and
-susceptibility together, and the sequence's own 180° pulse refocuses the *static* part of
-the field exactly as in a real spin echo — so a stimulated echo parks it alongside surface
-relaxivity, and the diffusion-driven residual is what survives.
+The field precesses the spin at its current position, so it composes with every other effect in
+one pass, and the sequence's own 180 refocuses its *static* part exactly as in a real spin echo:
+only the diffusion-driven residual survives, the part that carries microstructure.
 
 ![Spin-echo phase trajectories: a static field refocuses to full signal at the echo; diffusion through the field leaves a residual.](media/susceptibility_refocusing.png){ width="80%" }
 
-The 180° pulse refocuses the **static** part of the field exactly (the echo returns to full
-signal), so only the **diffusion-driven** part survives — the piece that actually carries
-microstructure.
+A myelinated axon's sheath is a field source: its pool is magnetic, so the walk reads the field along every
+walker's path and the pack stores it as a channel. The susceptibility and the scanner's field are replay knobs, and
+the fibre's angle to B0 is the pose:
 
 ```python
-from dmipy_sim import (run_bloch_sequence, spin_echo, Cylinder, MyelinSusceptibility)
+import numpy as np
+import dmipy_sim as ds
+from dmipy_replay import Envelope, Tissue, sequences
 
-susc = MyelinSusceptibility(centers=[[0, 0]], inner_radii=[2e-6], outer_radii=[3e-6],
-                            L=20e-6, delta_chi_a=-0.1e-6, B0=7.0, theta=1.57)   # B0 ⊥ fibre
-seq  = spin_echo(TE=40e-3, dt=1e-4)
-S    = run_bloch_sequence(seq, n_walkers=50_000, diffusivity=0.6e-9,
-                          geometry=Cylinder(radius=2e-6, orientation=(0, 0, 1)),
-                          susceptibility=susc)
+axon = ds.MyelinatedCylinder(inner_radius=2e-6, outer_radius=3e-6, orientation=(0, 0, 1),
+                             compartments=ds.Compartments(extra=ds.Pool(D=1.7e-9), intra=ds.Pool(D=1.7e-9),
+                                                          myelin=ds.Pool(D=0.0)))
+env = Envelope(name="docs", band_hz=400.0, G_max=0.08, B0_list=(3.0, 7.0), chi_max=2e-7, rho2_max=None,
+               max_refocusing_pulses=1)                     # the field tier certified to 7 T and |chi| 2e-7
+pack = ds.build_replay_pack(ds.walk(axon.spec, 500, T_max=0.04, envelope=env, seed=0, require_gpu=False),
+                            id="docs/myelinated-axon", license="CC-BY-4.0", citation="dmipy.org")
+myelin = Tissue(chi_iso=-0.1e-6, chi_aniso=-0.1e-6)         # the sheath's susceptibility: a replay knob
+se = sequences.pgse([[0, 0, 1]], 0.005, 0.020, gradient_strengths=[0.0], TE=0.040)   # a bare spin echo
+ge = sequences.gre(0.040)                                                       # a bare gradient echo
+for B0 in (3.0, 7.0):
+    for axis in ((0, 0, 1), (1, 0, 0)):                      # the fibre along B0, then across it
+        S = [float(np.abs(pack.replay(s, tissue=myelin, scanner=B0, orientation=axis)[0])) for s in (se, ge)]
+        print(B0, axis, np.round(S, 4))                      # across B0 the field dephases; the 180 refocuses its static part
 ```
 
-## In the coherence-gating law
-
-In the [coherence-gating](coherence_gating.md) pair susceptibility is a purely *transverse*
-channel — the $R_2'$ term of the apparent transverse rate,
-
-$$
-\frac{1}{T_2^{\mathrm{app}}} = \frac{1}{T_2} + \rho_2\,\frac{S}{V} + R_2' + k_f ,
-$$
-
-acting only while the magnetization is transverse ($\chi_\perp{=}1$), with **no**
-counterpart in $1/T_1^{\mathrm{app}}$: longitudinal storage pauses it over the mixing time.
-
-!!! tip "Validation against the literature"
-    The field solver is checked against exact analytics — isotropic sphere (zero internal
-    field, Lorentz) and cylinder; the anisotropic hollow-cylinder intra field
-    $\tfrac12\,\chi_A B_0 \sin^2\!\theta\,\ln(1/g)$ — and against published Monte-Carlo
-    findings on real segmented monkey axons (Winther et al. 2024).
+In the [coherence-gating](coherence_gating.md) law susceptibility is the purely transverse R₂′
+term: longitudinal storage pauses it over the mixing time. The field solver is validated against
+the exact sphere and cylinder fields, the hollow-cylinder intra-axonal law, and Winther et al.
+2024's Monte Carlo on segmented monkey axons.

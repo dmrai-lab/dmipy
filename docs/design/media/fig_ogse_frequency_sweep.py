@@ -7,8 +7,8 @@ with a short readout + long TE so each waveform holds many oscillation periods. 
 power spectra |q~(f)|^2 are sharp, well-separated peaks at the target frequencies — and the
 b-value (SNR) drops steeply with frequency, the OGSE cost.
 
-Needs the (private) ``dmipy-design`` package on the path:
-    OMP_NUM_THREADS=1 PYTHONPATH=/path/to/dmipy-design python fig_ogse_vanilla_vs_optimized.py
+Needs dmipy-design installed:
+    OMP_NUM_THREADS=1 python fig_ogse_vanilla_vs_optimized.py
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):

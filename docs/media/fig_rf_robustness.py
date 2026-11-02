@@ -10,9 +10,9 @@ Inversion fidelity (M_z from +z; −1 = perfect) vs transmit scale B1⁺, for fo
   * BIR-4               — an adiabatic pulse built from four half-passages with phase jumps: a
                           B1-insensitive rotation by ANY angle (shown at 180°).
 
-Built entirely on dmipy-sim's B1Pulse forward.
+Built entirely on dmipy-replay's B1Pulse forward.
 
-    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu PYTHONPATH=/path/sim python fig_rf_robustness.py
+    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu python fig_rf_robustness.py
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -24,7 +24,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from dmipy_sim.rf import B1Pulse, bloch_simulate
+from dmipy_replay.acquisition.rf import B1Pulse, bloch_simulate
 GAMMA = 2.675e8
 dt, T, A0 = 1e-5, 4e-3, 19e-6
 

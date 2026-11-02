@@ -1,73 +1,75 @@
-# Forward — dmipy-sim
+# Simulate — dmipy-sim
 
-The Monte-Carlo **ground truth**. Spins random-walk through an explicit tissue geometry and
-accumulate phase under an arbitrary free gradient waveform `G(t)`; the ensemble signal is
-`S/S₀ = ⟨cos φ⟩`, from first principles with no analytical shortcut. **Surface relaxivity**,
-**membrane permeability** and **T2** are baked into the walk. Magnetisation is treated as fully
-transverse (ideal instantaneous pulses).
+Spins random-walk through an explicit geometry and accumulate phase under the acquisition's
+gradient; the signal is the ensemble average, from first principles. Surface relaxivity,
+permeability, T2 and T1, susceptibility and magnetization transfer are part of the same walk.
 
 ```python
-import numpy as np, dmipy_sim as ds
+import dmipy_replay as dr
+import dmipy_sim as ds
 
-wf = ds.set_b(ds.pgse(delta=5e-3, DELTA=20e-3, G_magnitude=0.05,
-                      bvecs=np.array([[1., 0, 0]]), n_t=300), b_target=np.array([1e9]))
-signal = ds.simulate(50_000, diffusivity=2e-9, waveform=wf,
-                     geometry=ds.Cylinder(radius=5e-6, orientation=(0, 0, 1)))
+seq = dr.pgse([[1, 0, 0]] * 3, 0.010, 0.030, bvalues=[0, 1e9, 2e9])
+E   = ds.simulate(8_000, 2e-9, waveform=seq, geometry=ds.Cylinder(radius=4e-6, orientation=(0, 0, 1)),
+                  seed=0, require_gpu=False)
+E / E[0]                       # the signal, normalised to b = 0
 ```
 
-- **Encodings:** `pgse`, `ogse`, `cpmg`, `ste`, `pte`, `trapezoidal_ogse` — factory constructors
-  over the free waveform (`G(t)` of shape `(n_measurements, n_t, 3)`, the base representation).
-- **Multi-echo:** `simulate_cpmg(n_walkers, D, cpmg_waveform, geometry)` returns the full CPMG
-  echo train from a *single* walk.
-- **Substrate properties:** set `surface_relaxivity_t2=ρ` / `permeability=κ` on any closed
-  geometry — baked into the walk (one walk per ρ/κ).
-- **Noise:** Rician / non-central-χ measurement noise (`add_rician_noise`, `add_nc_chi_noise`).
-- **Sequence I/O:** Pulseq `.seq` interop + per-vendor gradient/RF/SAR deliverability limits.
+## Two ways to get a signal
 
-### Geometries
+**One call**: `simulate(n_walkers, diffusivity, waveform, geometry)` walks the spins and replays the
+acquisition on that walk, and returns the signal.
+
+**A pack**: walk once, keep the walk, replay any acquisition on it. `walk(spec, n_walkers, T_max=,
+envelope=)` is the one producer: it reads a substrate spec (or a geometry, reduced to its spec) and
+accumulates every walker's path as sine bands while it runs; `build_replay_pack` stores them as a
+`.rpk` replay pack, certified for the envelope it was walked for (a scanner class's band and gradient
+amplitude, `envelope_of("connectom")`, and the field and tissue bounds). dmipy-replay reads the pack:
+`pack.replay(seq)` contracts it with any waveform, and `pack.replay_bloch(seq)` carries the magnetisation
+through the sequence's own pulses. The pack is what [SubstrateCommons](https://huggingface.co/SubstrateCommons)
+distributes and what dmipy-fit's replay models fit against.
+
+```python
+from dmipy_replay import envelope_of
+
+walk = ds.walk(ds.Cylinder(radius=4e-6, orientation=(0, 0, 1)), 2_000, T_max=0.09,
+               envelope=envelope_of("connectom"), diffusivity=2e-9, seed=0, require_gpu=False)   # 90 ms of walk
+pack = ds.build_replay_pack(walk, id="docs/cylinder", license="CC-BY-4.0", citation="dmipy.org")
+E_pgse = pack.replay(dr.pgse([[1, 0, 0]], 0.010, 0.030, bvalues=[1e9]))
+E_ogse = pack.replay(dr.ogse([[1, 0, 0]], 50.0, 0.040, shape="cosine", bvalues=[1e9]))
+```
+
+The walk depends only on the substrate, the diffusivity and the seed; the acquisition, the field,
+the relaxation times and the pose are replay knobs. That invariant is why one walk answers every
+sequence within its envelope. **[The replay guide](replay/index.md)** is the manual for that side: one
+page per object (pack, sequence, tissue, scanner, orientation), the table of what each knob touches
+and which channel it needs, [the vector-Bloch route](replay/bloch.md), images from a pack opened by
+reference, and two recipes. [The workflow, end to end](start/workflow.md) runs the whole loop.
+
+## Geometries
 
 | Geometry | Restriction | Surface relaxivity | Permeability |
 |---|---|:---:|:---:|
 | `FreeDiffusion` | none | — | — |
-| `Box1D` | 1-D slab | ✓ | — |
-| `Sphere`, `Cylinder`, `Ellipsoid` | closed wall | ✓ | ✓ |
-| `PackedCylinders`, `PackedSpheres` | periodic ensemble | ✓ | ✓ |
+| `Box1D`, `PermeableSlab1D` | 1-D slab | ✓ | ✓ |
+| `Sphere`, `Cylinder`, `Ellipsoid`, `CurvedCylinder` | closed wall | ✓ | ✓ |
+| `PackedCylinders`, `PackedSpheres`, `PackedCurvedCylinders` | periodic ensemble | ✓ | ✓ |
 | `MyelinatedCylinder`, `PackedMyelinatedCylinders` | multi-wall myelin | ✓ | ✓ dual-wall |
-| `Mesh` (load a `.ply`) | arbitrary closed **or** 3-D-periodic mesh | ✓ | ✓ |
+| `SphereUnion` | overlapping spheres (CATERPillar-style) | ✓ | ✓ |
+| `Mesh` (`.ply`) | arbitrary closed or 3-D-periodic mesh | ✓ | ✓ |
 
-Load an arbitrary microstructure with `Mesh.from_ply(...)` — spatially accelerated (≈10⁶ triangles
-tractable), closed or 3-D periodic. See **[Mesh substrates](mesh_substrates.md)**.
+Every geometry has a `.spec` (a `SubstrateSpec`, saved as `.sub.json`) that writes out what the
+constructor leaves implicit, and every driver accepts the spec or the object. See
+[Substrate & geometry](substrate.md), [Mesh substrates](mesh_substrates.md) and the
+[biophysical constants](constants.md) the canonical white matter is built from.
 
----
+## Noise
 
-## What this adds over the original dmipy
+`add_rician_noise(S, sigma)` and `add_nc_chi_noise(S, sigma, n_coils)` add measurement noise to a
+signal; `estimate_sigma` recovers it from data.
 
-The 2019 dmipy had **no forward model** — it fit analytical compartment signals but could not
-*generate* a ground-truth one. dmipy-sim is that missing half, and it reads the **same**
-`Waveform` and substrate objects as the analytical [dmipy-fit](fit.md), so a fit and a simulation
-built from the same parameters describe the same tissue with no conversion layer. That is what
-lets every analytical model be checked, effect by effect, against Monte Carlo — the
-[canonical-WM parity example](examples/canonical_wm_parity.md) shows the agreement.
+## Correctness
 
-- **First-principles restriction** in spheres, cylinders, ellipsoids, packed ensembles and
-  multi-wall myelin — and in **arbitrary meshes**.
-- **Surface relaxivity** (Brownstein–Tarr, interior + exterior) and **membrane permeability /
-  exchange** (Powles) baked into the walk — the ground truth for the factors dmipy-fit fits.
-- **Arbitrary-waveform / b-tensor** encoding (OGSE, LTE/PTE/STE, free `G(t)`) — see
-  **[Acquisition sequences](sequences.md)** and **[Substrate & geometry](substrate.md)**.
-- **Watch the spins** — real Monte-Carlo-walk movies of the intra / myelin / extra pools in
-  **[Pedagogy](pedagogy.md)**.
-
-Every physical effect ships a first-principles 1D→2D→3D validation ladder against exact
-eigenvalues (the repo's `examples/validation/`).
-
-### Current scope (this release)
-
-The **mission** is a physics-complete, sequence- and substrate-agnostic forward model — the free
-waveform `G(t)` and an arbitrary substrate as the base representation, every physical effect on
-the same footing — paired with its analytical inverse. *This release* is the
-transverse-magnetisation slice: diffusion + T2 + surface relaxivity + permeable exchange +
-magnetization transfer, with
-ideal instantaneous pulses. Susceptibility, gradient-/stimulated-echo and T1 are part of the
-model but not in the released public scope yet — the boundary above is a *release* boundary, not
-the ceiling.
+Physics is the specification: every effect ships a validation ladder against exact analytical
+solutions (eigenfunction series, Brownstein–Tarr, exchange laws, MISST references) in the
+repository's `examples/validation/`. The [Physics](physics/index.md) pages show each effect and
+what it was validated against.

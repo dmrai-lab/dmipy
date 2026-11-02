@@ -1,0 +1,42 @@
+name: docs (pull request)
+# Builds the site for a pull request and runs every code block on its pages and every headless check of its
+# interactive pages. A pull request into `main` is built with the released packages (what the root of dmipy.org
+# documents); any other, into `staging`, with the packages' git mains (what /dev/ documents). Nothing is deployed
+# here; docs.yml deploys main (the root) and staging (/dev/).
+on:
+  pull_request:
+    paths: ["docs/**", "mkdocs.yml", "tools/**", ".github/workflows/docs*.yml", "pyproject.toml"]
+  workflow_dispatch:
+env:
+  JAX_PLATFORMS: cpu
+  MPLBACKEND: Agg
+  OMP_NUM_THREADS: "2"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - name: Install the released packages (a pull request into main)
+        if: github.base_ref == 'main'
+        run: bash tools/install_packages.sh released
+      - name: Install the packages from their git mains (a pull request into staging)
+        if: github.base_ref != 'main'
+        run: bash tools/install_packages.sh mains
+      - name: Every code block on every page runs
+        run: python tools/run_snippets.py
+      - name: The sequence explorer's page script runs over its whole grid
+        run: node tools/check_explorer.js
+      - name: The brain page recombines what the engine computed
+        run: node tools/check_brain.js
+      - name: The landing-page signal widget draws every stored state
+        run: node tools/check_signal_widget.js
+      - name: The spin studio's in-browser Bloch integration agrees with dmipy-replay's propagator
+        run: python tools/check_spin_studio.py
+      - name: The explorer data is what the installed dmipy-replay builds
+        run: python tools/check_explorer_data.py
+      - name: The site builds strictly
+        run: mkdocs build --strict --site-dir site

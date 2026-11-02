@@ -1,76 +1,67 @@
-# Migrating from dmipy 1.x (the 2019 toolbox)
+# Migrating
 
-If you used the original **dmipy** (Fick–Wassermann–Deriche, 2019), most of your analysis code
-carries over with a **namespace rename**. The big change is structural: dmipy 2.x is split into
-two engines, and `pip install dmipy` no longer gives you an importable `dmipy` package.
+## From dmipy 1.x (the 2019 toolbox)
 
-## The one-minute version
+From 2.0 the toolbox is separate packages, and `pip install dmipy` gives no importable `dmipy`
+package. The analytical toolbox you knew **is** `dmipy_fit`: submodule layout and class
+names are preserved, so a find-replace of `dmipy.` → `dmipy_fit.` is most of the migration.
 
-| 1.x | 2.x |
+| 1.x | now |
 |---|---|
-| `pip install dmipy` → `import dmipy` | `pip install dmipy` → `import dmipy_fit` (+ `import dmipy_sim`) |
-| `from dmipy.core...` | `from dmipy_fit.core...` |
-| `from dmipy.signal_models...` | `from dmipy_fit.signal_models...` |
-| `from dmipy.distributions...` | `from dmipy_fit.distributions...` |
-| (no forward simulator) | `import dmipy_sim` — GPU Monte-Carlo forward model (new) |
-
-The analytical / fitting toolbox you knew **is** `dmipy_fit`: the submodule layout and the class
-names are preserved. In most scripts a mechanical find-replace of `dmipy.` → `dmipy_fit.` is the
-whole migration.
+| `pip install dmipy` → `import dmipy` | `pip install dmipy` → `import dmipy_fit` (+ `dmipy_sim`, `dmipy_replay`, `dmipy_design`, `dmipy_analytic`) |
+| `from dmipy.core...`, `.signal_models...`, `.distributions...` | `from dmipy_fit.core...`, `.signal_models...`, `.distributions...` |
+| `acquisition_scheme_from_bvalues(bvals, bvecs, delta, Delta)` | unchanged, and now a `ScannerSequence` underneath |
+| `model.fit(scheme, data)` | unchanged; add `solver="jax"` for the vectorised GPU fit |
+| no forward model | `dmipy_sim` (Monte Carlo), `dmipy_replay` (the replay of its packs) and `dmipy_design` (sequence design) |
 
 ```python
-# 1.x
-from dmipy.core.acquisition_scheme import acquisition_scheme_from_bvalues
-from dmipy.signal_models import cylinder_models, gaussian_models
-from dmipy.core.modeling_framework import MultiCompartmentModel
-
-# 2.x — identical names, dmipy_fit namespace
-from dmipy_fit.core.acquisition_scheme import acquisition_scheme_from_bvalues
-from dmipy_fit.signal_models import cylinder_models, gaussian_models
-from dmipy_fit.core.modeling_framework import MultiCompartmentModel
-
-stick = cylinder_models.C1Stick()
-ball  = gaussian_models.G1Ball()
-model = MultiCompartmentModel(models=[stick, ball])   # unchanged
+# docs: skip  (the 1.x half needs the 2019 package)
+from dmipy.core.modeling_framework import MultiCompartmentModel       # 1.x
+from dmipy_fit.core.modeling_framework import MultiCompartmentModel   # now: same names, new namespace
 ```
 
-Watson/Bingham distributed models (`SD1WatsonDistributed`, …) live under
-`dmipy_fit.distributions.distribute_models`, as before.
+Double-check: b-values are in s/m² (multiply s/mm² by 1e6); the 1.x `dipy`-based helpers are
+gone (nothing in the engines imports `dipy` at runtime); the CSD and dispersion models keep their
+names but run on JAX. To stay on the original toolbox, `pip install "dmipy<2"`.
 
-## Things to double-check
+## From 2.x to 3.0
 
-- **b-values are in `s/m²`, not `s/mm²`** — as in 1.x. Multiply your `s/mm²` values by `1e6`
-  (`1000 s/mm² → 1e9 s/m²`). 2.x now emits a `RuntimeWarning` if the max b-value looks like it was
-  passed in `s/mm²`, so a silent all-b0 scheme won't bite you anymore.
-- **Import the engines directly.** There is no importable `dmipy` in 2.x — it is a meta-package
-  that installs `dmipy_fit` (inverse) and `dmipy_sim` (forward). See [Install](install.md).
-- **To pin the old toolbox:** `pip install "dmipy<2"` still resolves to the 2019 releases on PyPI.
+3.0 is [six packages](packages.md). The signal side, everything that turns a stored walk into a signal or an
+image, is dmipy-replay's, and so is the acquisition object every package shares; dmipy-sim produces packs; the
+closed forms and the physical constants are dmipy-analytic's. A name has one spelling: a name that moved is
+refused by name, and the refusal names its one spelling and the import that brings it.
 
-## What's genuinely new in 2.x
+| 2.x | 3.0 |
+|---|---|
+| `dmipy_sim.pgse`, `pgste`, `ogse`, `cpmg`, `gre`, `ste`, `pte`, `splice`, `dmipy_sim.sequences` | `dmipy_replay.pgse`, ..., `dmipy_replay.sequences` |
+| `ScannerSequence`, `Protocol`, `Encoding`, `Prescription`, `RFEvent`, `RFSchedule`, `B1Pulse`, `SequenceTiming`, `ScannerLimits`, `set_b` from `dmipy_sim` | the same names from `dmipy_replay` |
+| `dmipy_sim.acquisition.rf`, `.scanners`, `.timing`; `dmipy_sim.sequences.pulseq.from_pulseq` | `dmipy_replay.acquisition.rf`, `.scanners`, `.timing`; `dmipy_replay.sequences.pulseq.from_pulseq` (the writer, `to_pulseq`, is `dmipy_sim.sequences.pulseq`'s) |
+| `dmipy_sim.ReplayPack`, `read_rpk`, `dmipy_sim.phantom`, the pose and study modules of `dmipy_sim.replay` | `dmipy_replay.ReplayPack`, `read_rpk`, `dmipy_replay.phantom`, `dmipy_replay.replay.pose`, `.study`, `.so3`, `.fod` |
+| `dmipy_sim.spec.tissue.Tissue`, `dmipy_sim.spec.SubstrateSpec` | `dmipy_replay.Tissue`, `dmipy_replay.SubstrateSpec` |
+| `walk_spec(spec, n, T)`, `simulate_trajectories(...)` | `dmipy_sim.walk(spec, n, T_max=, envelope=envelope_of("prisma"))`: one producer, the envelope required |
+| `build_replay_pack(walk, K=)` | `dmipy_sim.build_replay_pack(walk)`: the band is the envelope's |
+| `simulate_bloch(n, D, seq, geometry)` | `pack.replay_bloch(seq, b1_scale=, off_resonance_T=)` on a pack of the walk ([the vector-Bloch route](replay/bloch.md)) |
+| `pack.replay(seq, T2=, B0=, b0_dir=, chi_iso=)` | `pack.replay(seq, tissue=Tissue(T2={pool: seconds}, chi_iso=...), scanner=B0, orientation=...)` |
+| `calc_b(seq)`, `calc_btensor(seq)` | `seq.b()`, `seq.btensor()` |
+| `GAMMA` from `dmipy_sim`, `dmipy_sim.math.matrix_method`, the MT forms of `dmipy_sim.engine.mt` | `dmipy_analytic.constants.GAMMA`, `dmipy_analytic.restricted.matrix_method`, `dmipy_analytic.relaxation` |
+| `MyelinatedCylinder(D_intra=, D_extra=, D_myelin=, water_fractions=)`, pool-wide `T2_intra=` scalars | `compartments=Compartments(intra=Pool(D=, T2=), extra=Pool(...), myelin=Pool(...))` |
+| the spec's `Pool` in dmipy-replay; `columnar.Source` | `PoolSpec`; `columnar.ColumnSource` |
+| `dmipy_design.certify.ReplayEnvelope`, `replay_envelope()` | `DeliverableSet`, `deliverable_set()` |
+| `dmipy_fit.audit.biophysical_constants` | `dmipy_sim.substrate.biophysical_constants` |
 
-2.x is **not just a rename** — the toolbox you knew (`dmipy_fit`) is now one half of a much larger
-tool. The compartment-model grammar carries over unchanged; everything below it was rebuilt, and a
-whole forward-simulation half was added. Each row links to where it lives in the docs.
+## The acquisition, one object
 
-| Capability | 1.x | 2.1 | Docs |
-|---|:---:|:---:|---|
-| Modular multi-compartment model design & fitting | ✓ | ✓ | [Inverse](fit.md) |
-| Orientation dispersion (Watson / Bingham), Gamma diameters | ✓ | ✓ | [Model catalog](catalog.md) |
-| CSD / fibre ODFs | ✓ | ✓ | [Inverse](fit.md) |
-| Named literature models (NODDI, SMT, VERDICT, SANDI, …) | ✓ | ✓ | [Model catalog](catalog.md) |
-| **GPU fitting** — whole-slice `vmap` fits in seconds (`solver="jax"`) | — | ✓ | [Inverse](fit.md) |
-| **Noise-aware Rician maximum-likelihood** fitting (not just least-squares) | — | ✓ | [Inverse](fit.md) |
-| **Forward Monte-Carlo simulator** (`dmipy_sim`) — no forward model in 1.x | — | ✓ | [Forward](sim.md) |
-| **Arbitrary / triangular-mesh substrates** (load a `.ply`) | — | ✓ | [Mesh substrates](mesh_substrates.md) |
-| **T2 & surface relaxivity** as composable occupancy-gated factors | — | ✓ | [Surface relaxivity & MWF](surface_relaxivity_bias.md) |
-| **Myelin-water fraction** (regularised NNLS T2 spectrum) | — | ✓ | [Surface relaxivity & MWF](surface_relaxivity_bias.md) |
-| **Water-exchange** — generalized Kärger / NEXI (analytical, on GPU) | — | ✓ | [Model catalog](catalog.md) |
-| **Arbitrary-waveform / b-tensor encoding** (OGSE, LTE/PTE/STE, free `G(t)`) | — | ✓ | [Acquisition sequences](sequences.md) |
-| **Composite, sequence-agnostic schemes** (mix encodings in one fit) | — | ✓ | [Acquisition sequences](sequences.md) |
-| **Exact analytical spherical harmonics** for Watson/Bingham/Gaussian ODFs | — | ✓ | [Model catalog](catalog.md) |
-| **Shared substrate for fit ↔ sim parity** (no conversion layer) | — | ✓ | [WM parity example](examples/canonical_wm_parity.md) |
-| **Spin-walk pedagogy movies** (intra / myelin / extra water pools) | — | ✓ | [Pedagogy](pedagogy.md) |
-| **Citation graph + auto-generated Methods** & BibTeX | — | ✓ | [Inverse](fit.md) |
+The acquisition is one object, `ScannerSequence`, built by the builders and read by every package
+([Acquisition](acquisition.md)):
 
-Everything in the diffusion-fitting grammar you already wrote still runs (after the `dmipy_fit`
-rename); the new rows are additive.
+| 2.x | 3.0 |
+|---|---|
+| `Sequence.from_pgse(bvals, dirs, delta, Delta)` | `dmipy_replay.pgse(dirs, delta, Delta, bvalues=bvals)` |
+| `Sequence.from_ogse(..., n_cycles=)` | `dmipy_replay.ogse(dirs, f, sigma, shape="cosine")`, whole periods, σ per block |
+| `Sequence.from_cpmg(...)`, `from_btensor_ste/pte` | `cpmg(...)`, `ste(sigma)`, `pte(normal, sigma)` |
+| `set_b(pgse(delta=, DELTA=, G_magnitude=, bvecs=), b)` | `pgse(dirs, delta, Delta, bvalues=b)` |
+| `scheme.waveform` (fit → sim) | `scheme.protocol`; `AcquisitionScheme(seq)` |
+| `Waveform`, `BlochSequence`, `rf_events=`, `echo_idx=`, `refocus_time=` | fields and derived properties of the one object (`rf`, `readout`, `echo_idx`, `rf.refocus_time`) |
+| `design_waveform_now(G_max=, slew_rate_max=)` | `design_waveform_now(limits=ScannerLimits.of("prisma"))` |
+| `design.to_sim_waveform()` | `design.to_sequence()` |
+| `HardwareConstraints` (design) | `dmipy_replay.ScannerLimits` |
