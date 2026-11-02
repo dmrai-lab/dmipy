@@ -6,7 +6,8 @@ any other, so every driver, every physics effect and every acquisition apply unc
 
 ```python
 # docs: skip  (needs a .ply file)
-from dmipy_sim import Mesh, simulate, pgse
+from dmipy_sim import Mesh, simulate
+from dmipy_replay import pgse
 
 mesh = Mesh.from_ply("substrate.ply", scale=1e-5,                    # normalised coordinates -> metres
                      periodic=True, voxel_min=[-10e-6] * 3, voxel_max=[10e-6] * 3,
@@ -23,7 +24,8 @@ E   = simulate(50_000, 2e-9, waveform=seq, geometry=mesh)
 - **Smooth normals and an exact hit floor** keep walkers inside their compartment: zero crossings
   is an output guarantee, checked, not a hope.
 - **`feature_radius`** names the smallest feature the walk must resolve; `quality_report()` says
-  whether the step and the save grid resolve it for diffusion, surface relaxivity and permeability.
+  whether the surface resolves it for diffusion, surface relaxivity and permeability (permeability
+  needs a median edge below about 0.05 of it).
 
 ## Look inside
 
@@ -36,13 +38,15 @@ E   = simulate(50_000, 2e-9, waveform=seq, geometry=mesh)
 ```python
 # docs: skip  (needs a .ply file)
 from dmipy_sim import Mesh, plot_mesh_3d, seed_in_cell, walk_paths, plot_mesh_section, save_rotation
-from dmipy_sim.viz import _split_cells
+from dmipy_sim.viz import split_cells
 
-cell  = _split_cells(mesh)[1]                       # an interior cell
+cell  = split_cells(mesh)[1]                        # an interior cell
 paths = walk_paths(mesh, 16, 500, diffusivity=2e-9, dt=2e-4, r0=seed_in_cell(cell, 16))
 ax = plot_mesh_3d(mesh, cells=(1,), paths=paths)    # transparent cell + confined paths
 save_rotation(ax, "cell_spin.gif")
 ```
 
-Meshes carry surface relaxivity and permeability like the analytic geometries, and a mesh walk can
-be stored as a replay pack and replayed under any acquisition ([Simulate](sim.md)).
+Meshes carry surface relaxivity and permeability like the analytic geometries, and a mesh is
+walked like any substrate (`walk(mesh.spec, ...)`), stored as a replay pack and replayed under any
+acquisition ([Simulate](sim.md)). The CACTUS axon bundles on
+[SubstrateCommons](https://huggingface.co/datasets/SubstrateCommons/cactus-axons) are mesh walks.

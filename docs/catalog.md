@@ -18,7 +18,7 @@ from dmipy_fit.signal_models.sphere_models import S1Dot
 from dmipy_fit.signal_models.attenuation import (
     OccupancyGatedModel, TransverseRelaxation,
     IntraPoreSurfaceRelaxivity, ExteriorSurfaceRelaxivity)
-from dmipy_fit.white_matter.surface import exterior_surface_to_volume
+from dmipy_analytic.relaxation import exterior_surface_to_volume
 
 # one Gamma OUTER (fibre) diameter distribution drives both surface factors
 gamma_shape, gamma_scale = 2.0, 0.304e-6      # mean outer diameter = shape * scale

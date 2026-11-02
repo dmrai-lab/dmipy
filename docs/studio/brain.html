@@ -96,7 +96,7 @@
  const TWO_SQRT_PI=2*Math.sqrt(Math.PI);                    // the axis-density map is this times the identity
  let field=null;                                            // filled when brain_data/field.bin exists
  if(idx.field){ try{ const fb=await (await fetch('brain_data/'+idx.field.file)).arrayBuffer(); const u=new Uint16Array(fb); const o=new Float32Array(u.length); for(let i=0;i<u.length;i++) o[i]=f16(u[i]); field={c:o,...idx.field}; $('#fieldBtn').disabled=false; $('#fieldBtn').title='' }catch(e){ console.log('no field tables', e) } }
- // ---------------------------------------------------------------- the harmonics (dmipy_sim.replay.so3.real_sh, even orders, compact)
+ // ---------------------------------------------------------------- the harmonics (dmipy_analytic.harmonics.real_sh, even orders, compact)
  function realSH(g){                                         // g unit (x,y,z) -> 45 values, l = 0,2,..,8, m = -l..l
    const x=Math.max(-1,Math.min(1,g[2])), phi=Math.atan2(g[1],g[0]), s=Math.sqrt(Math.max(0,1-x*x)), LM=8;
    const P=[]; for(let l=0;l<=LM;l++){P.push(new Array(l+1).fill(0))}

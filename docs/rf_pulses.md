@@ -7,13 +7,13 @@ effective gradient, which coherence pathway is transverse when, the mixing time 
 echo — is derived from that schedule. The forward has no intent: it plays what you hand it.
 
 ```python
-import dmipy_sim as ds
+import dmipy_replay as dr
 
-seq = ds.pgse([[1, 0, 0]], 0.010, 0.030, bvalues=[1e9],
-              timing=ds.SequenceTiming(t_excite=3e-3, t_refocus=6e-3, t_readout_pre_echo=14e-3))
+seq = dr.pgse([[1, 0, 0]], 0.010, 0.030, bvalues=[1e9],
+              timing=dr.SequenceTiming(t_excite=3e-3, t_refocus=6e-3, t_readout_pre_echo=14e-3))
 [(e.label, round(e.t_s * 1e3, 1), e.flip_deg, e.duration_s) for e in seq.rf]   # a 90 and a 180, finite
 seq.rf.refocus_time                     # follows the labelled refocusing pulse
-stim = ds.pgste([[1, 0, 0]], 0.006, 0.040, bvalues=[1e9])
+stim = dr.pgste([[1, 0, 0]], 0.006, 0.040, bvalues=[1e9])
 [e.label for e in stim.rf], stim.TM     # ['Mz→Mxy', 'store', 'recall'], 40 ms along z
 ```
 
@@ -26,7 +26,7 @@ A builder places its blocks inside those windows and derives the TE; `validate()
 sequence whose pulses do not fit.
 
 ```python
-budget = ds.SequenceTiming.from_readout(t_excite=3e-3, t_refocus=6e-3,
+budget = dr.SequenceTiming.from_readout(t_excite=3e-3, t_refocus=6e-3,
                                         readout_duration=30e-3, partial_fourier=0.75)
 budget.min_TE(), budget.t_readout_pre_echo          # the floor, and the tail partial Fourier leaves
 ```
@@ -34,7 +34,7 @@ budget.min_TE(), budget.t_readout_pre_echo          # the floor, and the tail pa
 ## Finite pulses: the shapes are conveniences on top of B1(t)
 
 ```python
-from dmipy_sim.acquisition.rf import B1Pulse, bloch_simulate, slice_profile
+from dmipy_replay.acquisition.rf import B1Pulse, bloch_simulate, slice_profile
 
 exc  = B1Pulse.hard(flip_deg=90,  duration=1e-3, dt=1e-6)            # rectangular 90°
 inv  = B1Pulse.hard(flip_deg=180, duration=1e-3, dt=1e-6)            # rectangular 180°
@@ -50,14 +50,20 @@ _, _, hist = bloch_simulate(exc, return_history=True)   # M at every raster step
 
 ![Bloch-sphere trajectories: a 90° hard pulse tips the magnetisation into the transverse plane; a 180° hard pulse inverts it.](media/rf_zoo.gif){ width="100%" }
 
-Put an envelope on an event and the vector-Bloch engine plays it inside the sequence:
+Put an envelope on an event and the [vector-Bloch route](replay/bloch.md) plays it inside the sequence,
+on any pack (here a free-water walk as long as the sequence):
 
 ```python
-ev  = ds.RFEvent(seq.rf.refocus_time, adia.nominal_flip_deg, "refocus",      # the label carries the role;
+import dmipy_sim as ds
+
+ev  = dr.RFEvent(seq.rf.refocus_time, adia.nominal_flip_deg, "refocus",      # the label carries the role;
                  axis_deg=90.0, duration_s=adia.duration, envelope=adia)     # the flip is the envelope's area
-fin = ds.ScannerSequence(G=seq.G, dt=seq.dt, rf=ds.RFSchedule((seq.rf[0], ev)), readout=seq.readout,
+fin = dr.ScannerSequence(G=seq.G, dt=seq.dt, rf=dr.RFSchedule((seq.rf[0], ev)), readout=seq.readout,
                          timing=seq.timing, encoding=seq.encoding, family=seq.family)
-E = ds.simulate_bloch(4_000, 2e-9, fin, ds.FreeDiffusion(), seed=0, require_gpu=False)
+walk = ds.walk(ds.FreeDiffusion(), 1_000, T_max=float(seq.T), envelope=dr.envelope_of("prisma"),
+               diffusivity=2e-9, seed=0, require_gpu=False)
+pack = ds.build_replay_pack(walk, id="docs/free-water", license="CC-BY-4.0", citation="dmipy.org")
+abs(pack.replay_bloch(fin)[0]), abs(pack.replay_bloch(seq)[0])         # the adiabatic 180 against the hard one
 ```
 
 ## What the shape buys you

@@ -2,7 +2,7 @@
 // Run the spin studio's page script headlessly at one knob setting and dump what it computed:
 // the sequence it built (G on its fine grid, the RF events) and the per-spin magnetisation at
 // every step. tools/check_spin_studio.py then replays the SAME positions under the SAME sequence
-// with dmipy_sim.replay_bloch and compares -- the studio is the one place on the site where the
+// with dmipy-replay's vector-Bloch propagator and compares -- the studio is the one place on the site where the
 // Bloch equation is integrated in JavaScript, so it is checked against the engine.
 //
 // Run: node tools/check_spin_studio.js '{"fam":"pgse","te":60,"pgse_b":1000,"relax":false}' out.json

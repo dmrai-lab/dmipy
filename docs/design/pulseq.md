@@ -30,6 +30,6 @@ encoded" are compared on the file itself.
 
 ## Round trip from a real sequence
 
-A `.seq` from the scanner reads back as a `ScannerSequence` (`dmipy_sim.sequences.pulseq.from_pulseq`)
+A `.seq` from the scanner reads back as a `ScannerSequence` (`dmipy_replay.sequences.pulseq.from_pulseq`)
 and its timing budget as a `SequenceTiming` (`from_pulseq`), so the next design starts from the
 windows the vendor sequence actually has. See [Scanners & Pulseq](../pulseq.md).

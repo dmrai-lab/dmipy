@@ -14,12 +14,13 @@ documentation home**.
 > [What's changed in 2.x](https://dmipy.org/migrating/)
 
 ```bash
-pip install dmipy            # dmipy-sim + dmipy-fit
+pip install dmipy            # dmipy-sim + dmipy-replay + dmipy-fit + dmipy-design
+pip install "dmipy[tract]"   # + dmipy-tract, tractography on FOD fields
 pip install "dmipy[cuda12]"  # + JAX GPU
 ```
 
 ```python
-import dmipy_sim, dmipy_fit   # no importable `dmipy`; import the engines directly
+import dmipy_sim, dmipy_replay, dmipy_fit, dmipy_design   # no importable `dmipy`; import the packages directly
 ```
 
 > **Upgrading from dmipy 1.x?** dmipy 2.0 is a ground-up rewrite with a different
@@ -31,7 +32,8 @@ import dmipy_sim, dmipy_fit   # no importable `dmipy`; import the engines direct
 
 ## This repo
 
-- `pyproject.toml` — the thin `dmipy` meta-package (installs the two engines).
+- `pyproject.toml` — the thin `dmipy` meta-package (installs dmipy-sim, dmipy-replay, dmipy-fit and
+  dmipy-design; the `tract` extra adds dmipy-tract).
 - `docs/` + `mkdocs.yml` — the [dmipy.org](https://dmipy.org) site (MkDocs Material; built and
   deployed by `.github/workflows/docs.yml`).
 - `papers/` — reproducible manuscripts (source + PDF + rerunnable figures); currently

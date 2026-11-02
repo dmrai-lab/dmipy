@@ -51,6 +51,8 @@ nav:
   - Home: index.md
   - Get started:
       - Install: install.md
+      - The packages: packages.md
+      - The workflow, end to end: start/workflow.md
       - Your first fit: start/fit.md
       - Your first simulation: start/sim.md
       - Your first designed sequence: start/design.md
@@ -75,6 +77,7 @@ nav:
           - The scanner: replay/scanner.md
           - The orientation: replay/orientation.md
           - The replay: replay/replay.md
+          - The vector-Bloch route: replay/bloch.md
           - Views: replay/views.md
           - Images by reference: replay/images.md
           - Phantoms: replay/phantoms.md
@@ -90,6 +93,9 @@ nav:
       - Max-b vs min-TE: design/snr.md
       - B1-robust refocusing RF: design/rf.md
       - Run it on the scanner: design/pulseq.md
+  - Closed forms:
+      - dmipy-analytic: analytic/index.md
+      - Every form and its source: analytic/forms.md
   - Physics:
       - Overview: physics/index.md
       - Diffusion: physics/diffusion.md

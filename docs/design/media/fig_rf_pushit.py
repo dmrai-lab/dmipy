@@ -6,7 +6,7 @@ off-resonance on a 19 µT / 5 ms budget. A plain hard 180° is hopeless there; t
 warm start already does well; and the GRAPE refinement squeezes out extra efficiency and
 peak-B1 headroom. This is dmipy-design's own optimiser working at the edge.
 
-    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu PYTHONPATH=/path/design:/path/sim python fig_rf_pushit.py
+    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu python fig_rf_pushit.py
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):

@@ -30,8 +30,8 @@ mode, the stimulated-echo layout, the refocusing-RF designer and the Pulseq roun
   vector-Bloch forward.
 - **[Run it on the scanner](design/pulseq.md)** — export, offline acceptance, round trip.
 
-Every designer takes `limits=` (dmipy-sim's `ScannerLimits`: the cited catalogue, whose SAFE
-coefficients the PNS constraint reads) and `timing=` (dmipy-sim's `SequenceTiming`). A
+Every designer takes `limits=` (dmipy-replay's `ScannerLimits`: the cited catalogue, whose SAFE
+coefficients the PNS constraint reads) and `timing=` (dmipy-replay's `SequenceTiming`). A
 stimulated echo is `design_stimulated_echo(b_delta, limits=, TM=, TE=)`; a substrate-informed
 waveform (maximise the contrast between two replay packs) is
 `replay_design.design_discriminating_waveform`.

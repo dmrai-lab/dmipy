@@ -14,29 +14,23 @@ SUBSTRATE_SNIPPET = '''\
 import dmipy_sim
 from dmipy_sim.substrate import Substrate
 from dmipy_fit.white_matter import build_white_matter_model
-from dmipy_fit.audit import biophysical_constants as fit_consts
-from dmipy_sim.substrate import biophysical_constants as sim_consts
 
 # --- describe the microstructure ONCE (dmipy-sim owns the physical ground truth) ---
 sub = Substrate()          # canonical healthy white matter; override any field
 # derived quantities the analytical model needs are computed here, once:
 #   sub.f_intra, sub.f_extra, sub.lambda_perp_extra (tortuosity), sub.mean_inner_radius, ...
 
-# forward truth (dmipy-sim): an explicit geometry the walkers diffuse in,
-# its inner/outer radii and diffusivities taken from the substrate
+# forward truth (dmipy-sim): an explicit geometry the walkers diffuse in, its inner/outer
+# radii from the substrate and its pools (D, T2, T1, water fraction) the substrate's own
 geom = dmipy_sim.MyelinatedCylinder(
     inner_radius=sub.mean_inner_radius, outer_radius=sub.mean_outer_radius,
-    orientation=(0, 0, 1), D_intra=sub.D_intra, D_extra=sub.D_extra,
-    D_myelin=sub.D_myelin)   # myelin water is stuck (D_myelin = 0) by default
+    orientation=(0, 0, 1), compartments=sub.compartments)   # myelin water is stuck (D = 0)
 
 # analytical inverse (dmipy-fit): the SAME physical numbers parametrize the model
 model, params = build_white_matter_model(
     gamma_shape=sub.gamma_shape_diameter,
     gamma_scale_outer_diameter=sub.gamma_scale_diameter,
     g_ratio=sub.g_ratio, f_axon=sub.f_axon, D_intra=sub.D_intra)
-
-# every physical CONSTANT is defined once: fit re-exports the sim catalogue
-assert fit_consts.get_value is sim_consts.get_value
 '''
 
 _ns = {}
@@ -78,20 +72,21 @@ out = [
     'needs, computed in one place:', '',
     '```python', SUBSTRATE_SNIPPET.rstrip(), '```', '',
     'The geometry and the model are parametrised from the *same* `Substrate` fields, and '
-    'the tissue constants come from a single catalogue: '
-    '`dmipy_fit.audit.biophysical_constants` re-exports '
-    '`dmipy_sim.substrate.biophysical_constants` verbatim, so there is exactly one '
-    'definition (with citation provenance) of every physical constant. Derived geometric '
-    'quantities — the exterior surface-to-volume ratio, the intra-pore ⟨4/d⟩ average, the '
-    'tortuosity `lambda_perp_extra` — use the same closed forms on both sides.', '',
+    'the tissue constants come from a single catalogue, '
+    '`dmipy_sim.substrate.biophysical_constants`, which dmipy-fit reads for its citations and '
+    'its Methods paragraph: there is exactly one definition (with citation provenance) of every '
+    'physical constant. Derived geometric quantities (the exterior surface-to-volume ratio, the '
+    'intra-pore ⟨4/d⟩ average, the tortuosity `lambda_perp_extra`) are the closed forms of '
+    '[dmipy-analytic](analytic/index.md), on both sides.', '',
     '!!! note "Input parity, not output agreement"',
     '    One substrate feeding both engines lets you check the analytical model against the '
     'Monte-Carlo ground truth on matched tissue. Agreement is necessary evidence, not proof '
     '— the two engines are correlated and can be wrong the same way.', '',
     '## Geometries', '',
     'The forward substrate: closed pores, packed ensembles, and free diffusion the walkers '
-    'sample. Each is a `dmipy_sim` `Geometry` accepted by `dmipy_sim.simulate(n_walkers, D, '
-    'waveform, geometry)`.', '',
+    'sample. Each is a `dmipy_sim` `Geometry`, written out as a `SubstrateSpec` by its `.spec`, '
+    'and accepted by `dmipy_sim.walk(spec, ...)` and `dmipy_sim.simulate(n_walkers, D, waveform, '
+    'geometry)`.', '',
 ]
 for g in _GEOMS:
     cls = getattr(dmipy_sim, g)

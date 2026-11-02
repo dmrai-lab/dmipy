@@ -1,9 +1,9 @@
-"""The committed explorer grid is what the installed dmipy-sim builds.
+"""The committed explorer grid is what the installed dmipy-replay builds.
 
 Regenerates the grid into a temporary directory and compares it with docs/studio/explorer_data:
 the knobs, the calls and the refusals must match exactly, the stored curves and scalars to a
 relative 2e-3 (the grid is rounded to four significant figures and platforms differ in the last
-one). The dmipy-sim revision stamp is provenance, not content, and is ignored.
+one). The dmipy-replay version stamp is provenance, not content, and is ignored.
 
 Run: python tools/check_explorer_data.py      (exit status 1 when the committed grid is stale)
 """
@@ -44,13 +44,13 @@ def main():
                 old = json.load(open(os.path.join(COMMITTED, f"{name}.json")))
             except FileNotFoundError:
                 stale.append(f"{name}: missing"); continue
-            fresh.pop("dmipy_sim", None); old.pop("dmipy_sim", None)
+            fresh.pop("dmipy_replay", None); old.pop("dmipy_replay", None)
             if not close(fresh, old):
                 stale.append(name)
     if stale:
         print("explorer_data is stale for:", ", ".join(stale), "-- run tools/gen_explorer_data.py and commit")
         return 1
-    print("explorer_data matches what the installed dmipy-sim builds")
+    print("explorer_data matches what the installed dmipy-replay builds")
     return 0
 
 

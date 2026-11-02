@@ -51,37 +51,40 @@ history, and the intra-axonal pool falls below its bulk-T2 ceiling faster than t
 
 ## Reproduce it
 
-One myelinated axon, a bare spin echo at each echo time, the walk carrying the compartments' T2;
-the NNLS spectrum then reads a myelin water fraction off the decay:
+One myelinated axon, walked once; a bare spin echo replayed at each echo time with the compartments' T2, and the
+NNLS spectrum reads a myelin water fraction off the decay:
 
 ```python
 import numpy as np
 import dmipy_sim as ds
+from dmipy_replay import Envelope, Tissue, sequences
 from dmipy_fit.white_matter.mwf import t2_spectrum_mwf
 
-geom = ds.MyelinatedCylinder(inner_radius=2.5e-6, outer_radius=3.57e-6, orientation=(0, 0, 1),
-    D_intra=1.7e-9, D_extra=1.7e-9, D_myelin=0.1e-9,
-    compartments=ds.Compartments(intra=ds.Pool(T2=0.080), myelin=ds.Pool(T2=0.015),
-                                 extra=ds.Pool(T2=0.080)))
+axon = ds.MyelinatedCylinder(inner_radius=2.5e-6, outer_radius=3.57e-6, orientation=(0, 0, 1),
+    compartments=ds.Compartments(intra=ds.Pool(D=1.7e-9), myelin=ds.Pool(D=0.1e-9), extra=ds.Pool(D=1.7e-9)))
+env = Envelope(name="docs", band_hz=400.0, G_max=0.08, B0_list=(3.0,), chi_max=1e-7, rho2_max=1e-4,
+               max_refocusing_pulses=1)
+pack = ds.build_replay_pack(ds.walk(axon.spec, 600, T_max=0.064, envelope=env, seed=1, require_gpu=False),
+                            id="docs/myelinated-axon", license="CC-BY-4.0", citation="dmipy.org")
 
+wm = Tissue(T2={"intra": 0.080, "myelin": 0.015, "extra": 0.080})
 echo_times = np.arange(1, 9) * 8e-3
-S = np.array([                                    # a bare spin echo at each TE: relaxation only
-    float(np.asarray(ds.simulate(
-        4_000,
-        waveform=ds.pgse([[0, 0, 1]], te / 2 - 1e-4, te / 2, gradient_strengths=[0.0], TE=te, n_t=200),
-        geometry=geom, seed=1, require_gpu=False)).ravel()[0])
-    for te in echo_times])
+bare = lambda te: sequences.pgse([[0, 0, 1]], te / 2 - 1e-4, te / 2, gradient_strengths=[0.0], TE=te)
+S = np.array([float(np.abs(pack.replay(bare(te), tissue=wm)[0])) for te in echo_times])   # relaxation only
 mwf, T2_grid, spectrum = t2_spectrum_mwf(S / S[0], echo_times)   # NNLS T2 spectrum -> MWF
 ```
 
-Add `surface_relaxivity_t2=` on the geometry to put the wall term in, and fit the same decay with
-the canonical white-matter model, which carries the surface factors explicitly:
+The wall term is one more replay knob on the same walk, the surface relaxivity `rho2`, read from the walk's wall
+contact; the canonical white-matter model of dmipy-fit carries the surface factors explicitly:
 
 ```python
+S_rho = np.array([float(np.abs(pack.replay(bare(te), tissue=wm.replace(rho2=1.16e-6))[0])) for te in echo_times])
+mwf_rho, _, _ = t2_spectrum_mwf(S_rho / S_rho[0], echo_times)
+
 from dmipy_fit.white_matter.composition import build_white_matter_model
 model, params = build_white_matter_model(gamma_shape=2.0,
                                          gamma_scale_outer_diameter=0.30e-6,
                                          f_axon=0.55, rho2=15e-6)
 ```
 
-The paper's figures regenerate from `papers/surface_relaxivity_bias/` with the public engines.
+The paper's figure scripts are in `papers/surface_relaxivity_bias/`.

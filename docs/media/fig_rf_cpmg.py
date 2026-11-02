@@ -11,9 +11,9 @@ A CPMG echo train with an IMPERFECT 180° (here B1⁺ = 0.8, so the refocusing f
     the error on an odd echo is undone on the next even echo, so the train is SELF-CORRECTING and
     stays flat. Same imperfect pulse, opposite outcome — purely from the rotation axis.
 
-Built on dmipy-sim's B1Pulse forward (the phase of a hard pulse sets its rotation axis).
+Built on dmipy-replay's B1Pulse forward (the phase of a hard pulse sets its rotation axis).
 
-    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu PYTHONPATH=/path/sim python fig_rf_cpmg.py
+    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu python fig_rf_cpmg.py
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -25,7 +25,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from dmipy_sim.acquisition.rf import B1Pulse, bloch_simulate
+from dmipy_replay.acquisition.rf import B1Pulse, bloch_simulate
 GAMMA = 2.675e8
 CP, MG = "#c1440e", "#1b6ca8"
 dt = 2e-5

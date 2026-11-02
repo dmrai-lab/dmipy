@@ -5,7 +5,7 @@ per axis, the RF events as ticks in their finite windows, the readout, and under
 derived effective gradient and q(t). Nothing is drawn by hand; every curve is a field or a
 derived property of the same ``ScannerSequence``.
 
-Run: python tools/gen_acquisition_figure.py   (needs dmipy-sim importable)
+Run: python tools/gen_acquisition_figure.py   (needs dmipy-replay importable)
 """
 import os
 
@@ -14,19 +14,20 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-import dmipy_sim as ds
+import dmipy_replay as dr
+from dmipy_analytic.constants import GAMMA
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "docs", "media", "acquisition_object.png")
 
 
 def main():
-    timing = ds.SequenceTiming(t_excite=3e-3, t_refocus=6e-3, t_readout_pre_echo=14e-3)
-    seq = ds.pgse([[1, 0, 0]], 0.012, 0.030, bvalues=[1.5e9], timing=timing, slew_rate=150.0)
+    timing = dr.SequenceTiming(t_excite=3e-3, t_refocus=6e-3, t_readout_pre_echo=14e-3)
+    seq = dr.pgse([[1, 0, 0]], 0.012, 0.030, bvalues=[1.5e9], timing=timing, slew_rate=150.0)
     t = np.arange(seq.n_t) * seq.dt * 1e3                       # ms
     G = np.asarray(seq.G)[0] * 1e3                              # mT/m, physical
     Geff = np.asarray(seq.G_eff)[0] * 1e3                       # mT/m, as the spins see it
-    q = ds.GAMMA * np.cumsum(np.asarray(seq.G_eff)[0], 0) * seq.dt / 1e3   # rad/mm
+    q = GAMMA * np.cumsum(np.asarray(seq.G_eff)[0], 0) * seq.dt / 1e3   # rad/mm
 
     bg, ink, mut, acc, acc2 = "#07090f", "#e8edf5", "#7a8499", "#4af0c4", "#7b9cff"
     fig, ax = plt.subplots(3, 1, figsize=(8.4, 5.6), sharex=True, facecolor=bg,

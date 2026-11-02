@@ -1,13 +1,14 @@
 # Scanners & Pulseq
 
 A scanner is a named entry in a cited catalogue, and a `ScannerSequence` goes to and from a
-Pulseq `.seq` file. Both live in dmipy-sim, so the simulator, the designer and the fitter all
-mean the same thing by "Prisma".
+Pulseq `.seq` file. The catalogue and the reader live in dmipy-replay and the writer in dmipy-sim, so
+the simulator, the replay, the designer and the fitter all mean the same thing by "Prisma".
 
 ## The catalogue
 
 ```python
-from dmipy_sim import ScannerLimits, SCANNERS
+from dmipy_replay import ScannerLimits
+from dmipy_replay.acquisition.scanners import SCANNERS
 
 lim = ScannerLimits.of("prisma")                     # a class, an alias, a model key, or (G_max, slew)
 lim.G_max, lim.slew_max, lim.grad_raster             # 0.08 T/m, 200 T/m/s, 10 µs
@@ -24,12 +25,12 @@ and reads the SAFE peripheral-nerve model from it.
 
 ```python
 # docs: skip  (needs the pypulseq extra)
-import dmipy_sim as ds
+import dmipy_replay as dr
 from dmipy_sim.sequences.pulseq import to_pulseq, make_system
 
-lim = ds.ScannerLimits.of("prisma")
-seq = ds.pgse([[1, 0, 0]], 0.012, 0.030, bvalues=[1e9], n_t=1001, slew_rate=lim.slew_max,
-              timing=ds.SequenceTiming.from_readout(t_excite=3e-3, t_refocus=6e-3,
+lim = dr.ScannerLimits.of("prisma")
+seq = dr.pgse([[1, 0, 0]], 0.012, 0.030, bvalues=[1e9], n_t=1001, slew_rate=lim.slew_max,
+              timing=dr.SequenceTiming.from_readout(t_excite=3e-3, t_refocus=6e-3,
                                                     readout_duration=30e-3, partial_fourier=0.75))
 to_pulseq(seq, system=make_system("prisma"), filename="dwi.seq")
 ```
@@ -42,9 +43,9 @@ samples, and **refuses a grid that does not sit on the scanner's gradient raster
 
 ```python
 # docs: skip  (needs a .seq file)
-from dmipy_sim.sequences.pulseq import from_pulseq
-seq = from_pulseq("dwi.seq")              # the gradient, the pulses, the ADC time, the b
-budget = ds.SequenceTiming.from_pulseq(seq)   # the timing budget a designer can optimise inside
+from dmipy_replay.sequences.pulseq import from_pulseq
+seq = from_pulseq("dwi.seq")                       # the gradient, the pulses, the ADC time, the b
+budget = dr.SequenceTiming.from_pulseq("dwi.seq")  # the timing budget a designer can optimise inside
 ```
 
 A file written by dmipy carries its schedule in the metadata and is read back exactly; a foreign

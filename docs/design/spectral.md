@@ -29,6 +29,6 @@ amplitude ceiling. The PNS constraint binds first on the fast designs.
 ## Simulate and fit the same object
 
 `ogse.to_sequence()` is a `ScannerSequence`; `encoding_spectrum(seq)` reads the spectrum of any
-sequence, designed or built (`dmipy_sim.ogse(...)`). Simulate it on a cylinder, fit it with the
+sequence, designed or built (`dmipy_replay.ogse(...)`). Simulate it on a cylinder, fit it with the
 OGSE-aware `C4` model on `AcquisitionScheme(seq)`, and the frequency dependence of the apparent
 diffusivity is the restriction size — see [your first simulation](../start/sim.md) for the loop.

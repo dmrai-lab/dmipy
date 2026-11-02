@@ -7,8 +7,8 @@ wall-clock speed, so the optimized design visibly echoes first. Off-regions are 
 scanner-fixed off-time (90° / 180°+crushers / EPI readout); amber = the extra dead time the
 vanilla adds purely to stay symmetric.
 
-Needs the (private) ``dmipy-design`` package on the path:
-    OMP_NUM_THREADS=1 PYTHONPATH=/path/to/dmipy-design python fig_mintte_vs_vanilla.py
+Needs dmipy-design installed:
+    OMP_NUM_THREADS=1 python fig_mintte_vs_vanilla.py
 """
 import os, dataclasses
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):

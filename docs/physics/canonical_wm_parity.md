@@ -35,11 +35,14 @@ is run on a GPU and cached here — regenerate with `python generate_mc_referenc
 
 ```python
 # docs: skip  (run in generate_mc_reference.py next to this page; shown for transparency)
-from dmipy_sim import pack_myelinated_cylinders, PackedMyelinatedCylinders, simulate, pgse
+from dmipy_sim import Compartments, Pool, PackedMyelinatedCylinders, pack_myelinated_cylinders, simulate
+from dmipy_replay import pgse
 inner, gr, cen = pack_myelinated_cylinders(inner_radii=g*d_out/2, g_ratios=..., target_packing=f_axon)
 geom = PackedMyelinatedCylinders(inner_radii=inner, g_ratios=gr, centers=cen, cell_size=cell,
-                                 D_intra=D, D_extra=D, T2_intra=..., rho_inner=rho, rho_outer=rho, ...)
-seq  = pgse(bvecs, delta, Delta, bvalues=bvals, TE=TE)            # the same object the fit reads below
+                                 compartments=Compartments(intra=Pool(D=D, T2=...), extra=Pool(D=D, T2=...),
+                                                           myelin=Pool(D=0.0, T2=...)),
+                                 rho_inner=rho, rho_outer=rho)
+seq  = pgse(bvecs, delta, Delta, bvalues=bvals)                 # the same object the fit reads below
 S_mc = simulate(N_walkers, waveform=seq, geometry=geom, seed=1)   # step-resolved
 ```
 

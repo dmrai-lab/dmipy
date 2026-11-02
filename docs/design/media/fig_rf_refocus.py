@@ -13,11 +13,11 @@ Designed 180°: a phase-modulated (composite/adiabatic-like) pulse whose net rot
 across the whole B1⁺ range, so all three spins arrive at −z. That per-spin robustness is what
 ``design_refocusing_rf`` maximises (crushed-echo refocusing efficiency η = (1−M_z)/2).
 
-The designed pulse is bridged into dmipy-sim as a ``B1Pulse`` (``to_b1pulse``) and run through
-the SAME ``dmipy_sim.acquisition.rf.bloch_simulate`` forward as the hard pulse — design proposes, sim scores.
+The designed pulse is bridged into dmipy-replay as a ``B1Pulse`` (``to_b1pulse``) and run through
+the SAME ``dmipy_replay.acquisition.rf.bloch_simulate`` forward as the hard pulse — design proposes, the replay's forward scores.
 
-Needs the working-tree dmipy-design + dmipy-sim on the path:
-    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu PYTHONPATH=/path/design:/path/sim python fig_rf_refocus.py
+Needs dmipy-design and dmipy-replay installed:
+    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu python fig_rf_refocus.py
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -32,7 +32,7 @@ from matplotlib import gridspec
 from matplotlib.animation import FuncAnimation, PillowWriter
 
 from dmipy_design import design_refocusing_rf
-from dmipy_sim.acquisition.rf import B1Pulse, bloch_simulate
+from dmipy_replay.acquisition.rf import B1Pulse, bloch_simulate
 
 DT, RF_DUR, B1_MAX = 1e-4, 6e-3, 19e-6
 

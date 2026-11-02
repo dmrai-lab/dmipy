@@ -12,7 +12,7 @@ the phase jump — B1-insensitively.
   (right)  at θ=180° it is a near-perfect inversion (M_z ≈ −1) across the whole B1⁺ range, where a
            hard 180° collapses.
 
-    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu PYTHONPATH=/path/sim python fig_rf_bir4.py
+    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu python fig_rf_bir4.py
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -24,7 +24,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from dmipy_sim.acquisition.rf import B1Pulse, bloch_simulate
+from dmipy_replay.acquisition.rf import B1Pulse, bloch_simulate
 GAMMA = 2.675e8
 dt, T, A0 = 1e-5, 4e-3, 19e-6
 BIR = "#2ca02c"

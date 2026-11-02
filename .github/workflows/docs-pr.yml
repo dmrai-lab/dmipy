@@ -1,7 +1,8 @@
 name: docs (pull request)
-# Builds the site for a pull request and runs every code block on its pages, against the
-# engines' git mains (what the staging /dev/ site documents). Nothing is deployed here; see
-# docs.yml for the deploy of main (root) and staging (/dev/).
+# Builds the site for a pull request and runs every code block on its pages and every headless check of its
+# interactive pages. A pull request into `main` is built with the released packages (what the root of dmipy.org
+# documents); any other, into `staging`, with the packages' git mains (what /dev/ documents). Nothing is deployed
+# here; docs.yml deploys main (the root) and staging (/dev/).
 on:
   pull_request:
     paths: ["docs/**", "mkdocs.yml", "tools/**", ".github/workflows/docs*.yml", "pyproject.toml"]
@@ -19,13 +20,12 @@ jobs:
         with: { python-version: "3.11" }
       - uses: actions/setup-node@v4
         with: { node-version: "20" }
-      - name: Install the docs toolchain and the engines from their git mains
-        run: |
-          pip install ".[docs]" "jax[cpu]>=0.6.2" jaxopt matplotlib safetensors
-          # the git mains carry the same version numbers as the released wheels until 3.0, so pip must be told to replace them
-          pip install --force-reinstall --no-deps "dmipy-sim @ git+https://github.com/dmrai-lab/dmipy-sim@main" \
-                      "dmipy-design @ git+https://github.com/dmrai-lab/dmipy-design@main" \
-                      "dmipy-fit @ git+https://github.com/dmrai-lab/dmipy-fit@main"
+      - name: Install the released packages (a pull request into main)
+        if: github.base_ref == 'main'
+        run: bash tools/install_packages.sh released
+      - name: Install the packages from their git mains (a pull request into staging)
+        if: github.base_ref != 'main'
+        run: bash tools/install_packages.sh mains
       - name: Every code block on every page runs
         run: python tools/run_snippets.py
       - name: The sequence explorer's page script runs over its whole grid
@@ -34,9 +34,9 @@ jobs:
         run: node tools/check_brain.js
       - name: The landing-page signal widget draws every stored state
         run: node tools/check_signal_widget.js
-      - name: The spin studio's in-browser Bloch integration agrees with dmipy-sim's replay
+      - name: The spin studio's in-browser Bloch integration agrees with dmipy-replay's propagator
         run: python tools/check_spin_studio.py
-      - name: The explorer data is what the installed dmipy-sim builds
+      - name: The explorer data is what the installed dmipy-replay builds
         run: python tools/check_explorer_data.py
       - name: The site builds strictly
         run: mkdocs build --strict --site-dir site

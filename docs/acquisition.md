@@ -3,14 +3,15 @@
 A `ScannerSequence` is **what the scanner does from t = 0 to the readout**: the physical
 gradient `G(t)`, the RF pulses, the readout, and the timing budget they sit in. You build it once
 with a *builder* and hand the same object to the simulator, the replay, the fitter and the
-designer. There is no second spelling of an acquisition anywhere in dmipy.
+designer. The object is dmipy-replay's, and there is no second spelling of an acquisition anywhere in
+dmipy.
 
 ![The one acquisition object: the physical gradient with the RF windows and the readout on top, and the derived effective gradient and q(t) below.](media/acquisition_object.png){ width="100%" }
 
 ```python
-import dmipy_sim as ds
+import dmipy_replay as dr
 
-seq = ds.pgse([[1, 0, 0], [0, 1, 0]], delta=0.010, Delta=0.030, bvalues=[1e9, 2e9])
+seq = dr.pgse([[1, 0, 0], [0, 1, 0]], delta=0.010, Delta=0.030, bvalues=[1e9, 2e9])
 seq.G.shape, seq.dt            # (2, 1000, 3) T/m on a uniform grid — the physical gradient
 seq.rf                         # RFSchedule: a 90° at t = 0 and a 180° at TE/2
 seq.b()                        # [1e9, 2e9] s/m², integrated from G and the pulses
@@ -50,7 +51,7 @@ number of periods, a cosine above the slew limit, a TE below the encoding's floo
 
 ```python
 import numpy as np
-from dmipy_sim import pgste, ogse, cpmg, ste
+from dmipy_replay import pgste, ogse, cpmg, ste
 
 stim  = pgste([[0, 0, 1]], delta=0.006, TM=0.040, bvalues=[1e9])         # TM stored along z
 osc   = ogse([[1, 0, 0]], 50.0, 0.040, shape="cosine", bvalues=[1e9])   # 2 whole periods per block
@@ -63,10 +64,10 @@ stim.TM, stim.stimulated_echo, osc.encoding.n_oscillation_cycles, len(train.echo
 
 ```python
 # docs: skip  (each line is a separate workflow; see the pages linked below)
-E   = ds.simulate(20_000, 2e-9, waveform=seq, geometry=ds.Cylinder(radius=4e-6))   # Monte Carlo
+E   = dmipy_sim.simulate(20_000, 2e-9, waveform=seq, geometry=dmipy_sim.Cylinder(4e-6, (0, 0, 1)))   # Monte Carlo
 E   = pack.replay(seq)                                       # a stored walk, any acquisition
 sch = AcquisitionScheme(seq)                                 # dmipy-fit reads the same object
-to_pulseq(seq, system=ds.ScannerLimits.of("prisma").pulseq_dict(), filename="dwi.seq")
+to_pulseq(seq, system=make_system("prisma"), filename="dwi.seq")   # dmipy_sim.sequences.pulseq
 ```
 
 The forward simulator ([Simulate](sim.md)), the replay pack, dmipy-fit's `AcquisitionScheme`
@@ -82,10 +83,10 @@ back into acquisition order; dmipy-fit builds one automatically when a scheme sp
 times, and normalises the signal per TE (every TE needs its own b = 0).
 
 ```python
-from dmipy_sim import Protocol
+from dmipy_replay import Protocol
 
-short = ds.pgse([[1, 0, 0]] * 2, 0.010, 0.030, bvalues=[0, 1e9])
-long_ = ds.pgse([[1, 0, 0]] * 2, 0.010, 0.030, bvalues=[0, 1e9], TE=0.090)
+short = dr.pgse([[1, 0, 0]] * 2, 0.010, 0.030, bvalues=[0, 1e9])
+long_ = dr.pgse([[1, 0, 0]] * 2, 0.010, 0.030, bvalues=[0, 1e9], TE=0.090)
 prot  = Protocol([short, long_])
 prot.n_meas, prot.echo_times            # 4 measurements, two echo times
 ```
@@ -95,16 +96,16 @@ prot.n_meas, prot.echo_times            # 4 measurements, two echo times
 The timing budget and the scanner are objects too, and a builder honours both.
 
 ```python
-from dmipy_sim import SequenceTiming, ScannerLimits
+from dmipy_replay import SequenceTiming, ScannerLimits
 
 budget = SequenceTiming.from_readout(t_excite=3e-3, t_refocus=6e-3,
                                      readout_duration=30e-3, partial_fourier=0.75)
-seq = ds.pgse([[1, 0, 0]], 0.012, 0.030, bvalues=[1e9], timing=budget)
+seq = dr.pgse([[1, 0, 0]], 0.012, 0.030, bvalues=[1e9], timing=budget)
 seq.T                                   # the TE the budget forces: lead-in, pulses, readout tail
 [e.duration_s for e in seq.rf]          # the finite 90 and 180 the budget declared
 
 prisma = ScannerLimits.of("prisma")     # the cited catalogue: G_max, slew, rasters, dead times
-seq = ds.pgse([[1, 0, 0]], 0.012, 0.030, bvalues=[1e9], slew_rate=prisma.slew_max)
+seq = dr.pgse([[1, 0, 0]], 0.012, 0.030, bvalues=[1e9], slew_rate=prisma.slew_max)
 ```
 
 Because the lead-in and the readout tail are rarely equal, the encoding windows before and after

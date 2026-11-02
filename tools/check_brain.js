@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Run the brain page's script headlessly against its generated data and compare what it computes with what
-// dmipy-sim computed: the real harmonics against dmipy_sim.replay.so3.real_sh on stored directions, and the
+// dmipy-sim computed: the real harmonics against dmipy_analytic.harmonics.real_sh on stored directions, and the
 // page's composition against ph.replay on the stored check voxels at the tutorial's own scheme (and, when the
 // field tables exist, at the stored field checks). The page never replays; this is the proof that its
 // recombination is the engine's arithmetic.
@@ -59,7 +59,7 @@ const fail = (m) => { failures.push(m); console.log('FAIL', m); };
   // 1. the harmonics
   let eY = 0;
   idx.sh.Y_check.dirs.forEach((d, i) => { const Y = B.realSH(d); idx.sh.Y_check.Y[i].forEach((y, k) => { eY = Math.max(eY, Math.abs(Y[k] - y)); }); });
-  console.log(`real harmonics vs dmipy_sim.replay.so3.real_sh: max |diff| ${eY.toExponential(2)} on ${idx.sh.Y_check.dirs.length} directions`);
+  console.log(`real harmonics vs dmipy_analytic.harmonics.real_sh: max |diff| ${eY.toExponential(2)} on ${idx.sh.Y_check.dirs.length} directions`);
   if (!(eY < 1e-9)) fail(`harmonics differ by ${eY}`);
   // 2. the composition at the tutorial's scheme, on the stored voxels, against ph.replay
   const chk = idx.check, tol = chk.tol, bs = chk.scheme.b_smm2, gs = chk.scheme.dirs_image;
