@@ -1,7 +1,7 @@
 """Generate docs/constants.md — the biophysical-constants table.
 
 Single source of truth: introspects dmipy-sim's cited constant catalogue
-(``dmipy_sim.substrate.biophysical_constants``, which dmipy-fit re-exports verbatim).
+(``dmipy_sim.substrate.biophysical_constants``, which dmipy-fit reads for its citations).
 Every value links to its source paper via a clickable DOI.
 
 Run: python tools/gen_constants.py   (needs dmipy-sim importable)
@@ -51,9 +51,10 @@ out = [
     '# Biophysical constants', '',
     'Every physical constant in the substrate is defined once, with a cited source. '
     'The catalogue lives in `dmipy_sim.substrate.biophysical_constants` (the forward-truth '
-    'engine owns the ground truth) and dmipy-fit re-exports it verbatim as '
-    '`dmipy_fit.audit.biophysical_constants`, so there is exactly one value — and one '
-    'reference — for each. Read them through the accessor, never hard-code:', '',
+    'engine owns the ground truth), and dmipy-fit reads it from there for its citations and its '
+    'Methods paragraph, so there is exactly one value — and one reference — for each. The '
+    'physical constants of the signal itself (`GAMMA`, `GAMMA_BAR`, `MU0`) are '
+    '[dmipy-analytic](analytic/index.md)\'s. Read them through the accessor, never hard-code:', '',
     '```python',
     'from dmipy_sim.substrate import biophysical_constants as bc',
     "bc.get_value('D_intra_axonal')      # 1.7e-9  (m^2/s)",

@@ -34,8 +34,11 @@ fit.fitted_parameters["partial_volume_1"], fit.fitted_parameters["eta"]   # ≈ 
 - **Physics factors**: `OccupancyGatedModel(compartment, [TransverseRelaxation(),
   LongitudinalRelaxation(), IntraPoreSurfaceRelaxivity(), ExteriorSurfaceRelaxivity()])` — diffusion
   × relaxation × surface, per compartment, on any acquisition family (PGSE, PGSTE, OGSE, CPMG, b-tensor).
-- **Replay models**: `C6MonteCarloReplayCylinder`, `S6MonteCarloReplaySphere` fit against a stored
-  Monte-Carlo walk instead of a closed form.
+- **Replay models**: `MonteCarloReplay` (any replay pack as a compartment, posed by `mu`),
+  `C6MonteCarloReplayCylinder` and `S6MonteCarloReplaySphere` fit against a stored Monte-Carlo walk
+  instead of a closed form.
+- **The closed forms** under the compartments are [dmipy-analytic's](analytic/index.md), each with
+  its source and its JAX twin.
 - **CSD**: Tournier, cvxpy, OSQP-JAX; multi-tissue; DTI, IVIM.
 - **White matter**: `white_matter.build_white_matter_model()` (the canonical model, surface
   relaxivity reweighting intra vs extra) and `white_matter.t2_spectrum_mwf()` (NNLS myelin water).
@@ -48,11 +51,11 @@ fit.fitted_parameters["partial_volume_1"], fit.fitted_parameters["eta"]   # ≈ 
 Every published model (NODDI, SMT, the Standard Model, NEXI, SANDI, VERDICT, …) is a few lines
 of these primitives: the [model catalog](catalog.md).
 
-## The acquisition is the simulator's
+## The acquisition is the shared one
 
 `AcquisitionScheme(sequence)` reads a `ScannerSequence` or a `Protocol`; its `from_pgse`,
 `from_pgste`, `from_ogse`, `from_cpmg`, `from_btensor_ste`, `from_btensor_pte` and
-`from_waveform` are the simulator's builders. The models read b, direction, δ, Δ, TE and the OGSE
+`from_waveform` are dmipy-replay's builders, the ones the simulator and the replay play. The models read b, direction, δ, Δ, TE and the OGSE
 fields per measurement from the sequence's encoding; the ones that integrate a waveform read the
 effective gradient itself. Schemes concatenate with `+`; a multi-TE scheme is a `Protocol` and is
 normalised per TE (every TE needs its own b = 0). See [Acquisition](acquisition.md).

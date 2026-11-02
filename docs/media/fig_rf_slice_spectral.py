@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Regenerates ``rf_slice_spectral.png`` — slice selectivity and the frequency dual.
 
-Two panels, both straight from ``dmipy_sim.acquisition.rf`` forwards:
+Two panels, both straight from ``dmipy_replay.acquisition.rf`` forwards:
   (left)  slice profile under a slice-select gradient — a windowed-sinc 90 excites a sharp
           slice (``slice_profile``); a hard 90 of the same duration has no spatial selectivity.
   (right) the small-tip (Pauly) frequency dual — |M_xy| vs off-resonance for low-flip pulses:
           a hard (box) pulse gives a sinc spectral profile; a windowed sinc gives a
           near-rectangular passband. Excitation profile ≈ FT of the B1 envelope.
 
-Needs the working-tree dmipy-sim on the path:
-    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu PYTHONPATH=/path/sim python fig_rf_slice_spectral.py
+Needs dmipy-replay installed:
+    OMP_NUM_THREADS=1 JAX_PLATFORMS=cpu python fig_rf_slice_spectral.py
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -21,7 +21,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from dmipy_sim.acquisition.rf import B1Pulse, bloch_simulate, slice_profile
+from dmipy_replay.acquisition.rf import B1Pulse, bloch_simulate, slice_profile
 
 SINC, HARDC = "#1b6ca8", "#c1440e"
 

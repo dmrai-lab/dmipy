@@ -1,6 +1,6 @@
 # Biophysical constants
 
-Every physical constant in the substrate is defined once, with a cited source. The catalogue lives in `dmipy_sim.substrate.biophysical_constants` (the forward-truth engine owns the ground truth) and dmipy-fit re-exports it verbatim as `dmipy_fit.audit.biophysical_constants`, so there is exactly one value — and one reference — for each. Read them through the accessor, never hard-code:
+Every physical constant in the substrate is defined once, with a cited source. The catalogue lives in `dmipy_sim.substrate.biophysical_constants` (the forward-truth engine owns the ground truth), and dmipy-fit reads it from there for its citations and its Methods paragraph, so there is exactly one value — and one reference — for each. The physical constants of the signal itself (`GAMMA`, `GAMMA_BAR`, `MU0`) are [dmipy-analytic](analytic/index.md)'s. Read them through the accessor, never hard-code:
 
 ```python
 from dmipy_sim.substrate import biophysical_constants as bc
@@ -30,13 +30,17 @@ Every value below links to its source paper.
 | --- | --- | --- | --- |
 | `T1_csf` | 4 s | T1 relaxation time of CSF | [Rooney 2007](https://doi.org/10.1002/mrm.21122) |
 | `T1_extra_axonal` | 1 s | T1 relaxation time of extra-axonal (hindered) water in WM at 3T. No direct compartment-specific measurement exists; value from mcDESPOT IE-compartment simulation ground truth (Deoni 2012). | [Deoni 2013](https://doi.org/10.1002/mrm.24429) |
+| `T1_grey_matter` | 1.82 s | T1 relaxation time of grey matter as one pool | [Stanisz 2005](https://doi.org/10.1002/mrm.20605) |
 | `T1_intra_axonal` | 1.2 s | T1 relaxation time of white matter at 3T | [Wright 2008](https://doi.org/10.1007/s10334-008-0104-8) |
 | `T1_myelin` | 0.44 s | T1 relaxation time of myelin water at 3T, in vivo human WM | [Deoni 2015](https://doi.org/10.1002/mrm.25108) |
+| `T1_white_matter` | 1.084 s | T1 relaxation time of white matter as ONE pool -- the whole-tissue figure a segmented image reports, NOT the three-pool decomposition (T1_intra_axonal / T1_extra_axonal / T1_myelin). T1 falls steeply below 1 T, so a field-matched read matters more here than it does for T2. | [Stanisz 2005](https://doi.org/10.1002/mrm.20605) |
 | `T2_bound_pool` | 1e-05 s |  | [Stanisz 2005](https://doi.org/10.1002/mrm.20605) |
 | `T2_csf` | 2 s | T2 relaxation time of CSF | [Piechnik 2009](https://doi.org/10.1002/mrm.21897) |
 | `T2_extra_axonal` | 0.08 s | T2 relaxation time of extra-axonal water | [MacKay 1994](https://doi.org/10.1002/mrm.1910310614) |
+| `T2_grey_matter` | 0.099 s | T2 relaxation time of grey matter as one pool (a sphere-packed cortex substrate replays both of its pools at it) | [Stanisz 2005](https://doi.org/10.1002/mrm.20605) |
 | `T2_intra_axonal` | 0.07 s | T2 relaxation time of intra-axonal water | [MacKay 1994](https://doi.org/10.1002/mrm.1910310614) |
 | `T2_myelin` | 0.015 s | T2 relaxation time of myelin water | [MacKay 1994](https://doi.org/10.1002/mrm.1910310614) |
+| `T2_white_matter` | 0.069 s | T2 relaxation time of white matter as ONE pool -- a whole-tissue figure, which is what a segmented image reports and NOT the three-pool decomposition. A replay of a myelinated substrate uses T2_intra_axonal / T2_extra_axonal / T2_myelin instead; this constant is for a white-matter voxel modelled without that structure. | [Stanisz 2005](https://doi.org/10.1002/mrm.20605) |
 
 ## Microstructure & geometry
 
@@ -78,3 +82,6 @@ Every value below links to its source paper.
 | `mt_bound_pool_fraction` | 0.139 |  | [Stanisz 2005](https://doi.org/10.1002/mrm.20605) |
 | `mt_exchange_rate` | 23 1/s |  | [Stanisz 2005](https://doi.org/10.1002/mrm.20605) |
 | `myelin_water_proton_density` | 0.4 (fraction of myelin-sheath VOLUME that is water) | Myelin water content: the fraction of the myelin-sheath VOLUME that is water (~0.40 = 1 - lipid/protein fraction). This is an INTENSIVE, per-volume proton-density weight -- NOT a signal fraction. | [West 2018](https://doi.org/10.1016/j.neuroimage.2016.12.067) |
+| `proton_density_csf` | 1 (water content relative to CSF = 1) | Proton density of CSF, the reference (1.0): the m0 free water declares in a replay phantom | [Tofts 2003](https://doi.org/10.1002/0470869526) |
+| `proton_density_grey_matter` | 0.85 (water content relative to CSF = 1) | Proton density (water content) of grey matter relative to CSF: the m0 a grey-matter substrate declares in a replay phantom | [Tofts 2003](https://doi.org/10.1002/0470869526) |
+| `proton_density_white_matter` | 0.7 (water content relative to CSF = 1) | Proton density (water content) of white matter relative to CSF: the m0 a white-matter substrate declares in a replay phantom | [Tofts 2003](https://doi.org/10.1002/0470869526) |

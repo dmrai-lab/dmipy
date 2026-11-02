@@ -5,11 +5,10 @@ Sweeps an off-resonance CW saturation pulse across offsets on ONE myelin-like su
 reads the free-pool longitudinal magnetization. The narrow free-water line is spared far
 off-resonance while the broad, short-T2 bound pool keeps saturating — the MT dip. The emergent
 Monte-Carlo points (``dmipy_sim.emergent_z_spectrum``) sit on the analytic two-pool
-Bloch--McConnell oracle (``dmipy_sim.mt.mt_z_spectrum``); no lineshape is imposed on either side.
+Bloch--McConnell oracle (``dmipy_analytic.relaxation.mt_z_spectrum``); no lineshape is imposed on either side.
 
-Needs ``dmipy_sim`` on the path (GPU strongly recommended):
-    LD_LIBRARY_PATH=<venv nvidia/*/lib> PYTHONPATH=<dmipy-sim worktree> \
-        python docs/media/fig_mt_zspectrum.py
+Needs dmipy-sim installed (a GPU strongly recommended):
+    LD_LIBRARY_PATH=<venv nvidia/*/lib> python docs/media/fig_mt_zspectrum.py
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -21,7 +20,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from dmipy_sim import Sphere, emergent_z_spectrum
-from dmipy_sim import mt
+from dmipy_analytic import relaxation as mt
 
 # dmipy.org dark palette
 BG, PANEL, TEXT, MUTED, TEAL, BLUE = "#0d1120", "#111827", "#e8edf5", "#7a8499", "#4af0c4", "#7b9cff"

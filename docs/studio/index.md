@@ -1,11 +1,13 @@
-# Bloch studio — superseded
+# Studios
 
-The brain-slice Bloch studio that lived here was a hand-built preview from before the acquisition
-object and the replay phantom were unified: its pulses were not guaranteed to match the engine, and
-its susceptibility was a hand-coded off-resonance formula on top of an interpolated table.
+The interactive pages of this site. Each one draws what the engine wrote; none of them computes physics the
+engine has not checked.
 
-It is superseded by **[The brain, replayed](../phantoms/brain.md)**: a real subject as a 3-D replay
-phantom, every slice and every direction, recombined in the browser from tables the engine wrote and
-checked against the engine in CI. The transmit-field effects the old studio showed need the
-RF-aware (vector-Bloch) route and will return on a tissue-level page; the
-[spin studio](spins.md) shows that route on a few spins today.
+- **[The brain, replayed](../phantoms/brain.md)**: a real subject as a 3-D replay phantom, every slice and every
+  direction, recombined in the browser from tables the engine wrote and checked against the engine in CI.
+- **[Spin studio](spins.md)**: a few water spins of each white-matter compartment through a pulse sequence, on
+  the vector-Bloch route; the page's integrator is checked against dmipy-replay's.
+- **[Sequence explorer](explorer.md)**: every family of the acquisition object over a grid of knobs, the physical
+  gradient, the RF events, q(t) and b.
+
+A transmit field (B1) at the tissue level is the [vector-Bloch route](../replay/bloch.md) on a pack.

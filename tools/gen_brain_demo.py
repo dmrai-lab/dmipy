@@ -8,12 +8,16 @@ any gradient direction at any b. With a field the coefficients depend on B0's di
 stored per (head tilt, B0, spin/gradient echo, shell, direction). Everything here is dmipy-sim's own arithmetic;
 tools/check_brain.js runs the page against the stored checks.
 
+Inputs, named by the environment: ``BATMAN_DIR`` (the B.A.T.M.A.N. tutorial's MRtrix3 outputs and the phantom built
+from them, ``out_full/batman_brain.rph``), ``WM_PACK`` and ``GM_PACK`` (the two packs the phantom cites).
+
 Run:  python tools/gen_brain_demo.py --stage voxels   (seconds)
       python tools/gen_brain_demo.py --stage field    (half an hour: the field route costs ~60 s per call)
       python tools/gen_brain_demo.py --stage checks   (minutes: the field-mode checks alone, after a tissue value changes)
 
 No physical value is written here: every T2, proton density, diffusivity and susceptibility comes from
-``dmipy_sim.substrate.biophysical_constants`` by key, and the page lists each with its citation.
+``dmipy_sim.substrate.biophysical_constants`` by key, and the page lists each with its citation; the composition
+and the replay are dmipy-replay's.
 """
 from __future__ import annotations
 import argparse
@@ -25,11 +29,23 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "docs", "studio", "brain_data")
-BATMAN = os.environ.get("BATMAN_DIR", "/home/rutger/dmrai-ws/data/batman")
-RPH = os.path.join(BATMAN, "out_full", "batman_brain.rph")
-ROUNDTRIP = os.path.join(BATMAN, "out_full", "csd_roundtrip.npz")
-PACKS = {"wm": os.environ.get("WM_PACK", "/home/rutger/dmrai-ws/packs/cactus_single_bundle_100ms_xframe.rpk"),
-         "gm": os.environ.get("GM_PACK", "/home/rutger/dmrai-ws/packs/gm_spheres_100ms.rpk")}
+INPUTS = ("BATMAN_DIR", "WM_PACK", "GM_PACK")
+
+
+def _input(name):
+    """The path the environment variable ``name`` names; an unset one is refused by name."""
+    path = os.environ.get(name)
+    if not path:
+        raise SystemExit(f"{name} is not set: the generator reads {', '.join(INPUTS)} (see the module docstring)")
+    return path
+
+
+def _batman(*parts):
+    return os.path.join(_input("BATMAN_DIR"), *parts)
+
+
+def _packs():
+    return {"wm": _input("WM_PACK"), "gm": _input("GM_PACK")}
 TE, DELTA, DDELTA = 0.100, 0.025, 0.055                       # the capstone's acquisition (the packs are 100 ms walks)
 LMAX = 8
 B_GRID = np.arange(0.0, 3000.1, 100.0) * 1e6                  # s/m^2
@@ -41,18 +57,18 @@ N_CHECK = 300
 
 
 def _phantom_and_packs():
-    from dmipy_sim.phantom import Phantom
-    from dmipy_sim.replay import read_rpk
-    packs = {k: read_rpk(v) for k, v in PACKS.items()}
-    ph = Phantom.read(RPH, packs={"wm": packs["wm"], "gm": packs["gm"]})
+    from dmipy_replay import read_rpk
+    from dmipy_replay.phantom import Phantom
+    packs = {k: read_rpk(v) for k, v in _packs().items()}
+    ph = Phantom.read(_batman("out_full", "batman_brain.rph"), packs={"wm": packs["wm"], "gm": packs["gm"]})
     return ph, packs
 
 
 def _image_rotation():
     """R (image -> scanner) of the FOD image, from the same affine the capstone used (the mask shares it)."""
     from dmipy_sim.io.mrtrix import read_mif
-    from dmipy_sim.phantom import Grid
-    m = read_mif(os.path.join(BATMAN, "mask_den_unr_preproc_unb.mif"))
+    from dmipy_replay.phantom import Grid
+    m = read_mif(_batman("mask_den_unr_preproc_unb.mif"))
     grid, R = Grid.from_oblique_affine(m.affine, m.shape[:3])
     return np.asarray(R, float), m
 
@@ -98,10 +114,31 @@ def _tissue(packs):
     return out
 
 
+def _by_pool(pack, values):
+    """``{pool name: value}`` over the pools of the pack's spec, ``values`` in pool-id order."""
+    pools = sorted(pack.substrate.pools, key=lambda q: q.id)
+    if len(pools) != len(values):
+        raise ValueError(f"{len(values)} values for the {len(pools)} pools {[q.name for q in pools]} of {pack.id}")
+    return {q.name: float(v) for q, v in zip(pools, values)}
+
+
+def _pack_tissue(pack, T2, chi_iso=None, chi_aniso=None):
+    """What the page replays a pack at: the table's T2 per pool and, in field mode, its susceptibility -- nothing
+    else (no wall relaxivity: the page's kernel does not carry it)."""
+    from dmipy_replay import Tissue
+    return Tissue(T2=_by_pool(pack, T2), chi_iso=chi_iso, chi_aniso=chi_aniso)
+
+
+def _line(name, m0, T2):
+    """The composition call the page shows for a pack, in the API's own spelling."""
+    pools = ", ".join(f'"{k}": {round(v, 4)}' for k, v in T2.items())
+    return f"PackSubstrate({name}_pack, m0={m0:g}, tissue=Tissue(T2={{{pools}}}))"
+
+
 def _even_sh_map():
     """The axis-density map restricted to even orders: the 45 x 45 matrix taking a voxel's FOD coefficients (even
-    orders, compact) to its n = 0 SO(3) coefficients in the same order (dmipy_sim.replay.so3._axis_map)."""
-    from dmipy_sim.replay import so3
+    orders, compact) to its n = 0 SO(3) coefficients in the same order (dmipy_replay.replay.so3._axis_map)."""
+    from dmipy_replay.replay import so3
     M = np.asarray(so3._axis_map(LMAX, 0), float)                                   # (81 so3 n=0, 81 sh full)
     idx = so3.so3_index(LMAX, 0)
     rows = [j for j, (l, m, n) in enumerate(idx) if l % 2 == 0]
@@ -112,15 +149,16 @@ def _even_sh_map():
 def _a_l(pack, T2, b_grid):
     """a_l(b): the per-order kernel of the pack's gradient-only response, from the closed-form pose expansion at a
     few directions per b (their agreement is the factorisation check, reported)."""
-    from dmipy_sim import sequences
-    from dmipy_sim.replay import so3
+    from dmipy_analytic.harmonics import real_sh
+    from dmipy_replay import sequences
+    from dmipy_replay.replay import so3
     dirs = np.array([[0, 0, 1.0], [1, 0, 0], [0, 1, 0], [1, 1, 0], [1, 0, 1], [1, 1, 1]], float)
     dirs /= np.linalg.norm(dirs, axis=1, keepdims=True)
     nb, nd = len(b_grid), len(dirs)
     G = np.tile(dirs, (nb, 1)); bv = np.repeat(b_grid, nd)
     seq = sequences.pgse(G, DELTA, DDELTA, bvalues=bv, TE=TE)
-    P = pack.pose_response(seq, tissue=False, T2=T2, keep=(LMAX, 0))
-    idx = so3.so3_index(LMAX, 0); Y = so3.real_sh(LMAX, dirs, full=True)
+    P = pack.pose_response(seq, tissue=_pack_tissue(pack, T2), keep=(LMAX, 0))
+    idx = so3.so3_index(LMAX, 0); Y = real_sh(LMAX, dirs, full=True)
     a = np.zeros((nb, LMAX // 2 + 1)); spread = 0.0
     for l in range(0, LMAX + 1, 2):
         cols = [j for j, (L, m, n) in enumerate(idx) if L == l]
@@ -134,10 +172,11 @@ def _a_l(pack, T2, b_grid):
     return a, spread
 
 
-def _check_phantom(ph, packs, voxels, tissue, wm_only=False):
+def _check_phantom(ph, packs, voxels, tissue, wm_only=False, field=False):
     """A one-row phantom of the check voxels, with the demo's tissue on each pack: what the browser's numbers are
     compared against through the full phantom route."""
-    from dmipy_sim.phantom import Grid, ODF, PackSubstrate, FreeWater, Inert, Phantom
+    from dmipy_replay import Tissue
+    from dmipy_replay.phantom import Grid, ODF, PackSubstrate, FreeWater, Inert, Phantom
     f = ph.file
     n = len(voxels)
     fr = np.asarray(f.arrays["geometric_fraction"])[voxels]; sid = np.asarray(f.arrays["substrate_id"])[voxels]
@@ -151,11 +190,12 @@ def _check_phantom(ph, packs, voxels, tissue, wm_only=False):
         return out_f, out_sh
     f_wm, sh_wm = slot(0); f_gm, sh_gm = slot(1); f_csf, _ = slot(2)
     # the page models diffusion, the table's T2 per pool and, in field mode, the table's susceptibility at the
-    # chosen B0 -- nothing nominal: a pack that embeds its spec would otherwise replay the spec's wall relaxivity
-    # and myelin susceptibility, which the page's kernel does not carry (the checks caught 3.6 %)
-    wm = PackSubstrate(packs["wm"], m0=tissue["m0"]["wm"], name="wm", T2_s=tissue["T2_wm"], rho_m_s=0.0, chi_iso=0.0, chi_aniso=0.0)
-    gm = PackSubstrate(packs["gm"], m0=tissue["m0"]["gm"], name="gm", T2_s=tissue["T2_gm"], rho_m_s=0.0, chi_iso=0.0, chi_aniso=0.0)
-    csf = FreeWater(D_m2_s=tissue["D_csf"], m0=tissue["m0"]["csf"], T2_s=tissue["T2_csf"])
+    # chosen B0: nothing nominal (the spec's wall relaxivity and myelin susceptibility), which the page's kernel does
+    # not carry; the gradient-only checks carry no field, the field checks the white matter's
+    chi = dict(chi_iso=tissue["chi_iso"], chi_aniso=tissue["chi_aniso"]) if field else {}
+    wm = PackSubstrate(packs["wm"], m0=tissue["m0"]["wm"], name="wm", tissue=_pack_tissue(packs["wm"], tissue["T2_wm"], **chi))
+    gm = PackSubstrate(packs["gm"], m0=tissue["m0"]["gm"], name="gm", tissue=_pack_tissue(packs["gm"], tissue["T2_gm"]))
+    csf = FreeWater(m0=tissue["m0"]["csf"], tissue=Tissue(D=tissue["D_csf"], T2=tissue["T2_csf"]))
     grid = Grid(shape=(n, 1, 1), voxel_size_m=(2.5e-3,) * 3)
     iso = np.zeros_like(sh_gm); iso[:, 0] = 1.0 / np.sqrt(4 * np.pi)
     sh_gm = np.where(np.abs(sh_gm).sum(1, keepdims=True) > 0, sh_gm, iso)
@@ -171,8 +211,8 @@ def _check_phantom(ph, packs, voxels, tissue, wm_only=False):
 
 
 def stage_voxels():
-    from dmipy_sim import sequences
-    from dmipy_sim.replay import so3
+    from dmipy_analytic.harmonics import real_sh
+    from dmipy_replay import sequences
     t0 = time.time()
     ph, packs = _phantom_and_packs(); f = ph.file
     R, mask_img = _image_rotation()
@@ -192,10 +232,10 @@ def stage_voxels():
         if i == 0:
             sh_wm[rows] = sh[rows, k]
     from dmipy_sim.io.mrtrix import read_mif
-    b0 = read_mif(os.path.join(BATMAN, "mean_b0_preprocessed.mif")).data
+    b0 = read_mif(_batman("mean_b0_preprocessed.mif")).data
     b0v = np.asarray(b0)[tuple(idx.T.astype(int))]
     b0u = np.clip(255.0 * b0v / np.percentile(b0v, 99.5), 0, 255).astype(np.uint8)
-    z = np.load(ROUNDTRIP)
+    z = np.load(_batman("out_full", "csd_roundtrip.npz"))
     ang = np.full(n, 255, np.uint8)
     lut = {tuple(v): i for i, v in enumerate(map(tuple, idx.tolist()))}
     for v, a in zip(z["voxels"], z["angle_deg"]):
@@ -215,10 +255,10 @@ def stage_voxels():
     a_wm, spread = _a_l(packs["wm"], tissue["T2_wm"], B_GRID)
     print(f"a_l(b) wm: factorisation spread {spread:.2e}  [{time.time() - t0:.0f}s]", flush=True)
     seq_b = sequences.pgse(np.tile([[0, 0, 1.0]], (len(B_GRID), 1)), DELTA, DDELTA, bvalues=B_GRID, TE=TE)
-    E_gm = np.asarray(packs["gm"].replay(seq_b, tissue=False, T2=tissue["T2_gm"]), float)
+    E_gm = np.asarray(packs["gm"].replay(seq_b, tissue=_pack_tissue(packs["gm"], tissue["T2_gm"])), float)
     M, _rows = _even_sh_map()
     # the checks: the browser against the phantom route, on random brain voxels, at the tutorial's own scheme
-    g = np.loadtxt(os.path.join(BATMAN, "dwipreproc_grad.b")); dirs_s, bv = g[:, :3], g[:, 3] * 1e6
+    g = np.loadtxt(_batman("dwipreproc_grad.b")); dirs_s, bv = g[:, :3], g[:, 3] * 1e6
     nrm = np.linalg.norm(dirs_s, axis=1); dirs_s = np.where(nrm[:, None] > 0, dirs_s / np.where(nrm[:, None] > 0, nrm[:, None], 1), [0, 0, 1.0])
     dirs_img = dirs_s @ R
     rng = np.random.default_rng(0)
@@ -229,22 +269,22 @@ def stage_voxels():
     S_chk = np.asarray(ph_c.replay(seq_real))[:, 0, 0, :]
     print(f"check phantom: {len(chk)} voxels x {seq_real.n_meas} measurements  [{time.time() - t0:.0f}s]", flush=True)
     Yd = rng.normal(size=(24, 3)); Yd /= np.linalg.norm(Yd, axis=1, keepdims=True)
-    Y_chk = so3.real_sh(LMAX, Yd, full=False)
+    Y_chk = real_sh(LMAX, Yd, full=False)
     index = dict(
         generated=time.strftime("%Y-%m-%d"), dmipy_sim=_sim_version(),
         grid=dict(shape=[int(x) for x in ph.grid.shape], voxel_size_mm=[float(v) * 1e3 for v in ph.grid.voxel_size_m], axes=ph.grid.axes,
                   R_image_to_scanner=R.tolist()),
         acquisition=dict(TE_ms=TE * 1e3, delta_ms=DELTA * 1e3, Delta_ms=DDELTA * 1e3, b_grid_smm2=(B_GRID / 1e6).tolist()),
-        tissues=[dict(id="wm", kind="pack", m0=m0["wm"], T2_s=tissue["T2_wm"], pack=os.path.basename(PACKS["wm"]),
-                      line=f'PackSubstrate(wm_pack, m0={m0["wm"]:g}, T2_s={[round(v, 4) for v in tissue["T2_wm"]]}, rho_m_s=0.0, chi_iso=0.0, chi_aniso=0.0)',
+        tissues=[dict(id="wm", kind="pack", m0=m0["wm"], T2_s=tissue["T2_wm"], pack=os.path.basename(_packs()["wm"]),
+                      line=_line("wm", m0["wm"], _by_pool(packs["wm"], tissue["T2_wm"])),
                       keys=dict(m0=CONSTANTS["m0_wm"], T2_s=CONSTANTS["T2_wm"]),
                       note="CACTUS bundle, 366 strands, 120k walkers, 100 ms; pools extra / intra / myelin"),
-                 dict(id="gm", kind="pack", m0=m0["gm"], T2_s=tissue["T2_gm"], pack=os.path.basename(PACKS["gm"]),
-                      line=f'PackSubstrate(gm_pack, m0={m0["gm"]:g}, T2_s={[round(v, 4) for v in tissue["T2_gm"]]}, rho_m_s=0.0, chi_iso=0.0, chi_aniso=0.0)',
+                 dict(id="gm", kind="pack", m0=m0["gm"], T2_s=tissue["T2_gm"], pack=os.path.basename(_packs()["gm"]),
+                      line=_line("gm", m0["gm"], _by_pool(packs["gm"], tissue["T2_gm"])),
                       keys=dict(m0=CONSTANTS["m0_gm"], T2_s=[CONSTANTS["T2_gm"]] * 2),
                       note="packed spheres 2-9 um, 20k walkers, 100 ms; isotropic"),
                  dict(id="csf", kind="analytic", m0=m0["csf"], D_m2_s=tissue["D_csf"], T2_s=tissue["T2_csf"],
-                      line=f'FreeWater(D_m2_s={tissue["D_csf"]:g}, m0={m0["csf"]:g}, T2_s={tissue["T2_csf"]:g})',
+                      line=f'FreeWater(m0={m0["csf"]:g}, tissue=Tissue(D={tissue["D_csf"]:g}, T2={tissue["T2_csf"]:g}))',
                       keys=dict(m0=CONSTANTS["m0_csf"], D_m2_s=CONSTANTS["D_csf"], T2_s=CONSTANTS["T2_csf"]),
                       note="exp(-b D) exp(-TE / T2): the one closed form the format defines, full-tier with zeros (RPH.md 3.1)")],
         constants=dict(field_T=FIELD_T_OF_VALUES, table=tissue["table"],
@@ -285,8 +325,8 @@ def _tilt_matrix(kind, deg):
 
 
 def stage_field():
-    from dmipy_sim import sequences
-    from dmipy_sim.replay import so3
+    from dmipy_replay import sequences
+    from dmipy_replay.phantom import Pose
     t0 = time.time()
     ph, packs = _phantom_and_packs()
     R, _ = _image_rotation(); tissue = _tissue(packs)
@@ -297,22 +337,22 @@ def stage_field():
     dirs_s = np.stack([r * np.cos(phi), r * np.sin(phi), zc], 1)
     M, rows = _even_sh_map()
     chk = np.asarray(index["check"]["voxels"])[:100]
-    ph_c = _check_phantom(ph, packs, chk, tissue)
+    ph_c = _check_phantom(ph, packs, chk, tissue, field=True)
+    wm_tissue = _pack_tissue(packs["wm"], tissue["T2_wm"], chi_iso=tissue["chi_iso"], chi_aniso=tissue["chi_aniso"])
     tables, checks = [], []
     seqs = os.environ.get("BRAIN_SEQS", "se").split(",")          # the gradient echo's static dephasing at high field pushes
     z_bore = np.array([0.0, 0.0, 1.0])                             # the closed form's band (and memory) far beyond a spin echo's
     for ti, (kind, deg) in enumerate(TILTS):
         T = _tilt_matrix(kind, deg)
-        b0_img = R.T @ (T.T @ z_bore); g_img = (dirs_s @ T) @ R                       # head tilted by T: field and gradients seen tilted back
+        pose = Pose(T @ R)                         # the head tilted by T: the image frame to the scanner's, B0 along z
         for B0 in B0_T:
             for seq_kind in seqs:
-                G = np.tile(g_img, (len(SHELLS), 1)); bv = np.repeat(SHELLS, len(dirs_s))
+                G = np.tile(dirs_s, (len(SHELLS), 1)); bv = np.repeat(SHELLS, len(dirs_s))    # the scanner frame
                 seq = (sequences.pgse(G, DELTA, DDELTA, bvalues=bv, TE=TE) if seq_kind == "se"
                        else sequences.gre(TE, gradient_directions=G, bvalues=bv, delta=DELTA, Delta=DDELTA))
                 t1 = time.time()
                 try:
-                    P = packs["wm"].pose_response(seq, tissue=False, T2=tissue["T2_wm"], B0=B0, b0_dir=tuple(b0_img),
-                                                  chi_iso=tissue["chi_iso"], chi_aniso=tissue["chi_aniso"], keep=(LMAX, 0))
+                    P = packs["wm"].pose_response(seq, tissue=wm_tissue, scanner=B0, pose=pose, keep=(LMAX, 0))
                     C = np.asarray(P.coeffs)[:, rows].real.astype("<f2")              # (n_shell * n_dir, 45)
                 except (MemoryError, ValueError) as e:
                     print(f"tilt {kind} {deg:+d} B0 {B0} {seq_kind}: refused ({str(e)[:120]})", flush=True)
@@ -323,8 +363,7 @@ def stage_field():
                 if seq_kind == "se" and B0 in (3.0, 7.0) and kind == "sagittal" and deg in (0, 20):   # checks at 3 and 7 T
                     sub = list(range(0, len(SHELLS) * len(dirs_s), 7))
                     seq_c = (sequences.pgse(G[sub], DELTA, DDELTA, bvalues=bv[sub], TE=TE))
-                    S = np.asarray(ph_c.replay(seq_c, B0_T=B0, b0_dir=tuple(b0_img), chi_iso=tissue["chi_iso"],
-                                               chi_aniso=tissue["chi_aniso"]))[:, 0, 0, :]
+                    S = np.asarray(ph_c.replay(seq_c, scanner=B0, pose=pose))[:, 0, 0, :]
                     checks.append(dict(tilt=ti, B0=B0, seq="se", meas=sub, S=np.round(S, 6).tolist(),
                                        note="the whole voxel through the phantom: the WM pack's field response, the GM pack at its zero field, CSF's closed form"))
                 print(f"tilt {kind} {deg:+d} B0 {B0} {seq_kind}: {P.n_meas} measurements in {time.time() - t1:.0f}s "
@@ -348,21 +387,21 @@ def stage_field():
 def stage_checks():
     """Recompute the field-mode checks against the phantom route (the tables stay): what a changed tissue value
     needs."""
-    from dmipy_sim import sequences
+    from dmipy_replay import sequences
+    from dmipy_replay.phantom import Pose
     t0 = time.time()
     ph, packs = _phantom_and_packs(); tissue = _tissue(packs)
     with open(os.path.join(OUT, "index.json")) as fh:
         index = json.load(fh)
     F = index["field"]; dirs_s = np.asarray(F["dirs_scanner"]); R = np.asarray(index["grid"]["R_image_to_scanner"])
     chk = np.asarray(index["check"]["voxels"])[:100]
-    ph_c = _check_phantom(ph, packs, chk, tissue)
+    ph_c = _check_phantom(ph, packs, chk, tissue, field=True)
     checks = []
     for c in F["checks"]:
-        t = F["tilts"][c["tilt"]]; T = np.asarray(t["T"]); b0_img = np.asarray(t["b0_image"]); g_img = (dirs_s @ T) @ R
-        G = np.tile(g_img, (len(SHELLS), 1)); bv = np.repeat(SHELLS, len(dirs_s)); sub = c["meas"]
+        T = np.asarray(F["tilts"][c["tilt"]]["T"])
+        G = np.tile(dirs_s, (len(SHELLS), 1)); bv = np.repeat(SHELLS, len(dirs_s)); sub = c["meas"]
         seq_c = sequences.pgse(G[sub], DELTA, DDELTA, bvalues=bv[sub], TE=TE)
-        S = np.asarray(ph_c.replay(seq_c, B0_T=c["B0"], b0_dir=tuple(b0_img), chi_iso=tissue["chi_iso"],
-                                   chi_aniso=tissue["chi_aniso"]))[:, 0, 0, :]
+        S = np.asarray(ph_c.replay(seq_c, scanner=c["B0"], pose=Pose(T @ R)))[:, 0, 0, :]
         checks.append(dict(c, S=np.round(S, 6).tolist()))
         print(f"field check tilt {c['tilt']} B0 {c['B0']}: {len(sub)} measurements  [{time.time() - t0:.0f}s]", flush=True)
     index["field"]["checks"] = checks

@@ -1,22 +1,23 @@
 """Build the sequence explorer's data -- docs/studio/explorer_data/<family>.json.
 
-Every point on the explorer's grid is one call to a dmipy-sim builder; what the page draws is
+Every point on the explorer's grid is one call to a dmipy-replay builder; what the page draws is
 what the object holds: the physical gradient ``G``, the sign the pulses impose, ``q(t)`` and ``b``
 from the object, the RF events from its schedule, the readout, and -- when the builder refuses the
 point -- the refusal itself. The browser looks up and draws; no physics is re-implemented there.
 
-Run: python tools/gen_explorer_data.py   (needs dmipy-sim importable)
+Run: python tools/gen_explorer_data.py   (needs dmipy-replay importable)
 """
 from __future__ import annotations
 
 import itertools
 import json
 import os
-import subprocess
+from importlib.metadata import version
 
 import numpy as np
 
-import dmipy_sim as ds
+import dmipy_replay as dr
+from dmipy_analytic.constants import GAMMA
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "docs", "studio", "explorer_data")
@@ -39,47 +40,47 @@ FAMILIES = {
     "pgse": dict(
         label="PGSE — spin echo",
         knobs=dict(delta_ms=[5, 10, 15, 20], Delta_ms=[20, 30, 40, 60], b=[0.5e9, 1e9, 2e9, 3e9], slew=[80, 200, INF]),
-        build=lambda k: ds.pgse([[1, 0, 0]], k["delta_ms"] * 1e-3, k["Delta_ms"] * 1e-3, bvalues=[k["b"]],
+        build=lambda k: dr.pgse([[1, 0, 0]], k["delta_ms"] * 1e-3, k["Delta_ms"] * 1e-3, bvalues=[k["b"]],
                                 n_t=N_T, slew_rate=_slew(k["slew"])),
         call=lambda k: f'pgse([[1, 0, 0]], delta={k["delta_ms"]}e-3, Delta={k["Delta_ms"]}e-3, bvalues=[{k["b"]:.1e}], slew_rate={k["slew"]})',
     ),
     "pgste": dict(
         label="PGSTE — stimulated echo",
         knobs=dict(delta_ms=[4, 6, 10], TM_ms=[20, 50, 100, 200], b=[0.5e9, 1e9, 2e9], slew=[200, INF]),
-        build=lambda k: ds.pgste([[1, 0, 0]], k["delta_ms"] * 1e-3, k["TM_ms"] * 1e-3, bvalues=[k["b"]],
+        build=lambda k: dr.pgste([[1, 0, 0]], k["delta_ms"] * 1e-3, k["TM_ms"] * 1e-3, bvalues=[k["b"]],
                                  n_t=N_T, slew_rate=_slew(k["slew"])),
         call=lambda k: f'pgste([[1, 0, 0]], delta={k["delta_ms"]}e-3, TM={k["TM_ms"]}e-3, bvalues=[{k["b"]:.1e}], slew_rate={k["slew"]})',
     ),
     "ogse": dict(
         label="OGSE — oscillating gradient",
         knobs=dict(f_hz=[25, 50, 100, 200], sigma_ms=[20, 40], shape=["trapezoid", "cosine"], b=[0.5e9, 1e9, 2e9], slew=[200, INF]),
-        build=lambda k: ds.ogse([[1, 0, 0]], float(k["f_hz"]), k["sigma_ms"] * 1e-3, shape=k["shape"], bvalues=[k["b"]],
+        build=lambda k: dr.ogse([[1, 0, 0]], float(k["f_hz"]), k["sigma_ms"] * 1e-3, shape=k["shape"], bvalues=[k["b"]],
                                 n_t=N_T, slew_rate=_slew(k["slew"])),
         call=lambda k: f'ogse([[1, 0, 0]], {k["f_hz"]}.0, {k["sigma_ms"]}e-3, shape="{k["shape"]}", bvalues=[{k["b"]:.1e}], slew_rate={k["slew"]})',
     ),
     "cpmg": dict(
         label="CPMG — refocusing train (no gradient)",
         knobs=dict(n_echoes=[4, 8, 16, 32], TE_ms=[5, 10, 20, 40]),
-        build=lambda k: ds.cpmg(k["n_echoes"], k["TE_ms"] * 1e-3, n_t_per_echo=max(15, N_T // k["n_echoes"])),
+        build=lambda k: dr.cpmg(k["n_echoes"], k["TE_ms"] * 1e-3, n_t_per_echo=max(15, N_T // k["n_echoes"])),
         call=lambda k: f'cpmg({k["n_echoes"]}, {k["TE_ms"]}e-3)',
     ),
     "gre": dict(
         label="GRE — gradient echo",
         knobs=dict(TE_ms=[20, 40, 80], delta_ms=[5, 10], Delta_ms=[15, 25], b=[0, 5e8, 1e9]),
-        build=lambda k: ds.gre(k["TE_ms"] * 1e-3, gradient_directions=[[1, 0, 0]], bvalues=[k["b"]],
+        build=lambda k: dr.gre(k["TE_ms"] * 1e-3, gradient_directions=[[1, 0, 0]], bvalues=[k["b"]],
                                delta=k["delta_ms"] * 1e-3, Delta=k["Delta_ms"] * 1e-3, n_t=N_T),
         call=lambda k: f'gre({k["TE_ms"]}e-3, gradient_directions=[[1, 0, 0]], bvalues=[{k["b"]:.1e}], delta={k["delta_ms"]}e-3, Delta={k["Delta_ms"]}e-3)',
     ),
     "ste": dict(
         label="STE — spherical b-tensor",
         knobs=dict(sigma_ms=[30, 45, 60], b=[0.5e9, 1e9, 2e9], slew=[200, INF]),
-        build=lambda k: ds.ste(k["sigma_ms"] * 1e-3, bvalues=[k["b"]], n_t=N_T, slew_rate=_slew(k["slew"])),
+        build=lambda k: dr.ste(k["sigma_ms"] * 1e-3, bvalues=[k["b"]], n_t=N_T, slew_rate=_slew(k["slew"])),
         call=lambda k: f'ste({k["sigma_ms"]}e-3, bvalues=[{k["b"]:.1e}], slew_rate={k["slew"]})',
     ),
     "pte": dict(
         label="PTE — planar b-tensor",
         knobs=dict(sigma_ms=[30, 45, 60], b=[0.5e9, 1e9, 2e9], slew=[200, INF]),
-        build=lambda k: ds.pte([0, 0, 1], k["sigma_ms"] * 1e-3, bvalues=[k["b"]], n_t=N_T, slew_rate=_slew(k["slew"])),
+        build=lambda k: dr.pte([0, 0, 1], k["sigma_ms"] * 1e-3, bvalues=[k["b"]], n_t=N_T, slew_rate=_slew(k["slew"])),
         call=lambda k: f'pte([0, 0, 1], {k["sigma_ms"]}e-3, bvalues=[{k["b"]:.1e}], slew_rate={k["slew"]})',
     ),
 }
@@ -102,7 +103,7 @@ def encode(seq):
     t = np.arange(n) * seq.dt
     G = np.asarray(seq.G)[0]                                   # (n_t, 3) physical
     sign = np.asarray(seq.rf.sign(t)) if len(seq.rf) else np.ones(n)
-    q = ds.GAMMA * np.cumsum(np.asarray(seq.G_eff)[0], 0) * seq.dt   # rad/m
+    q = GAMMA * np.cumsum(np.asarray(seq.G_eff)[0], 0) * seq.dt   # rad/m
     B = np.asarray(seq.btensor())[0]
     lam = np.sort(np.linalg.eigvalsh(B))[::-1]
     tr = float(lam.sum())
@@ -125,12 +126,8 @@ def encode(seq):
 
 def main(out=OUT):
     os.makedirs(out, exist_ok=True)
-    try:
-        sim_rev = subprocess.check_output(["git", "-C", os.path.dirname(ds.__file__), "rev-parse", "--short", "HEAD"],
-                                          text=True, stderr=subprocess.DEVNULL).strip()
-    except Exception:
-        sim_rev = "installed"
-    index = dict(families={}, dmipy_sim=sim_rev, n_draw=N_DRAW)
+    built_with = version("dmipy-replay")
+    index = dict(families={}, dmipy_replay=built_with, n_draw=N_DRAW)
     for name, fam in FAMILIES.items():
         points = []
         n_ok = n_ref = 0
@@ -143,7 +140,7 @@ def main(out=OUT):
                 entry["refused"] = str(e)
                 n_ref += 1
             points.append(entry)
-        data = dict(family=name, label=fam["label"], knobs=fam["knobs"], points=points, dmipy_sim=sim_rev)
+        data = dict(family=name, label=fam["label"], knobs=fam["knobs"], points=points, dmipy_replay=built_with)
         path = os.path.join(out, f"{name}.json")
         with open(path, "w") as f:
             json.dump(data, f, separators=(",", ":"))

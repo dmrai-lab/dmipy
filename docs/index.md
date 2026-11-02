@@ -1,15 +1,17 @@
 # dmipy
 
 **Diffusion Microstructure Imaging in Python.** Design the sequence, simulate the signal, fit
-the tissue — three engines that read the same two objects: one **acquisition** (what the scanner
-plays, from t = 0 to the readout) and one **substrate** (the tissue the spins walk through).
+the tissue: [six packages](packages.md) that read the same two objects, one **acquisition** (what
+the scanner plays, from t = 0 to the readout) and one **substrate** (the tissue the spins walk
+through). A substrate is walked once and stored as a **replay pack**, which then answers any
+acquisition on any tissue on any scanner, with no second walk.
 
 <div class="dm-loop" markdown>
 
 | | | |
 |---|---|---|
 | **[Design](design.md)** a deliverable sequence under a real scanner's limits | **[Simulate](sim.md)** the signal it produces on a known substrate, from first principles | **[Fit](fit.md)** the acquired data with a model validated against that simulation |
-| `design_waveform_now(...).to_sequence()` | `simulate(..., waveform=seq, geometry=...)` | `MultiCompartmentModel(...).fit(AcquisitionScheme(seq), data)` |
+| `design_waveform_now(...).to_sequence()` | `walk(spec, ...)` once, then `pack.replay(seq)` | `MultiCompartmentModel(...).fit(AcquisitionScheme(seq), data)` |
 
 </div>
 
@@ -18,24 +20,26 @@ agreement between the engines is a statement about the physics, not about a conv
 
 ## Start here
 
+- **I want the whole loop** → [the workflow, end to end](start/workflow.md)
 - **I have diffusion data** → [your first fit](start/fit.md)
 - **I have a substrate, or want one** → [your first simulation](start/sim.md)
 - **I have a scanner** → [your first designed sequence](start/design.md)
 
 ```bash
-pip install dmipy            # dmipy-design + dmipy-sim + dmipy-fit
+pip install dmipy            # dmipy-sim + dmipy-replay + dmipy-fit + dmipy-design
 ```
 
 ```python
 import numpy as np
+import dmipy_replay as dr
 import dmipy_sim as ds
 from dmipy_fit.core.acquisition_scheme import AcquisitionScheme
 from dmipy_fit.signal_models.cylinder_models import C4CylinderGaussianPhaseApproximation
 
-seq  = ds.pgse([[1, 0, 0]] * 3, 0.010, 0.030, bvalues=[0, 1e9, 2e9])         # the acquisition, once
+seq  = dr.pgse([[1, 0, 0]] * 3, 0.010, 0.030, bvalues=[0, 1e9, 2e9])         # the acquisition, once
 axon = ds.Cylinder(radius=4e-6, orientation=(0, 0, 1))                       # the tissue, once
 
-E_mc = ds.simulate(20_000, 1.7e-9, waveform=seq, geometry=axon, seed=0, require_gpu=False)   # forward truth
+E_mc = ds.simulate(8_000, 1.7e-9, waveform=seq, geometry=axon, seed=0, require_gpu=False)   # forward truth
 E_an = C4CylinderGaussianPhaseApproximation(mu=[0., 0.], lambda_par=1.7e-9, diameter=8e-6)(
            AcquisitionScheme(seq))                                            # analytical model, same object
 np.abs(E_mc / E_mc[0] - E_an).max()                                           # < 0.01: they agree
@@ -53,16 +57,20 @@ More knobs: the [sequence explorer](studio/explorer.md) and the [spin studio](st
 
 ## What is in the box
 
-- **[Acquisition](acquisition.md)** — `ScannerSequence`: PGSE, PGSTE, OGSE, CPMG, gradient echo,
-  b-tensor STE/PTE, or any waveform; RF pulses and timing budgets; scanner catalogue and Pulseq.
+- **[Acquisition](acquisition.md)** — `ScannerSequence` (dmipy-replay): PGSE, PGSTE, OGSE, CPMG,
+  gradient echo, b-tensor STE/PTE, or any waveform; RF pulses and timing budgets; scanner catalogue
+  and Pulseq.
 - **[Tissue](substrate.md)** — analytic geometries, packed ensembles, myelinated axons, meshes;
   every constant cited once.
-- **[Simulate](sim.md)** — the fused Monte-Carlo walk, the vector-Bloch engine, and replay packs
-  that answer any acquisition from one stored walk.
+- **[Simulate](sim.md)** — the Monte-Carlo walk (dmipy-sim) and the replay packs it writes, which
+  dmipy-replay answers any acquisition from, by the phase route or the vector-Bloch route, from a
+  file or by range from [SubstrateCommons](https://huggingface.co/SubstrateCommons).
 - **[Fit](fit.md)** — multi-compartment models with relaxation and surface relaxivity as
   composable factors, CSD, myelin water; GPU fitting with a Rician noise floor.
 - **[Design](design.md)** — deliverable waveforms (NOW), spectral and min-TE design, B1-robust
   refocusing RF, export to the scanner.
+- **[Closed forms](analytic/index.md)** — dmipy-analytic: every closed form the packages use, with
+  its assumptions, its source and its JAX twin.
 - **[Physics](physics/index.md)** — each effect, what it does to your numbers, and what it was
   validated against.
 

@@ -24,7 +24,7 @@
 </style></head><body>
 <div id="side">
  <h1>Sequence explorer</h1>
- <p class="sub">Every curve is a <code>ScannerSequence</code> built by dmipy-sim over a grid of knobs and stored, every sample of it. The page looks up and draws.</p>
+ <p class="sub">Every curve is a <code>ScannerSequence</code> built by dmipy-replay over a grid of knobs and stored, every sample of it. The page looks up and draws.</p>
  <div class="fam" id="fam"></div>
  <div id="knobs"></div>
  <div class="grp"><h2>The object</h2><div class="rd" id="rd"></div><div id="msg"></div><div class="call" id="call"></div></div>
@@ -47,7 +47,7 @@
  const TRACK=[150,95,95];                       // px per axis track, per canvas
  const famBox=$('#fam');
  for(const [name,f] of Object.entries(idx.families)){const b=document.createElement('button');b.textContent=f.label.split(' — ')[0];b.title=f.label;b.dataset.f=name;b.onclick=()=>pick(name);famBox.appendChild(b)}
- $('#foot').textContent=`built by tools/gen_explorer_data.py with dmipy-sim ${idx.dmipy_sim}; every sample of every sequence is drawn`;
+ $('#foot').textContent=`built by tools/gen_explorer_data.py with dmipy-replay ${idx.dmipy_replay}; every sample of every sequence is drawn`;
  let W=0;                                        // the plots' CSS width: measured from the container, never from a canvas
  function measure(){ W=Math.max(320, $('#main').clientWidth-32); }
  async function pick(name){

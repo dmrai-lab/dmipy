@@ -3,13 +3,16 @@
 The page is generated in the engine's repository by ``tools/gen_step_law.py`` there (every number on it is a
 measurement that script made, stamped with the commit and the tier) and tested by ``tests/test_step_law_report.py``;
 the site carries a copy under ``docs/physics/step_law.md`` with its figures and the measured values beside it.
-Regenerate the page in dmipy-sim, then regenerate here; nothing on it is typed by hand.
+Regenerate the page in dmipy-sim, then regenerate here; nothing on it is typed by hand. The figures are drawn by
+that script and are not tracked in dmipy-sim: a figure the checkout holds replaces the site's copy, one it does not
+hold stays as the site has it, and a figure the page shows that neither holds is refused.
 
 Run:  python tools/gen_step_law_page.py            (clones dmrai-lab/dmipy-sim at main into a temporary directory)
       DMIPY_SIM_SRC=/path/to/dmipy-sim python tools/gen_step_law_page.py     (a local checkout)
 """
 from __future__ import annotations
 
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -20,6 +23,7 @@ from gen_replay_guide import source  # noqa: E402  (the one way the site reads t
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "physics" / "step_law.md"
 FIGS = ROOT / "docs" / "physics" / "step-law"
+FIGURE = re.compile(r"!\[[^\]]*\]\(step-law/([^)\s]+)\)")
 
 
 def convert(text: str, sha: str) -> str:
@@ -37,14 +41,18 @@ def main() -> int:
     if not page.exists() or not figs.is_dir():
         print(f"no step-law page under {path / 'docs'}", file=sys.stderr)
         return 1
-    if FIGS.exists():
-        shutil.rmtree(FIGS)
-    FIGS.mkdir(parents=True)
+    text = page.read_text(encoding="utf-8")
+    FIGS.mkdir(parents=True, exist_ok=True)
     for f in sorted(figs.iterdir()):
         if f.suffix in (".png", ".json"):
             shutil.copy2(f, FIGS / f.name)
             print(f"step-law/{f.name}")
-    OUT.write_text(convert(page.read_text(encoding="utf-8"), sha), encoding="utf-8")
+    missing = [name for name in FIGURE.findall(text) if not (FIGS / name).exists()]
+    if missing:
+        print(f"the page shows {missing}, which neither the checkout nor the site holds: draw them with "
+              f"tools/gen_step_law.py in dmipy-sim", file=sys.stderr)
+        return 1
+    OUT.write_text(convert(text, sha), encoding="utf-8")
     print(f"physics/step_law.md from dmipy-sim@{sha[:12]}")
     return 0
 

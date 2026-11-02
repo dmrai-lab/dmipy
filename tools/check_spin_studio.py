@@ -1,13 +1,14 @@
-"""Parity of the spin studio's in-browser Bloch integration with dmipy_sim.replay_bloch.
+"""Parity of the spin studio's in-browser Bloch integration with dmipy-replay's vector-Bloch propagator.
 
 ``tools/check_spin_studio.js`` runs the page's script at a knob setting and dumps the sequence it
 built and the magnetisation it computed for every spin. This replays the SAME positions (the
 ``GEOM`` walk embedded in the page) under the SAME physical gradient and RF events with the
-engine's vector-Bloch replay, and compares the per-compartment mean transverse magnetisation at
+vector-Bloch propagator (``dmipy_replay.replay.bloch.replay_bloch``, the reference behind
+``ReplayPack.replay_bloch``), and compares the per-compartment mean transverse magnetisation at
 the echo. The page interpolates the walk onto its fine grid and the engine integrates the walk
 piecewise-exactly, so the two agree to interpolation error, not to rounding.
 
-Run: python tools/check_spin_studio.py   (needs node and dmipy-sim importable)
+Run: python tools/check_spin_studio.py   (needs node and dmipy-replay importable)
 Exit status is the number of settings that disagree.
 """
 from __future__ import annotations
@@ -19,7 +20,8 @@ import sys
 
 import numpy as np
 
-import dmipy_sim as ds
+from dmipy_replay import RFSchedule
+from dmipy_replay.replay.bloch import replay_bloch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.path.join(HERE, "..", "docs", "studio", "bloch_pedagogy.html")
@@ -53,10 +55,10 @@ def engine(G, run, r, dt_traj, T2, T1, comps, relax):
         rf.append(dict(t_s=t0 + e["nsub"] * dt / 2, flip_deg=float(np.degrees(e["flip_rad"])),
                        axis_deg=float(np.degrees(e["axis_rad"])), duration_s=e["nsub"] * dt, offset_hz=0.0,
                        label="Mz→Mxy" if k == 0 else "refocus"))
-    rf = ds.RFSchedule.from_dicts(rf)
+    rf = RFSchedule.from_dicts(rf)
     kw = dict(comp_traj=np.broadcast_to(comps[:, None], r.shape[:2]).copy(),
               T2_per_comp=np.array(T2), T1_per_comp=np.array(T1)) if relax else {}
-    walkers, _ = ds.replay_bloch(r, dt_traj, G[None], dt, rf, return_walker_signals=True, **kw)
+    walkers, _ = replay_bloch(r, dt_traj, G[None], dt, rf, return_walker_signals=True, **kw)
     return np.asarray(walkers)                                       # (3, n_w): Mx, My, Mz per walker at the end
 
 

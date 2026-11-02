@@ -3,7 +3,7 @@
 An open-source subject, one Monte-Carlo walk per tissue, replayed anywhere in the head at any
 gradient direction and any b — live, in this page, exactly. The subject is the
 [B.A.T.M.A.N.](https://osf.io/fkyht/) tutorial's (Tahedl 2018, CC BY 4.0); MRtrix3 gives its fibre
-orientation distribution and tissue fractions per voxel; dmipy-sim composes them into a replay
+orientation distribution and tissue fractions per voxel; dmipy-replay composes them into a replay
 phantom that cites two walks (a CACTUS white-matter bundle, a grey-matter sphere packing) and one
 closed form (free water). This page walks through how the phantom is made, then hands you the
 result.
@@ -49,27 +49,30 @@ fractions are supersampled onto the diffusion grid, so tissue boundaries carry g
 ```python
 # docs: skip
 import numpy as np
-from dmipy_sim.phantom import Grid
-from dmipy_sim.replay import so3
+from dmipy_replay.phantom import Grid
+from dmipy_replay.replay import so3
 grid, R = Grid.from_oblique_affine(fod.affine, fod.shape[:3])
 c = so3.rotate_sh(fod.data.reshape(-1, 45), R.T)                # the FODs in the grid's own frame
 ```
 
 ## Step 3 — compose
 
-Three tissues, declared as objects: two packs and one closed form. The white matter is oriented by
-the FOD, the grey matter by an isotropic ODF (a cortex has no fibre axis), the CSF is `exp(-bD)` with its T2,
-and what is not tissue is `Inert()`. The file that comes out (64 MB) is the arrangement — fractions
+Three tissues, declared as objects: two packs and one closed form, each with its material as a `Tissue`.
+The white matter is oriented by the FOD, the grey matter by an isotropic ODF (a cortex has no fibre axis), the
+CSF is `exp(-bD)` with its T2, and what is not tissue is `Inert()`. The file that comes out (64 MB) is the arrangement — fractions
 and FODs per voxel — citing the packs by URI; the physics stays in the packs.
 
 ```python
 # docs: skip
-from dmipy_sim.phantom import Phantom, PackSubstrate, FreeWater, Inert, ODF
+from dmipy_replay import Tissue
+from dmipy_replay.phantom import Phantom, PackSubstrate, FreeWater, Inert, ODF
 from dmipy_sim.substrate.biophysical_constants import get_value as v      # every value by key, with its citation
 wm = PackSubstrate(wm_pack, m0=v("proton_density_white_matter"),          # CACTUS bundle: extra / intra / myelin pools
-                   T2_s=[v(k, 3.0) for k in ("T2_extra_axonal", "T2_intra_axonal", "T2_myelin")])
-gm = PackSubstrate(gm_pack, m0=v("proton_density_grey_matter"), T2_s=[v("T2_grey_matter", 3.0)] * 2)   # packed spheres
-csf = FreeWater(D_m2_s=v("D_csf"), m0=v("proton_density_csf"), T2_s=v("T2_csf", 3.0))
+                   tissue=Tissue(T2={"extra": v("T2_extra_axonal", 3.0), "intra": v("T2_intra_axonal", 3.0),
+                                     "myelin": v("T2_myelin", 3.0)}))
+gm = PackSubstrate(gm_pack, m0=v("proton_density_grey_matter"),           # packed spheres: both pools at one T2
+                   tissue=Tissue(T2={"extra": v("T2_grey_matter", 3.0), "intra": v("T2_grey_matter", 3.0)}))
+csf = FreeWater(m0=v("proton_density_csf"), tissue=Tissue(D=v("D_csf"), T2=v("T2_csf", 3.0)))
 ph = Phantom.compose(grid, fractions={wm: f_wm, gm: f_gm, csf: f_csf}, remainder=Inert(),
                      orientation={wm: ODF(c, basis="mrtrix3"), gm: ODF(iso, basis="mrtrix3")})
 ph.write("batman_brain.rph", id="phantoms/batman-brain", license="CC-BY-4.0", citation="Tahedl 2018 ...")
@@ -87,7 +90,7 @@ sequence, so the phantom refuses an acquisition whose frame is not its own.
 
 ```python
 # docs: skip
-from dmipy_sim import Prescription, sequences
+from dmipy_replay import Prescription, sequences
 g = np.loadtxt("dwipreproc_grad.b"); dirs, b = g[:, :3], g[:, 3] * 1e6
 seq = sequences.pgse(dirs @ R, 0.025, 0.055, bvalues=b, TE=0.100)
 seq = seq.with_prescription(Prescription(isocenter_m=(0, 0, 0), axes=grid.axes, voxel_size_m=grid.voxel_size_m,
@@ -102,7 +105,7 @@ on the subject's grid.
 
 ```python
 # docs: skip
-S = ph.replay(seq, b0_dir=tuple(R.T @ [0.0, 0.0, 1.0]))       # (96, 96, 60, 113)
+S = ph.replay(seq)                                             # (96, 96, 60, 113)
 ```
 
 ## Step 6 — the round trip
@@ -138,14 +141,14 @@ fod_fit = MultiCompartmentSphericalHarmonicsModel(models=[tr2]).fit(scheme, S, s
   exchange, and other sequence families. The old brain-slice Bloch studio, which this page
   supersedes, hand-coded its susceptibility as an off-resonance formula; nothing here is hand-coded.
 
-**The file.** The phantom (`batman_brain.rph`) and the two packs it cites will be published on
-SubstrateCommons, so that the page's one-liner becomes literal
-([dmipy-sim#211](https://github.com/dmrai-lab/dmipy-sim/issues/211)); the author is contacted before
-that. Until then, the pipeline above reproduces it from the tutorial's data.
+**The file.** The phantom (`batman_brain.rph`) and the two packs it cites are not on
+[SubstrateCommons](https://huggingface.co/SubstrateCommons): their publication waits on the tutorial
+author ([dmipy-sim#211](https://github.com/dmrai-lab/dmipy-sim/issues/211)), and the pipeline above
+reproduces the phantom from the tutorial's data. Published, it reads by reference:
 
 ```python
-# docs: skip  (the file is not published yet)
-from dmipy_sim.phantom import Phantom
+# docs: skip  (the file is not on the Hub)
+from dmipy_replay.phantom import Phantom
 ph = Phantom.read("hf://SubstrateCommons/batman-brain/batman_brain.rph")
 S = ph.replay(seq)
 ```

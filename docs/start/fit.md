@@ -26,7 +26,7 @@ fit = model.fit(scheme, data, solver="jax")          # vmap over voxels, GPU if 
 fit.fitted_parameters["partial_volume_1"]            # ≈ 0.65, the stick fraction
 ```
 
-`AcquisitionScheme.from_pgse` builds the same `ScannerSequence` the simulator plays
+`AcquisitionScheme.from_pgse` builds the same `ScannerSequence` the simulator and the replay play
 ([Acquisition](../acquisition.md)); the analytical models read their δ, Δ, TE and b from it.
 Multi-shell, multi-TE, OGSE and b-tensor data use the other constructors (`from_ogse`,
 `from_pgste`, `from_cpmg`, `from_btensor_ste`, `from_btensor_pte`, `from_waveform`) and

@@ -4,6 +4,7 @@ Name the scanner, give the timing budget, ask for the most b a spin echo can enc
 answer is a `ScannerSequence` the simulator plays and the scanner can run.
 
 ```python
+import numpy as np
 import dmipy_sim as ds
 from dmipy_design import design_waveform_now, ScannerLimits, SequenceTiming
 
@@ -20,7 +21,7 @@ Simulate it and fit it like any other acquisition:
 
 ```python
 E = ds.simulate(10_000, 2e-9, waveform=seq, geometry=ds.FreeDiffusion(), seed=0, require_gpu=False)
-float(E[0]), float(__import__("numpy").exp(-d.b_value * 2e-9))        # Stejskal–Tanner on the designed pulse
+float(E[0]), float(np.exp(-d.b_value * 2e-9))                         # Stejskal–Tanner on the designed pulse
 ```
 
 ## Then

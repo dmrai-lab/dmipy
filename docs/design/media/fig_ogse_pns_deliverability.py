@@ -7,8 +7,8 @@ nerve stimulation (PNS) limit (SAFE model) — the scanner rejects it. Turning t
 holds it at 80% for only ~4% less b — deliverable. Shows why PNS is a hard constraint, not an
 afterthought.
 
-Needs the (private) ``dmipy-design`` package on the path:
-    OMP_NUM_THREADS=1 PYTHONPATH=/path/to/dmipy-design python fig_ogse_pns_deliverability.py
+Needs dmipy-design installed:
+    OMP_NUM_THREADS=1 python fig_ogse_pns_deliverability.py
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):

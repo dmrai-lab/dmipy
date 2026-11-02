@@ -11,10 +11,10 @@ In dmipy the gate is not a flag. It is `chi_perp`, derived from the acquisition'
 (`pgste`) is transverse only over its two encoding lobes and stored across the mixing time.
 
 ```python
-import numpy as np, dmipy_sim as ds
+import numpy as np, dmipy_replay as dr
 
-se  = ds.pgse([[1, 0, 0]], 0.006, 0.046, bvalues=[1e9])
-ste = ds.pgste([[1, 0, 0]], 0.006, 0.040, bvalues=[1e9])
+se  = dr.pgse([[1, 0, 0]], 0.006, 0.046, bvalues=[1e9])
+ste = dr.pgste([[1, 0, 0]], 0.006, 0.040, bvalues=[1e9])
 se.chi_perp is None, np.asarray(ste.chi_perp).mean(), ste.TM      # transverse throughout; ≈0.2 transverse; 40 ms stored
 ```
 

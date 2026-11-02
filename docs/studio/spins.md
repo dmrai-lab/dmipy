@@ -9,9 +9,10 @@ Everything is a **live vector-Bloch replay** of a stored Monte-Carlo walk throug
 <p style="margin:.8em 0"><a href="../bloch_pedagogy.html" target="_blank" rel="noopener"><strong>Open full-screen ↗</strong></a> &nbsp;·&nbsp; runs entirely in your browser, best on a desktop.</p>
 
 **What is real here.** The spins' positions are a dmipy-sim walk on the canonical white-matter
-substrate (`tools/gen_spin_studio.py`: `Substrate.canonical()` packed and walked, stored as a
-replay pack, a few dozen walkers per compartment decoded into the page); the compartments' T2 and
-T1 are the substrate's. The page integrates the Bloch equation on those positions in the browser,
+substrate (`tools/gen_spin_studio.py`: `Substrate.canonical()` packed and walked, a few dozen
+walkers per compartment taken from the walk's own positions, not decoded from a pack); the
+compartments' T2 and T1 are the substrate's. The page integrates the Bloch equation on those positions in the browser,
 the one place on this site where physics runs in JavaScript, and CI checks that integration
-against `dmipy_sim.replay_bloch` on the same positions and the same sequence
+against dmipy-replay's vector-Bloch propagator (`dmipy_replay.replay.bloch.replay_bloch`, the reference behind
+[`pack.replay_bloch`](../replay/bloch.md)) on the same positions and the same sequence
 (`tools/check_spin_studio.py`, agreement to 10⁻³).
