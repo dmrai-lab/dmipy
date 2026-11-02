@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dmipy"
-version = "2.2.0"
-description = "Diffusion Microstructure Imaging in Python — umbrella install for the dmipy-design (sequence design), dmipy-sim (forward Monte Carlo) and dmipy-fit (analytical inverse) engines"
+version = "3.0.0"
+description = "Diffusion Microstructure Imaging in Python — umbrella install for dmipy-sim (forward Monte Carlo), dmipy-replay (the replay-pack reader), dmipy-fit (analytical inverse) and dmipy-design (sequence design)"
 readme = "README.md"
 license = { text = "AGPL-3.0-only OR LicenseRef-Commercial" }  # dual-licensed; see LICENSING.md
 authors = [
@@ -20,18 +20,21 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 requires-python = ">=3.10"
-# Published deps (NOT git+ — PyPI rejects direct references). dmipy-fit already pulls
-# dmipy-sim; all three are listed so `pip install dmipy` states the whole ecosystem explicitly.
+# Published deps (NOT git+ — PyPI rejects direct references). dmipy-fit and dmipy-design already pull
+# dmipy-sim and dmipy-replay; all four are listed so `pip install dmipy` states the whole ecosystem explicitly.
 dependencies = [
-    "dmipy-design>=2.0,<3",   # sequence design (deliverable waveforms, Pulseq)
-    "dmipy-sim>=2.0,<3",      # forward Monte-Carlo
-    "dmipy-fit>=2.0,<3",      # analytical inverse
+    "dmipy-sim>=3,<4",        # forward Monte-Carlo: walks the substrates and produces the replay packs
+    "dmipy-replay>=0.2,<0.3", # the replay-pack reader: the signal, the images, the acquisition object
+    "dmipy-fit>=3,<4",        # analytical inverse
+    "dmipy-design>=3,<4",     # sequence design (deliverable waveforms, Pulseq)
 ]
 
 [project.optional-dependencies]
-# GPU / CPU JAX for both engines (osqp, a dmipy-fit CSD dep, is pulled by dmipy-fit itself)
+# JAX on a CUDA-12 GPU or on the CPU, with jaxopt (dmipy-fit's batched solvers); the bounds are dmipy-sim's and dmipy-fit's
 cuda12 = ["jax[cuda12]>=0.6.2", "jaxopt>=0.8"]
 cpu    = ["jax[cpu]>=0.6.2",    "jaxopt>=0.8"]
+# Tractography on FOD fields (not installed by default)
+tract  = ["dmipy-tract>=0.1,<0.2"]
 # Build the dmipy.org documentation site
 docs = [
     "mkdocs-material>=9.5",
@@ -39,7 +42,7 @@ docs = [
     "mkdocs-jupyter>=0.24",
     "black>=24.0",            # pretty-format autodoc signatures (mkdocstrings)
 ]
-# Ecosystem integration tests: assemble all three engines (pulled by the deps above) and
+# Ecosystem integration tests: assemble the engines (pulled by the deps above) and
 # check design -> sim -> fit interoperate at these resolved versions.
 test = ["pytest>=7", "jax[cpu]>=0.6.2"]
 
@@ -51,6 +54,6 @@ Source = "https://github.com/dmrai-lab"
 [tool.setuptools]
 py-modules = []
 
-# dmipy is a thin umbrella: `pip install dmipy` pulls the three engines
-# (dmipy-design + dmipy-sim + dmipy-fit). There is no `dmipy` importable package — import
-# `dmipy_design` / `dmipy_sim` / `dmipy_fit` directly. This repo also hosts the dmipy.org docs.
+# dmipy is a thin umbrella: `pip install dmipy` pulls dmipy-sim, dmipy-replay, dmipy-fit and dmipy-design
+# (`pip install "dmipy[tract]"` adds dmipy-tract). There is no `dmipy` importable package — import
+# `dmipy_sim` / `dmipy_replay` / `dmipy_fit` / `dmipy_design` directly. This repo also hosts the dmipy.org docs.

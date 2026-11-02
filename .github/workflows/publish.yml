@@ -5,8 +5,9 @@ name: Publish to PyPI
 # publisher for project "dmipy" with owner=dmrai-lab, repo=dmipy,
 # workflow=publish.yml, environment=pypi.
 #
-# NB: publish the engines (dmipy-sim, dmipy-fit) FIRST — this umbrella depends
-# on them by version, so `pip install dmipy` can only resolve once they are on PyPI.
+# NB: publish the packages it depends on FIRST (dmipy-replay, then dmipy-sim, then dmipy-fit and dmipy-design, and
+# dmipy-tract for the `tract` extra) — this umbrella depends on them by version, so `pip install dmipy` can only
+# resolve once they are on PyPI.
 on:
   release:
     types: [published]

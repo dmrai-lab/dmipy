@@ -1,7 +1,21 @@
 # Changelog
 
-`dmipy` is the umbrella install for the two engines — `dmipy-sim` (forward Monte Carlo) and
-`dmipy-fit` (analytical inverse). It versions in lockstep with them.
+`dmipy` is the umbrella install for the dmipy ecosystem. Its version follows dmipy-sim, dmipy-fit and
+dmipy-design; dmipy-replay and dmipy-tract have version lines of their own.
+
+## 3.0.0 - 2026-11-02
+
+`pip install dmipy` installs the 3.0 line: dmipy-sim 3, dmipy-replay 0.2, dmipy-fit 3 and dmipy-design 3.
+`pip install "dmipy[tract]"` adds dmipy-tract 0.1.
+
+- **dmipy-sim** walks a tissue substrate once and keeps the walk as a replay pack.
+- **dmipy-replay** turns a pack into a signal or an image: any acquisition, orientation distributions, replay phantoms.
+- **dmipy-fit** fits multi-compartment models to data, and the replay compartments fit through a pack.
+- **dmipy-design** designs deliverable waveforms and refocusing RF under a scanner's limits.
+- **dmipy-tract** tracks streamlines on FOD fields (the `tract` extra).
+- **Requires** `dmipy-sim>=3,<4`, `dmipy-replay>=0.2,<0.3`, `dmipy-fit>=3,<4` and `dmipy-design>=3,<4`; the `tract`
+  extra requires `dmipy-tract>=0.1,<0.2`. The extras `cuda12` and `cpu` add JAX with jaxopt, and `docs` builds the
+  dmipy.org site.
 
 ## 2.1.0
 

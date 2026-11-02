@@ -1,11 +1,14 @@
 # Contributing to dmipy
 
-This is the **umbrella** repo: the thin `dmipy` meta-package (installs the two engines), the
-[dmipy.org](https://dmipy.org) documentation site, and the licensing templates. The code that
-does the physics lives in the engines — contribute there:
+This is the **umbrella** repo: the thin `dmipy` meta-package (installs dmipy-sim, dmipy-replay, dmipy-fit and
+dmipy-design), the [dmipy.org](https://dmipy.org) documentation site, and the licensing templates. The code
+that does the physics lives in the packages — contribute there:
 
 - **dmipy-sim** (forward Monte-Carlo): https://github.com/dmrai-lab/dmipy-sim
+- **dmipy-replay** (replay packs as a signal or an image): https://github.com/dmrai-lab/dmipy-replay
 - **dmipy-fit** (analytical inverse): https://github.com/dmrai-lab/dmipy-fit
+- **dmipy-design** (sequence design): https://github.com/dmrai-lab/dmipy-design
+- **dmipy-tract** (tractography, the `tract` extra): https://github.com/dmrai-lab/dmipy-tract
 
 ## What belongs here
 
@@ -19,7 +22,7 @@ does the physics lives in the engines — contribute there:
 
 - Licensing (`licensing/`, `LICENSING.md`).
 
-Keep the umbrella thin — no importable `dmipy` package; it only pins and installs the engines.
+Keep the umbrella thin — no importable `dmipy` package; it only pins and installs the packages.
 
 ## Contributor License Agreement
 
