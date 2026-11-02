@@ -1,9 +1,10 @@
 # Install
 
-`dmipy` is a thin umbrella that pulls both engines:
+`dmipy` is a thin umbrella that pulls the packages of the ecosystem:
 
 ```bash
-pip install dmipy                 # dmipy-sim + dmipy-fit
+pip install dmipy                 # dmipy-sim + dmipy-replay + dmipy-fit + dmipy-design
+pip install "dmipy[tract]"        # + dmipy-tract, tractography on FOD fields
 pip install "dmipy[cuda12]"       # + JAX CUDA-12 GPU (JAX, jaxopt)
 pip install "dmipy[cpu]"          # + JAX CPU
 ```
@@ -16,11 +17,13 @@ pip install "dmipy[cpu]"          # + JAX CPU
 !!! tip "CPU-only / shared machine"
     Set `JAX_PLATFORMS=cpu` to force JAX onto CPU regardless of what is installed.
 
-There is no importable `dmipy` package — import the engines directly:
+There is no importable `dmipy` package — import the packages directly:
 
 ```python
-import dmipy_sim          # forward Monte Carlo
+import dmipy_sim          # forward Monte Carlo: walks the substrates, produces the replay packs
+import dmipy_replay       # the replay packs as a signal or an image; the acquisition object
 import dmipy_fit          # analytical inverse
+import dmipy_design       # sequence design
 ```
 
 !!! warning "Upgrading from dmipy 1.x"
@@ -29,9 +32,12 @@ import dmipy_fit          # analytical inverse
     Old `import dmipy` code will not run under 2.x. To stay on the original toolbox, pin
     `pip install "dmipy<2"` — it remains available on PyPI.
 
-Or install an engine on its own:
+Or install a package on its own:
 
 ```bash
 pip install dmipy-sim
+pip install dmipy-replay
 pip install "dmipy-fit[jax]"
+pip install dmipy-design
+pip install dmipy-tract
 ```

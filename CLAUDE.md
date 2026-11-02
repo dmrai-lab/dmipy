@@ -1,12 +1,13 @@
 # dmipy — umbrella + docs (dmipy.org)
 
-This repo is the **dmipy** brand umbrella: a thin meta-package (`pip install dmipy` → the two
-engines) and the source of the documentation site at dmipy.org. It holds **no engine code** —
-the engines are the sibling repos.
+This repo is the **dmipy** brand umbrella: a thin meta-package (`pip install dmipy` → dmipy-sim,
+dmipy-replay, dmipy-fit and dmipy-design) and the source of the documentation site at dmipy.org. It
+holds **no engine code** — the packages are the sibling repos.
 
 ## Layout
-- `pyproject.toml` — `dmipy` meta-package: deps = `dmipy-sim` + `dmipy-fit` (pinned git tags);
-  `[docs]`/`[cuda12]`/`[cpu]` extras. No importable `dmipy` package.
+- `pyproject.toml` — `dmipy` meta-package: deps = `dmipy-sim` + `dmipy-replay` + `dmipy-fit` +
+  `dmipy-design` (version ranges); `[tract]`/`[docs]`/`[cuda12]`/`[cpu]` extras. No importable `dmipy`
+  package.
 - `mkdocs.yml`, `docs/` — MkDocs Material site → dmipy.org. API pages use `mkdocstrings` to
   autodoc the *installed* `dmipy_sim` / `dmipy_fit`, so the reference is sourced from the real
   engine docstrings (can't drift).
