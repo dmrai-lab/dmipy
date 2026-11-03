@@ -43,8 +43,7 @@ the packages are the sibling repos.
   lists the interactive pages.
 - `/dev/` (`staging`) is the next site and the root (`main`) the released one; `main` takes
   `staging` by a pull request from `staging`.
-- The replay paper has no arXiv identifier yet: `docs/publications.md` holds the one marked
-  placeholder (`ARXIV_URL`, an HTML comment) where its link goes.
+- The replay paper is arXiv:2611.01758 (2026-11-01); `docs/publications.md` holds its link and BibTeX.
 
 ## Relationships (don't conflate)
 - **dmipy** (this repo) = the public computational-engine brand + docs + paper.

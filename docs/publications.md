@@ -4,7 +4,17 @@
 
 !!! quote "Replayable Monte Carlo MRI (2026)"
     **Replayable Monte Carlo MRI: From Persistent Tissue Microphysics to Queryable Virtual Phantoms.**
-    Rutger H.J. Fick (2026). Preprint.<!-- ARXIV_URL: the replay paper's arXiv link goes here once it has an identifier -->
+    Rutger H.J. Fick (2026). Preprint, [arXiv:2611.01758](https://arxiv.org/abs/2611.01758).
+
+    ```bibtex
+    @article{fick2026replayable,
+      title   = {Replayable Monte Carlo MRI: From Persistent Tissue Microphysics to Queryable Virtual Phantoms},
+      author  = {Fick, Rutger H. J.},
+      journal = {arXiv preprint arXiv:2611.01758},
+      year    = {2026},
+      url     = {https://arxiv.org/abs/2611.01758}
+    }
+    ```
 
 The method under dmipy-sim's replay packs and dmipy-replay: a Monte-Carlo walk stored once as the sine-band
 projections of every walker's path, its pool and its wall contact, certified, and replayed against any
