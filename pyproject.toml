@@ -57,3 +57,6 @@ py-modules = []
 # dmipy is a thin umbrella: `pip install dmipy` pulls dmipy-sim, dmipy-replay, dmipy-fit and dmipy-design
 # (`pip install "dmipy[tract]"` adds dmipy-tract). There is no `dmipy` importable package — import
 # `dmipy_sim` / `dmipy_replay` / `dmipy_fit` / `dmipy_design` directly. This repo also hosts the dmipy.org docs.
+
+[tool.pytest.ini_options]
+addopts = "--durations=25 --durations-min=1.0"
